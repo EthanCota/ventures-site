@@ -38,39 +38,57 @@ header.hero h1{font-size:clamp(28px,5vw,40px);margin:0 0 10px;}
 header.hero p{color:var(--ink-2);max-width:65ch;margin:0;}
 main{max-width:1100px;margin:0 auto;padding:10px 20px 60px;}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;}
-.card{background:var(--v-tint,var(--card-bg));border:1px solid var(--border);border-radius:14px;padding:22px;
+/* Card geometry is IDENTICAL for every venture -- same box, same padding, same
+   slot order, same gaps. The only per-card difference is colour and the one
+   background motif, both delivered as custom properties on the element. */
+.card{background-color:var(--v-ground,var(--card-bg));
+  background-image:var(--v-motif,none);
+  background-size:var(--v-motif-size,auto);
+  background-position:var(--v-motif-pos,0 0);
+  background-repeat:var(--v-motif-repeat,repeat);
+  border:1px solid var(--v-rule,var(--border));border-radius:14px;padding:22px;overflow:hidden;
+  color:var(--v-ink,var(--ink));
   display:flex;flex-direction:column;gap:12px;}
-/* Per-card brand theming: each card carries its own venture's light/dark token pair as
-   local custom properties (set inline via style="--v-accent-l:…"); these rules pick the
-   scheme-appropriate value the same way the page-level tokens above do, so a card themed
-   from ventures/dashboard/brand-tokens.json always matches the current light/dark scheme.
-   Cards with no brand tokens (coming-soon / no extracted data) fall back to the neutral
-   page --accent / --card-bg via the var() defaults above and below. */
-.card{--v-accent:var(--v-accent-l);--v-cta-text:var(--v-cta-text-l);--v-tint:var(--v-tint-l);}
+/* Per-card brand theming: each card carries its own venture's light/dark value
+   for every themed property as local custom properties (set inline via
+   style="--v-ground-l:…"); these rules pick the scheme-appropriate value the
+   same way the page-level tokens above do. Cards with no brand-tokens.json
+   entry (a freshly-added venture pending extraction) fall back to the neutral
+   page palette via the var() defaults, with no motif. */
+.card{--v-ground:var(--v-ground-l);--v-ink:var(--v-ink-l);--v-ink-2:var(--v-ink-2-l);
+  --v-muted:var(--v-muted-l);--v-rule:var(--v-rule-l);--v-accent:var(--v-accent-l);
+  --v-cta-bg:var(--v-cta-bg-l);--v-cta-text:var(--v-cta-text-l);--v-motif:var(--v-motif-l);}
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]) .card{
-    --v-accent:var(--v-accent-d);--v-cta-text:var(--v-cta-text-d);--v-tint:var(--v-tint-d);
+    --v-ground:var(--v-ground-d);--v-ink:var(--v-ink-d);--v-ink-2:var(--v-ink-2-d);
+    --v-muted:var(--v-muted-d);--v-rule:var(--v-rule-d);--v-accent:var(--v-accent-d);
+    --v-cta-bg:var(--v-cta-bg-d);--v-cta-text:var(--v-cta-text-d);--v-motif:var(--v-motif-d);
   }
 }
 :root[data-theme="dark"] .card{
-  --v-accent:var(--v-accent-d);--v-cta-text:var(--v-cta-text-d);--v-tint:var(--v-tint-d);
+  --v-ground:var(--v-ground-d);--v-ink:var(--v-ink-d);--v-ink-2:var(--v-ink-2-d);
+  --v-muted:var(--v-muted-d);--v-rule:var(--v-rule-d);--v-accent:var(--v-accent-d);
+  --v-cta-bg:var(--v-cta-bg-d);--v-cta-text:var(--v-cta-text-d);--v-motif:var(--v-motif-d);
 }
 :root[data-theme="light"] .card{
-  --v-accent:var(--v-accent-l);--v-cta-text:var(--v-cta-text-l);--v-tint:var(--v-tint-l);
+  --v-ground:var(--v-ground-l);--v-ink:var(--v-ink-l);--v-ink-2:var(--v-ink-2-l);
+  --v-muted:var(--v-muted-l);--v-rule:var(--v-rule-l);--v-accent:var(--v-accent-l);
+  --v-cta-bg:var(--v-cta-bg-l);--v-cta-text:var(--v-cta-text-l);--v-motif:var(--v-motif-l);
 }
 .card .accent-bar{height:4px;border-radius:2px;margin:-22px -22px 6px;background:var(--v-accent,var(--accent));}
-.card h2{margin:0;font-size:20px;font-family:var(--v-font,inherit);}
-.card .one-liner{color:var(--ink-2);font-size:14.5px;margin:0;}
-.card .desc{font-size:14px;color:var(--ink-2);margin:0;}
-.card .desc strong{color:var(--ink);}
-.card .pricing{font-size:13.5px;color:var(--muted);border-top:1px solid var(--border);padding-top:10px;margin-top:auto;}
+.card h2{margin:0;font-size:20px;font-family:var(--v-font,inherit);color:var(--v-ink,var(--ink));}
+.card .one-liner{color:var(--v-ink-2,var(--ink-2));font-size:14.5px;margin:0;}
+.card .desc{font-size:14px;color:var(--v-ink-2,var(--ink-2));margin:0;}
+.card .desc strong{color:var(--v-ink,var(--ink));}
+.card .pricing{font-size:13.5px;color:var(--v-muted,var(--muted));
+  border-top:1px solid var(--v-rule,var(--border));padding-top:10px;margin-top:auto;}
 .card a.visit{display:inline-block;margin-top:6px;padding:9px 16px;border-radius:8px;
-  background:var(--v-accent,var(--accent));color:var(--v-cta-text,var(--accent-ink));
+  background:var(--v-cta-bg,var(--accent));color:var(--v-cta-text,var(--accent-ink));
   text-decoration:none;font-weight:600;font-size:14px;text-align:center;}
 .card a.visit:hover{opacity:0.9;}
 .card .coming-soon{display:inline-block;margin-top:6px;padding:9px 16px;border-radius:8px;
-  background:transparent;border:1px dashed var(--border);color:var(--muted);font-weight:500;
-  font-size:13px;text-align:center;}
+  background:transparent;border:1px dashed var(--v-rule,var(--border));color:var(--v-muted,var(--muted));
+  font-weight:500;font-size:13px;text-align:center;}
 footer.site-footer{max-width:1100px;margin:0 auto;padding:20px;color:var(--muted);font-size:12.5px;
   border-top:1px solid var(--border);}
 @media (max-width:480px){
@@ -90,7 +108,7 @@ footer.site-footer{max-width:1100px;margin:0 auto;padding:20px;color:var(--muted
 </header>
 <main>
   <div class="grid">
-  <div class="card" style="--v-accent-l:#08786d;--v-accent-d:#57dfcb;--v-cta-text-l:#ffffff;--v-cta-text-d:#0b1210;--v-tint-l:#fbf7f0;--v-tint-d:#1b1d19;--v-font:Rockwell, &#x27;Rockwell Nova&#x27;, &#x27;Roboto Slab&#x27;, &#x27;DejaVu Serif&#x27;, &#x27;Sitka Small&#x27;, serif">
+  <div class="card" style="--v-ground-l:#f7f1e3;--v-ink-l:#17262a;--v-ink-2-l:#3a4f53;--v-muted-l:#3a4f53;--v-rule-l:#d9cba6;--v-accent-l:#08786d;--v-cta-bg-l:#08786d;--v-cta-text-l:#ffffff;--v-motif-l:repeating-linear-gradient(90deg,rgba(8,120,109,0.13) 0 11px,transparent 11px 22px),linear-gradient(#d9cba6 0 0);--v-ground-d:#101b19;--v-ink-d:#eef4f1;--v-ink-2-d:#c4d3ce;--v-muted-d:#c4d3ce;--v-rule-d:#33473f;--v-accent-d:#57dfcb;--v-cta-bg-d:#57dfcb;--v-cta-text-d:#101b19;--v-motif-d:repeating-linear-gradient(90deg,rgba(87,223,203,0.13) 0 11px,transparent 11px 22px),linear-gradient(#33473f 0 0);--v-motif-size:100% 30px,100% 1px;--v-motif-pos:0 0,0 30px;--v-motif-repeat:no-repeat,no-repeat;--v-font:Rockwell, &#x27;Rockwell Nova&#x27;, &#x27;Roboto Slab&#x27;, &#x27;DejaVu Serif&#x27;, &#x27;Sitka Small&#x27;, serif">
     <div class="accent-bar"></div>
     <h2>Harborcite</h2>
     <p class="one-liner">SEO + AEO visibility for single-location local service businesses in San Diego.</p>
@@ -100,7 +118,7 @@ footer.site-footer{max-width:1100px;margin:0 auto;padding:20px;color:var(--muted
     <a class="visit" href="./PITCH-001-seo-aeo-visibility/index.html">View Harborcite (alpha) &rarr;</a>
   </div>
 
-  <div class="card" style="--v-accent-l:#a8441a;--v-accent-d:#e07a3d;--v-cta-text-l:#ffffff;--v-cta-text-d:#0b1210;--v-tint-l:#faf7f1;--v-tint-d:#1d1a15;--v-font:&#x27;Iowan Old Style&#x27;, &#x27;Palatino Linotype&#x27;, &#x27;Book Antiqua&#x27;, Palatino, Georgia, serif">
+  <div class="card" style="--v-ground-l:#f6f0e4;--v-ink-l:#2b2318;--v-ink-2-l:#5c5346;--v-muted-l:#675d4e;--v-rule-l:#d6cfc3;--v-accent-l:#a8441a;--v-cta-bg-l:#a8441a;--v-cta-text-l:#fff8f0;--v-motif-l:linear-gradient(rgba(168,68,26,0.55) 0 0),repeating-linear-gradient(180deg,transparent 0 26px,rgba(43,35,24,0.07) 26px 28px);--v-ground-d:#17130f;--v-ink-d:#f3ead9;--v-ink-2-d:#cbbfa9;--v-muted-d:#a89c89;--v-rule-d:#3a352f;--v-accent-d:#e07a3d;--v-cta-bg-d:#e07a3d;--v-cta-text-d:#1a1005;--v-motif-d:linear-gradient(rgba(224,122,61,0.55) 0 0),repeating-linear-gradient(180deg,transparent 0 26px,rgba(243,234,217,0.07) 26px 28px);--v-motif-size:100% 2px,100% 162px;--v-motif-pos:left 0 bottom 9px,0 100%;--v-motif-repeat:no-repeat,no-repeat;--v-font:&#x27;Iowan Old Style&#x27;, &#x27;Palatino Linotype&#x27;, &#x27;Book Antiqua&#x27;, Palatino, Georgia, serif">
     <div class="accent-bar"></div>
     <h2>PraxisKB</h2>
     <p class="one-liner">AI-searchable knowledge bases built and curated from practice documents—done-for-you setup, cited answers, HIPAA-aware.</p>
@@ -110,7 +128,7 @@ footer.site-footer{max-width:1100px;margin:0 auto;padding:20px;color:var(--muted
     <a class="visit" href="./PITCH-002-professional-knowledge-bases/index.html">View PraxisKB (alpha) &rarr;</a>
   </div>
 
-  <div class="card" style="--v-accent-l:#a03317;--v-accent-d:#d35d31;--v-cta-text-l:#ffffff;--v-cta-text-d:#0b1210;--v-tint-l:#fdf9f4;--v-tint-d:#191a1d;--v-font:Avenir, Montserrat, Corbel, &#x27;URW Gothic&#x27;, &#x27;source-sans-pro&#x27;, sans-serif">
+  <div class="card" style="--v-ground-l:#fcf4eb;--v-ink-l:#072232;--v-ink-2-l:#3e505c;--v-muted-l:#3e505c;--v-rule-l:#dacbbd;--v-accent-l:#d35d31;--v-cta-bg-l:#a03317;--v-cta-text-l:#fffaf7;--v-motif-l:linear-gradient(158deg,rgba(211,93,49,0.12) 0%,transparent 45%),linear-gradient(15deg,rgba(62,80,92,0.07) 0%,transparent 40%);--v-ground-d:#091521;--v-ink-d:#ebe3da;--v-ink-2-d:#baafa4;--v-muted-d:#baafa4;--v-rule-d:#354452;--v-accent-d:#d35d31;--v-cta-bg-d:#d35d31;--v-cta-text-d:#091521;--v-motif-d:linear-gradient(158deg,rgba(211,93,49,0.12) 0%,transparent 45%),linear-gradient(15deg,rgba(186,175,164,0.07) 0%,transparent 40%);--v-motif-size:100% 100%,100% 100%;--v-motif-pos:0 0,0 0;--v-motif-repeat:no-repeat,no-repeat;--v-font:Avenir, Montserrat, Corbel, &#x27;URW Gothic&#x27;, &#x27;source-sans-pro&#x27;, sans-serif">
     <div class="accent-bar"></div>
     <h2>GuestWaypoint</h2>
     <p class="one-liner">White-label day-plan and spend-calibrated food/bar map for San Diego hosts and boutique hotels.</p>
@@ -120,7 +138,7 @@ footer.site-footer{max-width:1100px;margin:0 auto;padding:20px;color:var(--muted
     <a class="visit" href="./PITCH-004-sd-travel-curator/index.html">View GuestWaypoint (alpha) &rarr;</a>
   </div>
 
-  <div class="card" style="--v-accent-l:#b5480a;--v-accent-d:#ff9a3c;--v-cta-text-l:#ffffff;--v-cta-text-d:#0b1210;--v-tint-l:#f8f2e8;--v-tint-d:#1c1914;--v-font:Bahnschrift, &#x27;DIN Alternate&#x27;, &#x27;Franklin Gothic Medium&#x27;, &#x27;Nimbus Sans Narrow&#x27;, sans-serif-condensed, sans-serif">
+  <div class="card" style="--v-ground-l:#15100b;--v-ink-l:#f5ead9;--v-ink-2-l:#c9b79e;--v-muted-l:#c9b79e;--v-rule-l:#3a2c1e;--v-accent-l:#ff9a3c;--v-cta-bg-l:#ff9a3c;--v-cta-text-l:#15100b;--v-motif-l:radial-gradient(150px 110px at 8% -4%,rgba(255,154,60,0.26),transparent 72%),radial-gradient(170px 130px at 104% 104%,rgba(87,224,207,0.2),transparent 72%);--v-ground-d:#15100b;--v-ink-d:#f5ead9;--v-ink-2-d:#c9b79e;--v-muted-d:#c9b79e;--v-rule-d:#3a2c1e;--v-accent-d:#ff9a3c;--v-cta-bg-d:#ff9a3c;--v-cta-text-d:#15100b;--v-motif-d:radial-gradient(150px 110px at 8% -4%,rgba(255,154,60,0.26),transparent 72%),radial-gradient(170px 130px at 104% 104%,rgba(87,224,207,0.2),transparent 72%);--v-motif-size:100% 100%,100% 100%;--v-motif-pos:0 0,0 0;--v-motif-repeat:no-repeat,no-repeat;--v-font:Bahnschrift, &#x27;DIN Alternate&#x27;, &#x27;Franklin Gothic Medium&#x27;, &#x27;Nimbus Sans Narrow&#x27;, sans-serif-condensed, sans-serif">
     <div class="accent-bar"></div>
     <h2>Fareloop</h2>
     <p class="one-liner">Platform that turns patron social posts into food/merch rewards redeemable across partnered venues</p>
@@ -130,7 +148,7 @@ footer.site-footer{max-width:1100px;margin:0 auto;padding:20px;color:var(--muted
     <a class="visit" href="./PITCH-005-ugc-venue-rewards/index.html">View Fareloop (alpha) &rarr;</a>
   </div>
 
-  <div class="card" style="--v-accent-l:#a65200;--v-accent-d:#f19b37;--v-cta-text-l:#ffffff;--v-cta-text-d:#0b1210;--v-tint-l:#fdfbf8;--v-tint-d:#1e1a15;--v-font:ui-monospace, &#x27;SF Mono&#x27;, &#x27;Cascadia Code&#x27;, &#x27;Source Code Pro&#x27;, Menlo, Consolas, &#x27;DejaVu Sans Mono&#x27;, monospace">
+  <div class="card" style="--v-ground-l:#fbf7f2;--v-ink-l:#211c15;--v-ink-2-l:#534c41;--v-muted-l:#534c41;--v-rule-l:#cfc6b9;--v-accent-l:#a65200;--v-cta-bg-l:#a65200;--v-cta-text-l:#fbf8f3;--v-motif-l:repeating-linear-gradient(0deg,rgba(33,28,21,0.06) 0 1px,transparent 1px 8px),repeating-linear-gradient(90deg,rgba(33,28,21,0.06) 0 1px,transparent 1px 8px);--v-ground-d:#1a150f;--v-ink-d:#ece7df;--v-ink-2-d:#b1aa9e;--v-muted-d:#b1aa9e;--v-rule-d:#3f362d;--v-accent-d:#f19b37;--v-cta-bg-d:#f19b37;--v-cta-text-d:#130b05;--v-motif-d:repeating-linear-gradient(0deg,rgba(236,231,223,0.06) 0 1px,transparent 1px 8px),repeating-linear-gradient(90deg,rgba(236,231,223,0.06) 0 1px,transparent 1px 8px);--v-motif-size:auto,auto;--v-motif-pos:0 0,0 0;--v-motif-repeat:repeat,repeat;--v-font:ui-monospace, &#x27;SF Mono&#x27;, &#x27;Cascadia Code&#x27;, &#x27;Source Code Pro&#x27;, Menlo, Consolas, &#x27;DejaVu Sans Mono&#x27;, monospace">
     <div class="accent-bar"></div>
     <h2>Loadout</h2>
     <p class="one-liner">Setup and curation service that configures a Claude Pro/Max subscription for actual productivity</p>
@@ -140,7 +158,7 @@ footer.site-footer{max-width:1100px;margin:0 auto;padding:20px;color:var(--muted
     <a class="visit" href="./PITCH-006-agentic-env-upsell/index.html">View Loadout (alpha) &rarr;</a>
   </div>
 
-  <div class="card" style="--v-accent-l:#356224;--v-accent-d:#85c56f;--v-cta-text-l:#ffffff;--v-cta-text-d:#0b1210;--v-tint-l:#f6fbf6;--v-tint-d:#191914;--v-font:&#x27;SF Compact Display&#x27;, &#x27;SF Compact Text&#x27;, &#x27;Segoe UI Semibold&#x27;, &#x27;Roboto Condensed&#x27;, &#x27;Arial Narrow&#x27;, &#x27;Helvetica Neue&#x27;, Arial, sans-serif">
+  <div class="card" style="--v-ground-l:#eff7ef;--v-ink-l:#171f17;--v-ink-2-l:#3d4c3d;--v-muted-l:#3d4c3d;--v-rule-l:#c0cbbf;--v-accent-l:#356224;--v-cta-bg-l:#356224;--v-cta-text-l:#f6faf5;--v-motif-l:linear-gradient(118deg,transparent 0 44%,rgba(53,98,36,0.13) 44% 45.2%,transparent 45.2%),repeating-linear-gradient(90deg,rgba(23,31,23,0.07) 0 1px,transparent 1px 27px),repeating-linear-gradient(180deg,rgba(23,31,23,0.07) 0 1px,transparent 1px 43px);--v-ground-d:#0c120c;--v-ink-d:#e3eae3;--v-ink-2-d:#b6c1b6;--v-muted-d:#b6c1b6;--v-rule-d:#2f392e;--v-accent-d:#85c56f;--v-cta-bg-d:#85c56f;--v-cta-text-d:#070d06;--v-motif-d:linear-gradient(118deg,transparent 0 44%,rgba(133,197,111,0.13) 44% 45.2%,transparent 45.2%),repeating-linear-gradient(90deg,rgba(227,234,227,0.07) 0 1px,transparent 1px 27px),repeating-linear-gradient(180deg,rgba(227,234,227,0.07) 0 1px,transparent 1px 43px);--v-motif-size:100% 100%,auto,auto;--v-motif-pos:0 0,0 0,0 0;--v-motif-repeat:no-repeat,repeat,repeat;--v-font:&#x27;SF Compact Display&#x27;, &#x27;SF Compact Text&#x27;, &#x27;Segoe UI Semibold&#x27;, &#x27;Roboto Condensed&#x27;, &#x27;Arial Narrow&#x27;, &#x27;Helvetica Neue&#x27;, Arial, sans-serif">
     <div class="accent-bar"></div>
     <h2>Beachhead Intel</h2>
     <p class="one-liner">City-by-city capability-tagged business intelligence for territory sellers and dealer networks</p>
@@ -150,7 +168,7 @@ footer.site-footer{max-width:1100px;margin:0 auto;padding:20px;color:var(--muted
     <a class="visit" href="./PITCH-007-city-scan-network/index.html">View Beachhead Intel (alpha) &rarr;</a>
   </div>
 
-  <div class="card" style="--v-accent-l:#0c6e5c;--v-accent-d:#41b59c;--v-cta-text-l:#ffffff;--v-cta-text-d:#0b1210;--v-tint-l:#fbfdfc;--v-tint-d:#1a1b18;--v-font:Optima, Candara, &#x27;Noto Sans&#x27;, sans-serif">
+  <div class="card" style="--v-ground-l:#f7fbfa;--v-ink-l:#1a2421;--v-ink-2-l:#45544f;--v-muted-l:#45544f;--v-rule-l:#d3dbd9;--v-accent-l:#0c6e5c;--v-cta-bg-l:#0c6e5c;--v-cta-text-l:#f9fdfc;--v-motif-l:linear-gradient(180deg,rgba(12,110,92,0.09) 0,transparent 96px),linear-gradient(0deg,rgba(211,219,217,0.55) 0,transparent 84px);--v-ground-d:#0f1816;--v-ink-d:#e1eae7;--v-ink-2-d:#a8b4b1;--v-muted-d:#a8b4b1;--v-rule-d:#374642;--v-accent-d:#41b59c;--v-cta-bg-d:#41b59c;--v-cta-text-d:#020c09;--v-motif-d:linear-gradient(180deg,rgba(65,181,156,0.09) 0,transparent 96px),linear-gradient(0deg,rgba(55,70,66,0.55) 0,transparent 84px);--v-motif-size:100% 100%,100% 100%;--v-motif-pos:0 0,0 0;--v-motif-repeat:no-repeat,no-repeat;--v-font:Optima, Candara, &#x27;Noto Sans&#x27;, sans-serif">
     <div class="accent-bar"></div>
     <h2>Cuspid</h2>
     <p class="one-liner">Three add-on modules for dental practices: ambient charting, patient recall SMS, and PMS integration on top of Vornix voice.</p>
@@ -160,7 +178,7 @@ footer.site-footer{max-width:1100px;margin:0 auto;padding:20px;color:var(--muted
     <a class="visit" href="./PITCH-008-healthcare-platform/index.html">View Cuspid (alpha) &rarr;</a>
   </div>
 
-  <div class="card" style="--v-accent-l:#8d631b;--v-accent-d:#d9b070;--v-cta-text-l:#ffffff;--v-cta-text-d:#0b1210;--v-tint-l:#fbf8f4;--v-tint-d:#211c15;--v-font:Charter, &#x27;Bitstream Charter&#x27;, &#x27;Sitka Text&#x27;, Cambria, Georgia, serif">
+  <div class="card" style="--v-ground-l:#f7f3eb;--v-ink-l:#112732;--v-ink-2-l:#325261;--v-muted-l:#526c78;--v-rule-l:#cfcabf;--v-accent-l:#8d631b;--v-cta-bg-l:#8d631b;--v-cta-text-l:#f7f3eb;--v-motif-l:linear-gradient(rgba(141,99,27,0.55) 0 0),repeating-linear-gradient(180deg,transparent 0 25px,rgba(17,39,50,0.05) 25px 26px);--v-ground-d:#201910;--v-ink-d:#ece7de;--v-ink-2-d:#c4bdb0;--v-muted-d:#a09788;--v-rule-d:#4a4134;--v-accent-d:#d9b070;--v-cta-bg-d:#d9b070;--v-cta-text-d:#201910;--v-motif-d:linear-gradient(rgba(217,176,112,0.55) 0 0),repeating-linear-gradient(180deg,transparent 0 25px,rgba(236,231,222,0.05) 25px 26px);--v-motif-size:2px 100%,auto;--v-motif-pos:14px 0,0 0;--v-motif-repeat:no-repeat,repeat;--v-font:Charter, &#x27;Bitstream Charter&#x27;, &#x27;Sitka Text&#x27;, Cambria, Georgia, serif">
     <div class="accent-bar"></div>
     <h2>TallyHelm</h2>
     <p class="one-liner">KPI dashboard, contact cadence queue, form autofill, and client data entry unified for solo CFP® advisors.</p>
@@ -170,7 +188,7 @@ footer.site-footer{max-width:1100px;margin:0 auto;padding:20px;color:var(--muted
     <a class="visit" href="./PITCH-009-cfp-advisor-copilot/index.html">View TallyHelm (alpha) &rarr;</a>
   </div>
 
-  <div class="card" style="--v-accent-l:#8a520c;--v-accent-d:#e8a84a;--v-cta-text-l:#ffffff;--v-cta-text-d:#0b1210;--v-tint-l:#f8f5f0;--v-tint-d:#1c191a;--v-font:ui-monospace, &#x27;SF Mono&#x27;, &#x27;Cascadia Code&#x27;, &#x27;Source Code Pro&#x27;, Menlo, Consolas, &#x27;DejaVu Sans Mono&#x27;, monospace">
+  <div class="card" style="--v-ground-l:#f2ede3;--v-ink-l:#1a1420;--v-ink-2-l:#4a4358;--v-muted-l:#4a4358;--v-rule-l:#cfcac4;--v-accent-l:#8a520c;--v-cta-bg-l:#8a520c;--v-cta-text-l:#f7f1e4;--v-motif-l:repeating-linear-gradient(90deg,rgba(26,20,32,0.22) 0 5px,transparent 5px 11px),repeating-linear-gradient(90deg,rgba(26,20,32,0.4) 0 5px,transparent 5px 11px),repeating-linear-gradient(45deg,rgba(26,20,32,0.05) 0 1px,transparent 1px 5px);--v-ground-d:#14111c;--v-ink-d:#ede4d0;--v-ink-2-d:#c7bfd8;--v-muted-d:#c7bfd8;--v-rule-d:#322f35;--v-accent-d:#e8a84a;--v-cta-bg-d:#e8a84a;--v-cta-text-d:#1a1000;--v-motif-d:repeating-linear-gradient(90deg,rgba(237,228,208,0.22) 0 5px,transparent 5px 11px),repeating-linear-gradient(90deg,rgba(237,228,208,0.4) 0 5px,transparent 5px 11px),repeating-linear-gradient(45deg,rgba(237,228,208,0.05) 0 1px,transparent 1px 5px);--v-motif-size:100% 1px,100% 1px,auto;--v-motif-pos:0 46px,left 0 bottom 11px,0 0;--v-motif-repeat:no-repeat,no-repeat,repeat;--v-font:ui-monospace, &#x27;SF Mono&#x27;, &#x27;Cascadia Code&#x27;, &#x27;Source Code Pro&#x27;, Menlo, Consolas, &#x27;DejaVu Sans Mono&#x27;, monospace">
     <div class="accent-bar"></div>
     <h2>Hackerlantern</h2>
     <p class="one-liner">A weekly digest and live directory aggregating all 150+ tech/AI meetups, hackathons, and community events in San Diego.</p>
@@ -180,7 +198,7 @@ footer.site-footer{max-width:1100px;margin:0 auto;padding:20px;color:var(--muted
     <a class="visit" href="./PITCH-011-niche-source/index.html">View Hackerlantern (alpha) &rarr;</a>
   </div>
 
-  <div class="card" style="--v-accent-l:#9c4519;--v-accent-d:#e2884a;--v-cta-text-l:#ffffff;--v-cta-text-d:#0b1210;--v-tint-l:#fbf8f1;--v-tint-d:#1d1913;--v-font:Didot, &#x27;Bodoni MT&#x27;, &#x27;Noto Serif Display&#x27;, &#x27;URW Palladio L&#x27;, P052, Sylfaen, serif">
+  <div class="card" style="--v-ground-l:#f8f2e5;--v-ink-l:#221a12;--v-ink-2-l:#221a12;--v-muted-l:#221a12;--v-rule-l:#dbcda8;--v-accent-l:#9c4519;--v-cta-bg-l:#9c4519;--v-cta-text-l:#f8f2e5;--v-motif-l:linear-gradient(rgba(156,69,25,0.46) 0 0),linear-gradient(rgba(34,26,18,0.24) 0 0);--v-ground-d:#16110a;--v-ink-d:#ece2cd;--v-ink-2-d:#ece2cd;--v-muted-d:#ece2cd;--v-rule-d:#382c1c;--v-accent-d:#e2884a;--v-cta-bg-d:#e2884a;--v-cta-text-d:#16110a;--v-motif-d:linear-gradient(rgba(226,136,74,0.46) 0 0),linear-gradient(rgba(236,226,205,0.24) 0 0);--v-motif-size:100% 2px,100% 1px;--v-motif-pos:0 42px,0 47px;--v-motif-repeat:no-repeat,no-repeat;--v-font:Didot, &#x27;Bodoni MT&#x27;, &#x27;Noto Serif Display&#x27;, &#x27;URW Palladio L&#x27;, P052, Sylfaen, serif">
     <div class="accent-bar"></div>
     <h2>OneGoodIntro</h2>
     <p class="one-liner">Concierge-scale, one-time human-vetted introductions for pre-threshold San Diego founders seeking investors and advisors.</p>
@@ -190,7 +208,7 @@ footer.site-footer{max-width:1100px;margin:0 auto;padding:20px;color:var(--muted
     <a class="visit" href="./PITCH-012-blind-date-networks/index.html">View OneGoodIntro (alpha) &rarr;</a>
   </div>
 
-  <div class="card" style="--v-accent-l:#a5540a;--v-accent-d:#ffb020;--v-cta-text-l:#ffffff;--v-cta-text-d:#0b1210;--v-tint-l:#faf8f4;--v-tint-d:#1a1813;--v-font:Bahnschrift, &#x27;DIN Alternate&#x27;, &#x27;Franklin Gothic Medium&#x27;, &#x27;Nimbus Sans Narrow&#x27;, sans-serif-condensed, sans-serif">
+  <div class="card" style="--v-ground-l:#0e0d0a;--v-ink-l:#f2ede0;--v-ink-2-l:#c9c0ac;--v-muted-l:#9c927c;--v-rule-l:#3a3324;--v-accent-l:#ffb020;--v-cta-bg-l:#ffb020;--v-cta-text-l:#0e0d0a;--v-motif-l:linear-gradient(45deg,#0e0d0a 0 50%,transparent 50%),repeating-linear-gradient(135deg,rgba(255,176,32,0.16) 0 9px,transparent 9px 20px);--v-ground-d:#0e0d0a;--v-ink-d:#f2ede0;--v-ink-2-d:#c9c0ac;--v-muted-d:#9c927c;--v-rule-d:#3a3324;--v-accent-d:#ffb020;--v-cta-bg-d:#ffb020;--v-cta-text-d:#0e0d0a;--v-motif-d:linear-gradient(45deg,#0e0d0a 0 50%,transparent 50%),repeating-linear-gradient(135deg,rgba(255,176,32,0.16) 0 9px,transparent 9px 20px);--v-motif-size:116px 116px,116px 116px;--v-motif-pos:right 0 top 0,right 0 top 0;--v-motif-repeat:no-repeat,no-repeat;--v-font:Bahnschrift, &#x27;DIN Alternate&#x27;, &#x27;Franklin Gothic Medium&#x27;, &#x27;Nimbus Sans Narrow&#x27;, sans-serif-condensed, sans-serif">
     <div class="accent-bar"></div>
     <h2>IronLine</h2>
     <p class="one-liner">24/7 voice agent answering emergency calls for plumbing, electrical, and HVAC shops—triages safety, quotes the call-out window, and books dispatch before the customer hangs up.</p>
@@ -200,7 +218,7 @@ footer.site-footer{max-width:1100px;margin:0 auto;padding:20px;color:var(--muted
     <a class="visit" href="./PITCH-013-emergency-trades-voice/index.html">View IronLine (alpha) &rarr;</a>
   </div>
 
-  <div class="card" style="--v-accent-l:#1f5fb8;--v-accent-d:#4f9cff;--v-cta-text-l:#ffffff;--v-cta-text-d:#0b1210;--v-tint-l:#f9fafc;--v-tint-d:#191817;--v-font:&#x27;Avenir Next&#x27;, Avenir, &#x27;Helvetica Neue&#x27;, &#x27;Arial Nova&#x27;, Helvetica, Arial, sans-serif">
+  <div class="card" style="--v-ground-l:#0a0e15;--v-ink-l:#e8ecf3;--v-ink-2-l:#aab4c4;--v-muted-l:#aab4c4;--v-rule-l:#232c39;--v-accent-l:#4f9cff;--v-cta-bg-l:#4f9cff;--v-cta-text-l:#0a0e15;--v-motif-l:linear-gradient(152deg,rgba(79,156,255,0.1),transparent 42%),radial-gradient(circle at 1px 1px,rgba(232,236,243,0.13) 1px,transparent 1.6px);--v-ground-d:#0a0e15;--v-ink-d:#e8ecf3;--v-ink-2-d:#aab4c4;--v-muted-d:#aab4c4;--v-rule-d:#232c39;--v-accent-d:#4f9cff;--v-cta-bg-d:#4f9cff;--v-cta-text-d:#0a0e15;--v-motif-d:linear-gradient(152deg,rgba(79,156,255,0.1),transparent 42%),radial-gradient(circle at 1px 1px,rgba(232,236,243,0.13) 1px,transparent 1.6px);--v-motif-size:100% 100%,17px 17px;--v-motif-pos:0 0,0 0;--v-motif-repeat:no-repeat,repeat;--v-font:&#x27;Avenir Next&#x27;, Avenir, &#x27;Helvetica Neue&#x27;, &#x27;Arial Nova&#x27;, Helvetica, Arial, sans-serif">
     <div class="accent-bar"></div>
     <h2>Governframe</h2>
     <p class="one-liner">Hosted MCP/tooling layer for small teams already on Claude—shared memory, curated tool roster per role, admin isolation view; BYO-subscription, credentials never shared.</p>
@@ -210,7 +228,7 @@ footer.site-footer{max-width:1100px;margin:0 auto;padding:20px;color:var(--muted
     <a class="visit" href="./PITCH-014-ai-infra-layer/index.html">View Governframe (alpha) &rarr;</a>
   </div>
 
-  <div class="card" style="--v-accent-l:#93321f;--v-accent-d:#e2695a;--v-cta-text-l:#ffffff;--v-cta-text-d:#0b1210;--v-tint-l:#faf7f0;--v-tint-d:#1c1914;--v-font:&#x27;Iowan Old Style&#x27;, &#x27;Palatino Linotype&#x27;, &#x27;Book Antiqua&#x27;, Palatino, Georgia, serif">
+  <div class="card" style="--v-ground-l:#f6f1e2;--v-ink-l:#1e1811;--v-ink-2-l:#4b4130;--v-muted-l:#4b4130;--v-rule-l:#cebb8c;--v-accent-l:#93321f;--v-cta-bg-l:#93321f;--v-cta-text-l:#f6f1e2;--v-motif-l:linear-gradient(rgba(147,50,31,0.85) 0 0);--v-ground-d:#14100c;--v-ink-d:#efe4c8;--v-ink-2-d:#c7b98f;--v-muted-d:#c7b98f;--v-rule-d:#4a3d28;--v-accent-d:#e2695a;--v-cta-bg-d:#e2695a;--v-cta-text-d:#14100c;--v-motif-d:linear-gradient(rgba(226,105,90,0.85) 0 0);--v-motif-size:3px 44px;--v-motif-pos:0 28px;--v-motif-repeat:no-repeat;--v-font:&#x27;Iowan Old Style&#x27;, &#x27;Palatino Linotype&#x27;, &#x27;Book Antiqua&#x27;, Palatino, Georgia, serif">
     <div class="accent-bar"></div>
     <h2>Quillecho</h2>
     <p class="one-liner">Drafts new newsletter pieces in an independent writer&#x27;s own voice by learning from their published back-catalog.</p>
@@ -220,7 +238,7 @@ footer.site-footer{max-width:1100px;margin:0 auto;padding:20px;color:var(--muted
     <a class="visit" href="./PITCH-016-writer-voice-draft/index.html">View Quillecho (alpha) &rarr;</a>
   </div>
 
-  <div class="card" style="--v-accent-l:#2f5233;--v-accent-d:#9fce9d;--v-cta-text-l:#ffffff;--v-cta-text-d:#0b1210;--v-tint-l:#fcfbf8;--v-tint-d:#1b1b15;--v-font:&#x27;Segoe UI&#x27;, system-ui, &#x27;Helvetica Neue&#x27;, Helvetica, Arial, sans-serif">
+  <div class="card" style="--v-ground-l:#faf8f3;--v-ink-l:#1c2618;--v-ink-2-l:#3f4a38;--v-muted-l:#3f4a38;--v-rule-l:#d9d2bd;--v-accent-l:#2f5233;--v-cta-bg-l:#2f5233;--v-cta-text-l:#ffffff;--v-motif-l:linear-gradient(rgba(47,82,51,0.38) 0 0),linear-gradient(rgba(47,82,51,0.38) 0 0);--v-ground-d:#12160e;--v-ink-d:#edead9;--v-ink-2-d:#b9c0a9;--v-muted-d:#b9c0a9;--v-rule-d:#33402a;--v-accent-d:#9fce9d;--v-cta-bg-d:#9fce9d;--v-cta-text-d:#12160e;--v-motif-d:linear-gradient(rgba(159,206,157,0.38) 0 0),linear-gradient(rgba(159,206,157,0.38) 0 0);--v-motif-size:104px 2px,62px 2px;--v-motif-pos:right 22px bottom 15px,right 22px bottom 8px;--v-motif-repeat:no-repeat,no-repeat;--v-font:&#x27;Segoe UI&#x27;, system-ui, &#x27;Helvetica Neue&#x27;, Helvetica, Arial, sans-serif">
     <div class="accent-bar"></div>
     <h2>Steady Grants</h2>
     <p class="one-liner">Grant copilot for small nonprofits that drafts proposals grounded in their real documents and mission voice.</p>
@@ -230,7 +248,7 @@ footer.site-footer{max-width:1100px;margin:0 auto;padding:20px;color:var(--muted
     <a class="visit" href="./PITCH-017-nonprofit-grant-copilot/index.html">View Steady Grants (alpha) &rarr;</a>
   </div>
 
-  <div class="card" style="--v-accent-l:#9a2b19;--v-accent-d:#f47f55;--v-cta-text-l:#ffffff;--v-cta-text-d:#0b1210;--v-tint-l:#fdf8f2;--v-tint-d:#241d17;--v-font:Superclarendon, &#x27;Bookman Old Style&#x27;, &#x27;URW Bookman&#x27;, &#x27;Georgia Pro&#x27;, Georgia, serif">
+  <div class="card" style="--v-ground-l:#fbf2e6;--v-ink-l:#281911;--v-ink-2-l:#574339;--v-muted-l:#78645a;--v-rule-l:#cbbaac;--v-accent-l:#c65331;--v-cta-bg-l:#9a2b19;--v-cta-text-l:#fffbf6;--v-motif-l:radial-gradient(circle at 11px 7px,rgba(198,83,49,0.26) 0 4px,transparent 4.6px);--v-ground-d:#271b15;--v-ink-d:#f0e6da;--v-ink-2-d:#c8bcad;--v-muted-d:#a49586;--v-rule-d:#564337;--v-accent-d:#f47f55;--v-cta-bg-d:#f47f55;--v-cta-text-d:#120805;--v-motif-d:radial-gradient(circle at 11px 7px,rgba(244,127,85,0.26) 0 4px,transparent 4.6px);--v-motif-size:22px 14px;--v-motif-pos:left 16px bottom 5px;--v-motif-repeat:repeat-x;--v-font:Superclarendon, &#x27;Bookman Old Style&#x27;, &#x27;URW Bookman&#x27;, &#x27;Georgia Pro&#x27;, Georgia, serif">
     <div class="accent-bar"></div>
     <h2>Chairside</h2>
     <p class="one-liner">SMS appointment confirmations and reminders from shops&#x27; own numbers with STOP-handling built in</p>
