@@ -222,6 +222,22 @@
   .plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
   @media (max-width:720px){ .plan-grid{grid-template-columns:1fr;} }
 
+  
+  .reveal-pending{opacity:0;transform:translateY(10px);}
+  .revealed{opacity:1;transform:translateY(0);transition:opacity 420ms ease-out,transform 420ms ease-out;}
+
+  
+  nav.section-labels a{transition:color 150ms ease;}
+  .faq-item{transition:background-color 150ms ease;}
+  .faq-item:hover{background:color-mix(in srgb, var(--accent2) 6%, transparent);}
+  .mess-row{transition:border-color 150ms ease;}
+  .mess-row:hover{border-color:var(--border-strong);}
+  .cap-panel{transition:border-color 150ms ease,box-shadow 150ms ease;}
+  .cap-panel:hover{border-color:var(--border-strong);box-shadow:0 1px 4px rgba(0,0,0,.06);}
+  tbody tr{transition:background-color 150ms ease;}
+  tbody tr:hover{background:color-mix(in srgb, var(--ink) 4%, var(--surface));}
+  tbody tr.us:hover{background:color-mix(in srgb, var(--good) 15%, var(--surface));}
+
   @media (prefers-reduced-motion: reduce){
     *{animation:none !important;transition:none !important;scroll-behavior:auto !important;}
   }
@@ -594,3 +610,34 @@
 
   
 </div>
+
+<script>
+(function () {
+  // One-shot scroll reveal — section headers + card-like elements fade+rise 10px,
+  // never re-hidden once revealed. header.hero is never a target (renders fully
+  // visible on first paint). Reduced-motion / no-IntersectionObserver visitors
+  // never get the .reveal-pending class assigned to begin with, so their content
+  // is never hidden waiting on JS (same pattern as the 009/012 builds).
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduce || !("IntersectionObserver" in window)) return;
+
+  var targets = document.querySelectorAll(
+    ".shell > section > h2, .cap-panel, .mess-row, .faq-item, .table-wrap, .demo-frame, .note-panel"
+  );
+
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("revealed");
+        entry.target.classList.remove("reveal-pending");
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  targets.forEach(function (el) {
+    el.classList.add("reveal-pending");
+    io.observe(el);
+  });
+})();
+</script>

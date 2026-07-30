@@ -2,23 +2,29 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PraxisKB — simulated product demo</title>
 <style>
   :root{
     --bg:#faf7f2; --surface:#ffffff; --surface-2:#f3efe7; --ink:#16233a; --ink-2:#52514e; --muted:#898781;
     --border:rgba(22,35,58,0.12); --border-strong:rgba(22,35,58,0.22);
     --accent:#eb6834; --accent2:#2f6f62; --good:#0ca30c;
+    
+    --accent-solid:#cc4814;
     --sim-bg:#7a1f1f; --sim-ink:#fdf1ec; --sim-accent:#7a1f1f;
+    --reveal-ring: rgba(47,111,98,0.85);
   }
   @media (prefers-color-scheme: dark){
     :root{ --bg:#11161f; --surface:#1a2130; --surface-2:#212a3b; --ink:#f5f1ea; --ink-2:#c9c2b5; --muted:#8b8a84;
            --border:rgba(245,241,234,0.14); --border-strong:rgba(245,241,234,0.26);
            --accent:#d95926; --accent2:#4f9c8a; --good:#0ca30c;
-           --sim-bg:#c0392b; --sim-ink:#1a1005; --sim-accent:#e2854a; }
+           --accent-solid:#c35022;
+           --sim-bg:#c0392b; --sim-ink:#1a1005; --sim-accent:#e2854a;
+           --reveal-ring: rgba(79,156,138,0.8); }
   }
   *{box-sizing:border-box;}
   body{margin:0;padding:22px 16px 40px;background:var(--bg);color:var(--ink);
-       font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5;}
+       font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5;overflow-x:hidden;}
   .wrap{max-width:640px;margin:0 auto;}
   .sim-banner{background:var(--sim-bg);color:var(--sim-ink);font-size:12.5px;font-weight:700;
     letter-spacing:.03em;text-align:center;padding:9px 14px;border-radius:8px;margin-bottom:14px;}
@@ -35,8 +41,10 @@
     border:1px solid var(--sim-accent);border-radius:99px;padding:2px 8px;flex:none;}
   .tabs{display:flex;gap:6px;padding:12px 16px 0;flex-wrap:wrap;}
   .tab{font:inherit;font-size:12px;font-weight:700;padding:7px 11px;border-radius:8px;
-    border:1px solid var(--border-strong);background:transparent;color:var(--ink-2);cursor:pointer;}
-  .tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff;}
+    border:1px solid var(--border-strong);background:transparent;color:var(--ink-2);cursor:pointer;
+    transition:background-color 150ms ease,color 150ms ease,border-color 150ms ease;}
+  .tab:hover{border-color:var(--accent2);color:var(--ink);}
+  .tab[aria-selected="true"]{background:var(--accent-solid);border-color:var(--accent-solid);color:#fff;}
   .body{padding:16px;min-height:230px;}
   .thread{display:flex;flex-direction:column;gap:10px;}
   .sysline{font-size:11px;color:var(--muted);text-align:center;margin:2px 0 6px;}
@@ -46,15 +54,31 @@
   .msg .role{display:block;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
     color:var(--muted);margin-bottom:4px;}
   .msg.kb .role{color:var(--sim-accent);}
+  
+  .answer-text{display:inline-block;clip-path:inset(0 100% 0 0);}
+  .answer-text.revealed{clip-path:inset(0 0 0 0);transition:clip-path var(--reveal-ms,1200ms) ease-out;}
+  .cite-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
   .cite{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--accent2);
-        border:1px solid var(--border);border-radius:6px;padding:2px 7px;margin:3px 4px 0 0;white-space:nowrap;}
+        border:1px solid var(--border);border-radius:6px;padding:2px 7px;white-space:nowrap;
+        opacity:0;transform:translateY(3px);
+        transition:opacity 150ms ease-out,transform 150ms ease-out,box-shadow 150ms ease-out;}
+  .cite.in{opacity:1;transform:translateY(0);}
+  .cite.in.just-in{box-shadow:0 0 0 2px var(--reveal-ring);}
   .foot{padding:12px 16px 16px;display:flex;align-items:center;gap:12px;border-top:1px solid var(--border);
     flex-wrap:wrap;}
-  .btn{font:inherit;font-size:13px;font-weight:700;padding:9px 16px;border-radius:8px;border:1px solid var(--accent);
-       background:var(--accent);color:#fff;cursor:pointer;}
+  .btn{font:inherit;font-size:13px;font-weight:700;padding:9px 16px;border-radius:8px;border:1px solid var(--accent-solid);
+       background:var(--accent-solid);color:#fff;cursor:pointer;transition:background-color 150ms ease,opacity 150ms ease;}
+  .btn.ghost{background:transparent;color:var(--accent2);border-color:var(--accent2);}
+  .btn.ghost[hidden]{display:none;}
   .foot .note{font-size:11.5px;color:var(--muted);}
   .cap{font-size:11px;color:var(--muted);margin-top:16px;max-width:640px;}
   a.back{font-size:12.5px;color:var(--accent2);}
+
+  
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; scroll-behavior:auto !important; }
+  }
 </style>
 </head>
 <body><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
@@ -63,7 +87,7 @@
   <p class="sub-cap">Three scripted scenarios showing how staff at "Riverbend Family Dental" (fictional)
     would query PraxisKB once built. <a class="back" href="../site/index.html">← back to the pitch page</a></p>
 
-  <div class="frame">
+  <div class="frame" id="demoRoot">
     <header>
       <div class="dot" aria-hidden="true"></div>
       <span class="who">Riverbend Family Dental — knowledge base</span>
@@ -80,6 +104,7 @@
     </div>
     <div class="foot">
       <button class="btn" id="play" type="button">Play scenario</button>
+      <button class="btn ghost" id="replay" type="button" hidden>↻ Replay all</button>
       <span class="note" id="scenarioNote"></span>
     </div>
   </div>
@@ -96,8 +121,6 @@
 
 <script>
 (function () {
-  var PRACTICE = "Riverbend Family Dental";
-
   var scenarios = [
     {
       label: "Insurance denial",
@@ -135,40 +158,41 @@
   ];
 
   var thread = document.getElementById("thread");
+  var demoRoot = document.getElementById("demoRoot");
   var playBtn = document.getElementById("play");
+  var replayBtn = document.getElementById("replay");
   var hdrTime = document.getElementById("hdrTime");
   var note = document.getElementById("scenarioNote");
   var tabs = Array.prototype.slice.call(document.querySelectorAll(".tab"));
+  var reducedMotionMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+
   var active = 0;
-  var timers = [];
-  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var queue = [];     // sequence of {type:'line'|'pause', si, line}
+  var qi = 0;
+  var mode = "auto";  // "auto" (chained 3-scenario autoplay) | "manual" (single scenario)
+  var autoplayEnabled = false;
+  var holdCount = 0;
+  var timer = null;
+  var citeTimers = [];
 
-  function clearThread() {
-    timers.forEach(function (id) { clearTimeout(id); });
-    timers = [];
-    thread.innerHTML = "";
+  function clearTimer() { if (timer) { clearTimeout(timer); timer = null; } }
+  function clearCiteTimers() { citeTimers.forEach(function (id) { clearTimeout(id); }); citeTimers = []; }
+  function clearThread() { clearCiteTimers(); thread.innerHTML = ""; }
+
+  function plainLength(text) { return text.replace(/\s*\[\[[^\]]+\]\]/g, "").length; }
+
+  function selectTab(i) {
+    tabs.forEach(function (b, bi) { b.setAttribute("aria-selected", String(bi === i)); });
+    active = i;
+    hdrTime.textContent = scenarios[i].time;
   }
 
-  function appendWithCites(container, text) {
-    var re = /\[\[([^\]]+)\]\]/g;
-    var last = 0, m;
-    while ((m = re.exec(text))) {
-      if (m.index > last) container.appendChild(document.createTextNode(text.slice(last, m.index)));
-      var cite = document.createElement("span");
-      cite.className = "cite";
-      cite.textContent = "📄 " + m[1];
-      container.appendChild(cite);
-      last = re.lastIndex;
-    }
-    if (last < text.length) container.appendChild(document.createTextNode(text.slice(last)));
-  }
-
-  function lineNode(m) {
+  function lineNode(m, animate) {
     if (m.t === "sys") {
       var s = document.createElement("div");
       s.className = "sysline";
       s.textContent = m.x;
-      return s;
+      return { node: s, cites: [] };
     }
     var d = document.createElement("div");
     d.className = "msg " + (m.t === "kb" ? "kb" : "staff");
@@ -176,53 +200,194 @@
     role.className = "role";
     role.textContent = m.t === "kb" ? "PraxisKB — SIMULATED" : m.who;
     d.appendChild(role);
-    var body = document.createElement("span");
-    appendWithCites(body, m.x);
-    d.appendChild(body);
-    return d;
-  }
 
-  function render(i, animate) {
-    clearThread();
-    var sc = scenarios[i];
-    hdrTime.textContent = sc.time;
-    note.textContent = "Scenario " + (i + 1) + " of " + scenarios.length + " — scripted, not live";
-    if (!animate || reduce) {
-      sc.lines.forEach(function (m) { thread.appendChild(lineNode(m)); });
-      thread.scrollTop = thread.scrollHeight;
-      playBtn.textContent = "Play scenario";
-      return;
+    // Strip inline [[cite]] markers from the flowing sentence — same citation
+    // text, just relocated to a badge row that reveals after the answer completes
+    // (spec: "citation badge animates in AFTER the answer completes", not inline
+    // mid-sentence, to reinforce cited-not-guessed rather than guess-then-source).
+    var cites = [];
+    var cleanText = m.x.replace(/\s*\[\[([^\]]+)\]\]/g, function (whole, ref) {
+      cites.push(ref);
+      return "";
+    });
+
+    var textSpan = document.createElement("span");
+    textSpan.className = "answer-text";
+    textSpan.textContent = cleanText;
+    d.appendChild(textSpan);
+
+    var citeRow = null;
+    if (cites.length) {
+      citeRow = document.createElement("div");
+      citeRow.className = "cite-row";
+      cites.forEach(function (ref) {
+        var c = document.createElement("span");
+        c.className = "cite";
+        c.textContent = "📄 " + ref;
+        citeRow.appendChild(c);
+      });
+      d.appendChild(citeRow);
     }
-    playBtn.textContent = "Replay scenario";
-    var delay = 0;
-    sc.lines.forEach(function (m) {
-      var wait = m.t === "sys" ? 400 : Math.min(2200, 500 + String(m.x).length * 9);
-      timers.push(setTimeout(function () {
-        thread.appendChild(lineNode(m));
-        thread.scrollTop = thread.scrollHeight;
-      }, delay));
-      delay += wait;
-    });
+    return { node: d, textSpan: textSpan, citeRow: citeRow, cites: cites };
   }
 
-  function selectTab(i) {
-    tabs.forEach(function (b, bi) {
-      b.setAttribute("aria-selected", String(bi === i));
+  // Instant, fully-visible render — used for reduced-motion and the initial
+  // load-bearing state (never hidden-and-stuck, per shared conventions §2/§3).
+  function renderStatic(i) {
+    clearThread();
+    selectTab(i);
+    scenarios[i].lines.forEach(function (m) {
+      var built = lineNode(m, false);
+      thread.appendChild(built.node);
+      if (built.textSpan) built.textSpan.classList.add("revealed");
+      if (built.citeRow) {
+        Array.prototype.forEach.call(built.citeRow.children, function (c) { c.classList.add("in"); });
+      }
     });
-    active = i;
+    thread.scrollTop = thread.scrollHeight;
+    note.textContent = "Scenario " + (i + 1) + " of " + scenarios.length + " — scripted, not live";
+    playBtn.textContent = "Play scenario";
   }
+
+  function buildQueue(onlyIndex) {
+    var list = [];
+    var idxs = (onlyIndex == null) ? scenarios.map(function (_, i) { return i; }) : [onlyIndex];
+    idxs.forEach(function (si) {
+      scenarios[si].lines.forEach(function (line) { list.push({ type: "line", si: si, line: line }); });
+      if (onlyIndex == null) list.push({ type: "pause", si: si });
+    });
+    return list;
+  }
+
+  function computeDelay(action) {
+    if (action.type === "pause") return 1400; // let the exchange sit before advancing
+    var m = action.line;
+    if (m.t === "sys") return 500;
+    var citeCount = (m.x.match(/\[\[/g) || []).length;
+    var revealMs = Math.max(700, Math.min(2200, 450 + plainLength(m.x) * 9));
+    var citeTail = citeCount ? 180 + citeCount * 90 + 220 : 260;
+    return revealMs + citeTail;
+  }
+
+  function execute(action) {
+    if (action.type === "pause") return;
+    if (action.si !== active) {
+      selectTab(action.si);
+      clearThread();
+      note.textContent = "Scenario " + (action.si + 1) + " of " + scenarios.length + " — playing";
+    }
+    var m = action.line;
+    var built = lineNode(m, true);
+    thread.appendChild(built.node);
+    thread.scrollTop = thread.scrollHeight;
+    if (built.textSpan) {
+      var m2 = m.x.match(/\[\[/g) || [];
+      var revealMs = Math.max(700, Math.min(2200, 450 + plainLength(m.x) * 9));
+      built.textSpan.style.setProperty("--reveal-ms", revealMs + "ms");
+      // reflow before adding the class so the transition actually runs
+      void built.textSpan.offsetWidth;
+      requestAnimationFrame(function () { built.textSpan.classList.add("revealed"); });
+      if (built.citeRow) {
+        var kids = Array.prototype.slice.call(built.citeRow.children);
+        kids.forEach(function (c, ci) {
+          var id = setTimeout(function () {
+            c.classList.add("in", "just-in");
+            setTimeout(function () { c.classList.remove("just-in"); }, 500);
+          }, revealMs + 180 + ci * 90);
+          citeTimers.push(id);
+        });
+      }
+    }
+    note.textContent = "Scenario " + (action.si + 1) + " of " + scenarios.length +
+      (mode === "auto" ? " — autoplay" : " — playing");
+  }
+
+  function finish() {
+    autoplayEnabled = false;
+    clearTimer();
+    if (mode === "auto") {
+      replayBtn.hidden = false;
+      note.textContent = "Scenario " + scenarios.length + " of " + scenarios.length + " — done";
+    } else {
+      playBtn.textContent = "Replay scenario";
+      note.textContent = "Scenario " + (active + 1) + " of " + scenarios.length + " — scripted, not live";
+    }
+  }
+
+  function tick() {
+    clearTimer();
+    if (!autoplayEnabled || holdCount > 0) return;
+    if (qi >= queue.length) { finish(); return; }
+    var delay = computeDelay(queue[qi]);
+    timer = setTimeout(function () {
+      var action = queue[qi++];
+      execute(action);
+      tick();
+    }, delay);
+  }
+
+  function startAuto() {
+    mode = "auto";
+    replayBtn.hidden = true;
+    selectTab(0);
+    clearThread();
+    queue = buildQueue(null);
+    qi = 0;
+    autoplayEnabled = true;
+    tick();
+  }
+
+  function startManual(i) {
+    mode = "manual";
+    clearTimer();
+    selectTab(i);
+    clearThread();
+    queue = buildQueue(i);
+    qi = 0;
+    autoplayEnabled = true;
+    playBtn.textContent = "Playing…";
+    tick();
+  }
+
+  function hold() { holdCount++; clearTimer(); }
+  function release() { holdCount = Math.max(0, holdCount - 1); if (holdCount === 0) tick(); }
 
   tabs.forEach(function (btn, i) {
     btn.addEventListener("click", function () {
-      selectTab(i);
-      render(active, true);
+      if (reducedMotionMQ.matches) { renderStatic(i); return; }
+      startManual(i);
     });
   });
 
-  playBtn.addEventListener("click", function () { render(active, true); });
+  playBtn.addEventListener("click", function () {
+    if (reducedMotionMQ.matches) { renderStatic(active); return; }
+    startManual(active);
+  });
 
-  selectTab(0);
-  render(0, false);
+  replayBtn.addEventListener("click", function () {
+    if (reducedMotionMQ.matches) { renderStatic(0); return; }
+    startAuto();
+  });
+
+  // Pause on hover/focus/touch of the demo, and on tab visibility change — resumes
+  // from wherever it left off (shared autoplay etiquette, DEMO-WAVE-PLAN.md §1).
+  demoRoot.addEventListener("mouseenter", hold);
+  demoRoot.addEventListener("mouseleave", release);
+  demoRoot.addEventListener("focusin", hold);
+  demoRoot.addEventListener("focusout", release);
+  demoRoot.addEventListener("touchstart", hold, { passive: true });
+  demoRoot.addEventListener("touchend", release, { passive: true });
+  demoRoot.addEventListener("touchcancel", release, { passive: true });
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) hold(); else release();
+  });
+
+  // ---- init ----
+  if (reducedMotionMQ.matches) {
+    renderStatic(0);
+  } else {
+    startAuto();
+  }
 })();
 </script>
 </body>
