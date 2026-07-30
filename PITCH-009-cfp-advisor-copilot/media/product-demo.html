@@ -11,14 +11,14 @@
     --navy:#16303d; --navy-2:#1f4a5c; --gold:#b9863a; --gold-2:#e0b06a;
     --good:#3f7d5c; --warn:#b9863a; --focus:#1f4a5c;
     --banner-bg:#7a1f1f; --banner-ink:#fff5ee;
-    --sim-bg:#3a2f6b; --sim-ink:#f3efff;
+    --sim-bg:#3a2f6b; --sim-ink:#f3efff; --due-glow:rgba(141,84,0,.9);
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
   }
   @media (prefers-color-scheme: dark){
-    :root{ --ink:#eef2f4; --ink-2:#b9c6cc; --ink-muted:#8fa0a8; --surface:#101a1f; --surface-2:#16232b; --line:#2b3a42; --navy:#9fd0e6; --navy-2:#7fb8d1; --gold:#e0b06a; --gold-2:#f0c988; --good:#7fc7a2; }
+    :root{ --ink:#eef2f4; --ink-2:#b9c6cc; --ink-muted:#8fa0a8; --surface:#101a1f; --surface-2:#16232b; --line:#2b3a42; --navy:#9fd0e6; --navy-2:#7fb8d1; --gold:#e0b06a; --gold-2:#f0c988; --good:#7fc7a2; --due-glow:rgba(224,176,106,.85); }
   }
-  :root[data-theme="dark"]{ --ink:#eef2f4; --ink-2:#b9c6cc; --ink-muted:#8fa0a8; --surface:#101a1f; --surface-2:#16232b; --line:#2b3a42; --navy:#9fd0e6; --navy-2:#7fb8d1; --gold:#e0b06a; --gold-2:#f0c988; --good:#7fc7a2; }
-  :root[data-theme="light"]{ --ink:#16232b; --ink-2:#48606c; --ink-muted:#7c8f98; --surface:#f7f5f0; --surface-2:#ffffff; --line:#dcd6c8; --navy:#16303d; --gold:#b9863a; --good:#3f7d5c; }
+  :root[data-theme="dark"]{ --ink:#eef2f4; --ink-2:#b9c6cc; --ink-muted:#8fa0a8; --surface:#101a1f; --surface-2:#16232b; --line:#2b3a42; --navy:#9fd0e6; --navy-2:#7fb8d1; --gold:#e0b06a; --gold-2:#f0c988; --good:#7fc7a2; --due-glow:rgba(224,176,106,.85); }
+  :root[data-theme="light"]{ --ink:#16232b; --ink-2:#48606c; --ink-muted:#7c8f98; --surface:#f7f5f0; --surface-2:#ffffff; --line:#dcd6c8; --navy:#16303d; --gold:#b9863a; --good:#3f7d5c; --due-glow:rgba(141,84,0,.9); }
 
   *{box-sizing:border-box;}
   body{margin:0; background:var(--surface); color:var(--ink); line-height:1.5;}
@@ -40,37 +40,47 @@
   .tab-btn{
     border:1px solid var(--line); background:var(--surface-2); color:var(--ink);
     padding:.55rem .9rem; border-radius:999px; font-size:.85rem; cursor:pointer;
-    font-weight:600;
+    font-weight:600; transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease, transform 150ms ease;
   }
-  .tab-btn[aria-selected="true"]{ background:var(--navy); color:#fff; border-color:var(--navy); }
+  .tab-btn[aria-selected="true"]{ background:var(--navy); color:#fff; border-color:var(--navy); transform:scale(1.03); }
   :root[data-theme="dark"] .tab-btn[aria-selected="true"], @media (prefers-color-scheme:dark){ .tab-btn[aria-selected="true"]{ color:#0d161a; } }
 
-  .panel{ display:none; background:var(--surface-2); border:1px solid var(--line); border-radius:14px; padding:1.25rem; }
-  .panel.active{ display:block; }
+  .panel{ display:none; background:var(--surface-2); border:1px solid var(--line); border-radius:14px; padding:1.25rem; opacity:0; }
+  .panel.active{ display:block; opacity:1; animation: panelIn 200ms ease both; }
+  @keyframes panelIn{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:translateY(0); } }
   .panel h2{ margin-top:0; font-size:1.15rem; }
   .illustrative-tag{
     display:inline-block; background:var(--gold); color:#241a08; font-size:.7rem; font-weight:800;
     letter-spacing:.04em; text-transform:uppercase; padding:.2rem .5rem; border-radius:5px; margin-bottom:.75rem;
   }
 
-  .stepper{ display:flex; align-items:center; gap:.5rem; margin:1rem 0; }
+  .stepper{ display:flex; align-items:center; flex-wrap:wrap; gap:.5rem; margin:1rem 0; }
   .stepper button{
     border:1px solid var(--line); background:var(--surface); color:var(--ink);
     border-radius:8px; padding:.45rem .8rem; cursor:pointer; font-weight:600;
+    transition: background-color 150ms ease, border-color 150ms ease, opacity 150ms ease;
   }
   .stepper button:disabled{ opacity:.4; cursor:not-allowed; }
   .step-dots{ display:flex; gap:.35rem; margin:0 .5rem; }
-  .step-dots span{ width:8px; height:8px; border-radius:50%; background:var(--line); display:inline-block; }
-  .step-dots span.on{ background:var(--gold); }
+  .step-dots span{ width:8px; height:8px; border-radius:50%; background:var(--line); display:inline-block; transition: background-color 150ms ease, transform 150ms ease; }
+  .step-dots span.on{ background:var(--gold); transform:scale(1.15); }
+  .progress-label{ font-size:.78rem; color:var(--ink-muted); margin-left:.2rem; font-variant-numeric: tabular-nums; }
+  .replay-btn{
+    border:1px solid var(--gold); background:var(--surface); color:var(--gold);
+    border-radius:8px; padding:.45rem .8rem; cursor:pointer; font-weight:700; margin-left:.2rem;
+    transition: background-color 150ms ease, color 150ms ease;
+  }
+  .replay-btn:hover, .replay-btn:focus-visible{ background:var(--gold); color:#241a08; }
+  .replay-btn[hidden]{ display:none; }
 
   
   .kpi-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:.75rem; margin:1rem 0; }
   .kpi-card{ border:1px solid var(--line); border-radius:10px; padding:.85rem; background:var(--surface); }
   .kpi-card .label{ font-size:.72rem; text-transform:uppercase; letter-spacing:.03em; color:var(--ink-muted); }
-  .kpi-card .value{ font-size:1.4rem; font-weight:800; color:var(--navy-2,var(--navy)); margin:.15rem 0; }
+  .kpi-card .value{ font-size:1.4rem; font-weight:800; color:var(--navy-2,var(--navy)); margin:.15rem 0; font-variant-numeric: tabular-nums; }
   .kpi-card .sub{ font-size:.78rem; color:var(--ink-2); }
   .bar-track{ background:var(--line); height:8px; border-radius:4px; overflow:hidden; margin-top:.4rem; }
-  .bar-fill{ height:100%; background:var(--good); border-radius:4px; }
+  .bar-fill{ height:100%; width:0%; background:var(--good); border-radius:4px; transition: width 900ms ease; }
 
   
   .thread{ display:flex; flex-direction:column; gap:.6rem; margin-top:1rem; }
@@ -87,6 +97,12 @@
   .pill.done{ background:#d6ecdd; color:#1f5c39; }
   :root[data-theme="dark"] .pill.due{ background:#5c3a12; color:#ffd39a; }
   :root[data-theme="dark"] .pill.done{ background:#1f4230; color:#a8e6c1; }
+  
+  @keyframes dueGlow{
+    0%, 100% { box-shadow: 0 0 0 0 transparent; }
+    50% { box-shadow: 0 0 0 3px var(--due-glow); }
+  }
+  .panel.active .queue-row.due{ animation: dueGlow 1.6s ease-in-out 2; }
 
   
   .form-mock{ margin-top:1rem; display:grid; gap:.6rem; }
@@ -98,6 +114,12 @@
   .autofill-tag{ font-size:.68rem; color:var(--good); font-weight:700; margin-left:.4rem; }
 
   footer{ text-align:center; padding:1.5rem 1rem 2.5rem; color:var(--ink-muted); font-size:.8rem; }
+
+  
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; scroll-behavior:auto !important; }
+  }
 </style>
 </head>
 <body><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
@@ -112,7 +134,7 @@
       RESEARCH.md — none of it is a real client or a real result.</p>
   </header>
 
-  <main>
+  <main id="demoRoot">
     <div class="tabs" role="tablist">
       <button class="tab-btn" role="tab" aria-selected="true" data-panel="p1">1 · KPI Dashboard</button>
       <button class="tab-btn" role="tab" aria-selected="false" data-panel="p2">2 · Contact Cadence Queue</button>
@@ -129,25 +151,25 @@
       <div class="kpi-grid">
         <div class="kpi-card">
           <div class="label">New AUM — YTD goal</div>
-          <div class="value">$1.6M / $2.4M</div>
-          <div class="bar-track"><div class="bar-fill" style="width:67%"></div></div>
+          <div class="value"><span class="countup" data-target="1.6" data-decimals="1" data-prefix="$" data-suffix="M">$0.0M</span> / $2.4M</div>
+          <div class="bar-track"><div class="bar-fill" data-target-width="67"></div></div>
           <div class="sub">67% of annual target, month 8 of 12</div>
         </div>
         <div class="kpi-card">
           <div class="label">New households — YTD goal</div>
-          <div class="value">7 / 10</div>
-          <div class="bar-track"><div class="bar-fill" style="width:70%"></div></div>
+          <div class="value"><span class="countup" data-target="7" data-decimals="0">0</span> / 10</div>
+          <div class="bar-track"><div class="bar-fill" data-target-width="70"></div></div>
           <div class="sub">70% of annual target</div>
         </div>
         <div class="kpi-card">
           <div class="label">Annual reviews completed</div>
-          <div class="value">38 / 61</div>
-          <div class="bar-track"><div class="bar-fill" style="width:62%"></div></div>
+          <div class="value"><span class="countup" data-target="38" data-decimals="0">0</span> / 61</div>
+          <div class="bar-track"><div class="bar-fill" data-target-width="62"></div></div>
           <div class="sub">23 households not yet reviewed this cycle</div>
         </div>
         <div class="kpi-card">
           <div class="label">Referrals this quarter</div>
-          <div class="value">4</div>
+          <div class="value"><span class="countup" data-target="4" data-decimals="0">0</span></div>
           <div class="sub">3 from existing clients, 1 CFP peer referral</div>
         </div>
       </div>
@@ -164,11 +186,11 @@
       <p style="color:var(--ink-2)">Instead of a birthday-card default (the ad hoc pattern Kitces.com describes,
         RESEARCH.md §3), TallyHelm surfaces who's actually due and why — pulled from each household's own
         cadence rule (quarterly, semiannual, annual), not a generic blast.</p>
-      <div class="queue-row">
+      <div class="queue-row due">
         <div><div class="name">Diane &amp; Robert M.</div><div class="why">Quarterly check-in — 97 days since last contact</div></div>
         <span class="pill due">Due</span>
       </div>
-      <div class="queue-row">
+      <div class="queue-row due">
         <div><div class="name">Priya K.</div><div class="why">Annual review — market volatility flagged in her portfolio</div></div>
         <span class="pill due">Due</span>
       </div>
@@ -219,6 +241,8 @@
       <button id="prevBtn">← Previous</button>
       <div class="step-dots"><span class="on"></span><span></span><span></span></div>
       <button id="nextBtn">Next →</button>
+      <span id="progress" class="progress-label" aria-live="polite">1 / 3</span>
+      <button id="replayBtn" class="replay-btn" type="button" hidden>↻ Replay</button>
     </div>
   </main>
 
@@ -226,19 +250,122 @@
     described workflow, not a live application.</footer>
 
 <script>
+  // ---- reusable autoplay pattern (shared conventions §1-2, DEMO-WAVE-PLAN.md) ----
   const tabs = Array.from(document.querySelectorAll('.tab-btn'));
   const panels = Array.from(document.querySelectorAll('.panel'));
   const dots = Array.from(document.querySelectorAll('.step-dots span'));
+  const demoRoot = document.getElementById('demoRoot');
+  const progressEl = document.getElementById('progress');
+  const replayBtn = document.getElementById('replayBtn');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const reducedMotionMQ = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  const STEP_DELAY = 3200; // ms — within the 2.6-3.5s/step autoplay band
   let idx = 0;
+  let autoplayEnabled = false; // true only while the single unattended pass is still live
+  let hasPlayedOnce = false;
+  let timer = null;
+  let holdCount = 0; // >0 = something is pausing autoplay (hover/focus/touch/hidden tab)
+
+  function clearTimer(){ if (timer){ clearTimeout(timer); timer = null; } }
+
   function show(i){
     idx = (i + panels.length) % panels.length;
     panels.forEach((p,n)=>p.classList.toggle('active', n===idx));
     tabs.forEach((t,n)=>t.setAttribute('aria-selected', n===idx ? 'true':'false'));
     dots.forEach((d,n)=>d.classList.toggle('on', n===idx));
+    progressEl.textContent = (idx+1) + ' / ' + panels.length;
+    if (idx === 0) runKpiCountUp();
   }
-  tabs.forEach((t,n)=>t.addEventListener('click', ()=>show(n)));
-  document.getElementById('nextBtn').addEventListener('click', ()=>show(idx+1));
-  document.getElementById('prevBtn').addEventListener('click', ()=>show(idx-1));
+
+  function tick(){
+    clearTimer();
+    if (!autoplayEnabled || holdCount > 0) return;
+    timer = setTimeout(()=>{
+      if (idx >= panels.length - 1){
+        autoplayEnabled = false;
+        hasPlayedOnce = true;
+        replayBtn.hidden = false;
+        return;
+      }
+      show(idx + 1);
+      tick();
+    }, STEP_DELAY);
+  }
+
+  function hold(){ holdCount++; clearTimer(); }
+  function release(){ holdCount = Math.max(0, holdCount - 1); if (holdCount === 0) tick(); }
+
+  function stopAutoplayForManual(){
+    autoplayEnabled = false;
+    clearTimer();
+  }
+
+  // manual controls stay live and immediately take over from autoplay
+  tabs.forEach((t,n)=>t.addEventListener('click', ()=>{ stopAutoplayForManual(); show(n); }));
+  nextBtn.addEventListener('click', ()=>{ stopAutoplayForManual(); show(idx+1); });
+  prevBtn.addEventListener('click', ()=>{ stopAutoplayForManual(); show(idx-1); });
+  replayBtn.addEventListener('click', ()=>{
+    replayBtn.hidden = true;
+    show(0);
+    if (!reducedMotionMQ.matches){
+      autoplayEnabled = true;
+      hasPlayedOnce = false;
+      tick();
+    }
+  });
+
+  // pause on hover/focus/touch of the demo, resume when released (per shared etiquette)
+  demoRoot.addEventListener('mouseenter', hold);
+  demoRoot.addEventListener('mouseleave', release);
+  demoRoot.addEventListener('focusin', hold);
+  demoRoot.addEventListener('focusout', release);
+  demoRoot.addEventListener('touchstart', hold, { passive:true });
+  demoRoot.addEventListener('touchend', release, { passive:true });
+  demoRoot.addEventListener('touchcancel', release, { passive:true });
+  document.addEventListener('visibilitychange', ()=>{
+    if (document.hidden) hold(); else release();
+  });
+
+  // ---- KPI count-up (Scenario 1) — new JS timer, gated on matchMedia per shared
+  // conventions §2; reduced-motion snaps straight to the final values, no rAF loop ----
+  function runKpiCountUp(){
+    const reduce = reducedMotionMQ.matches;
+    document.querySelectorAll('#p1 .countup').forEach((el)=>{
+      const target = parseFloat(el.dataset.target);
+      const decimals = parseInt(el.dataset.decimals || '0', 10);
+      const prefix = el.dataset.prefix || '';
+      const suffix = el.dataset.suffix || '';
+      if (reduce || !('requestAnimationFrame' in window)){
+        el.textContent = prefix + target.toFixed(decimals) + suffix;
+        return;
+      }
+      const start = performance.now();
+      const duration = 900;
+      function frame(now){
+        const t = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - t, 3);
+        el.textContent = prefix + (target * eased).toFixed(decimals) + suffix;
+        if (t < 1) requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+    });
+    document.querySelectorAll('#p1 .bar-fill').forEach((el)=>{
+      const target = el.dataset.targetWidth;
+      if (!target) return;
+      el.style.width = '0%';
+      void el.offsetWidth; // force reflow so the width transition retriggers each reveal
+      requestAnimationFrame(()=>{ el.style.width = target + '%'; });
+    });
+  }
+
+  // ---- init ----
+  show(0);
+  if (!reducedMotionMQ.matches){
+    autoplayEnabled = true;
+    tick();
+  }
 </script>
 </body>
 </html>

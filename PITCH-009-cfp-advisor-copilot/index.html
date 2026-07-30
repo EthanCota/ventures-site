@@ -110,8 +110,9 @@
 
   
   ol.schedule{ list-style:decimal; padding-left:1.4em; margin:1rem 0 0; }
-  ol.schedule > li{ padding-left:.5em; padding-bottom:1.4rem; margin-bottom:1.4rem; border-bottom:1px solid var(--rule); }
+  ol.schedule > li{ padding-left:.5em; padding-bottom:1.4rem; margin-bottom:1.4rem; border-bottom:1px solid var(--rule); transition:border-color 150ms ease; }
   ol.schedule > li:last-child{ border-bottom:none; margin-bottom:0; padding-bottom:0; }
+  ol.schedule > li:hover{ border-color:var(--ink-navy); }
   ol.schedule > li::marker{ font-family:var(--font-sans); font-weight:700; color:var(--ink-navy); }
   ol.schedule h3{ margin:0 0 .35rem; }
   ol.schedule p{ margin:0; color:var(--ink-2); }
@@ -139,11 +140,12 @@
   .specimen-caption{ font-family:var(--font-sans); font-size:.72rem; letter-spacing:.07em; text-transform:uppercase; color:var(--ink-muted); text-align:center; margin:.65rem 0 1.5rem; }
 
   
-  .faq-item{ border-bottom:1px solid var(--rule); padding:1.2rem 0; }
+  .faq-item{ border-bottom:1px solid var(--rule); padding:1.2rem 0; transition:background-color 150ms ease; }
   main section#questions .faq-item:first-of-type{ padding-top:0; }
   .faq-item:last-child{ border-bottom:none; padding-bottom:0; }
   .faq-item h3{ font-style:italic; font-weight:500; margin:0 0 .5rem; }
   .faq-item p{ margin:0; color:var(--ink-2); }
+  .faq-item:hover{ background:var(--paper-2); }
 
   
   .signature-line{ margin-top:1.4rem; }
@@ -175,6 +177,10 @@
     .specimen-frame iframe{ height:480px; }
     nav.contents{ gap:.25rem .7rem; }
   }
+
+  
+  .reveal-pending{ opacity:0; transform:translateY(10px); }
+  .revealed{ opacity:1; transform:translateY(0); transition:opacity .5s ease, transform .5s ease; }
 
   @media (prefers-reduced-motion: reduce){
     html{ scroll-behavior:auto; }
@@ -424,5 +430,25 @@
   
   
 
+  
+  <script>
+  (function(){
+    var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion || !('IntersectionObserver' in window)) return;
+    var targets = document.querySelectorAll(
+      'main section > h2, .profile-box, ol.schedule, .table-wrap, .exhibit, .specimen-frame, .faq-item, #internal .apx'
+    );
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting){
+          entry.target.classList.add('revealed');
+          entry.target.classList.remove('reveal-pending');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    targets.forEach(function(el){ el.classList.add('reveal-pending'); io.observe(el); });
+  })();
+  </script>
 </body>
 </html>
