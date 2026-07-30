@@ -38,16 +38,35 @@ header.hero h1{font-size:clamp(28px,5vw,40px);margin:0 0 10px;}
 header.hero p{color:var(--ink-2);max-width:65ch;margin:0;}
 main{max-width:1100px;margin:0 auto;padding:10px 20px 60px;}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;}
-.card{background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:22px;
+.card{background:var(--v-tint,var(--card-bg));border:1px solid var(--border);border-radius:14px;padding:22px;
   display:flex;flex-direction:column;gap:12px;}
-.card .accent-bar{height:4px;border-radius:2px;margin:-22px -22px 6px;}
-.card h2{margin:0;font-size:20px;}
+/* Per-card brand theming: each card carries its own venture's light/dark token pair as
+   local custom properties (set inline via style="--v-accent-l:…"); these rules pick the
+   scheme-appropriate value the same way the page-level tokens above do, so a card themed
+   from ventures/dashboard/brand-tokens.json always matches the current light/dark scheme.
+   Cards with no brand tokens (coming-soon / no extracted data) fall back to the neutral
+   page --accent / --card-bg via the var() defaults above and below. */
+.card{--v-accent:var(--v-accent-l);--v-cta-text:var(--v-cta-text-l);--v-tint:var(--v-tint-l);}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .card{
+    --v-accent:var(--v-accent-d);--v-cta-text:var(--v-cta-text-d);--v-tint:var(--v-tint-d);
+  }
+}
+:root[data-theme="dark"] .card{
+  --v-accent:var(--v-accent-d);--v-cta-text:var(--v-cta-text-d);--v-tint:var(--v-tint-d);
+}
+:root[data-theme="light"] .card{
+  --v-accent:var(--v-accent-l);--v-cta-text:var(--v-cta-text-l);--v-tint:var(--v-tint-l);
+}
+.card .accent-bar{height:4px;border-radius:2px;margin:-22px -22px 6px;background:var(--v-accent,var(--accent));}
+.card h2{margin:0;font-size:20px;font-family:var(--v-font,inherit);}
 .card .one-liner{color:var(--ink-2);font-size:14.5px;margin:0;}
 .card .desc{font-size:14px;color:var(--ink-2);margin:0;}
 .card .desc strong{color:var(--ink);}
 .card .pricing{font-size:13.5px;color:var(--muted);border-top:1px solid var(--border);padding-top:10px;margin-top:auto;}
 .card a.visit{display:inline-block;margin-top:6px;padding:9px 16px;border-radius:8px;
-  background:var(--accent);color:var(--accent-ink);text-decoration:none;font-weight:600;font-size:14px;text-align:center;}
+  background:var(--v-accent,var(--accent));color:var(--v-cta-text,var(--accent-ink));
+  text-decoration:none;font-weight:600;font-size:14px;text-align:center;}
 .card a.visit:hover{opacity:0.9;}
 .card .coming-soon{display:inline-block;margin-top:6px;padding:9px 16px;border-radius:8px;
   background:transparent;border:1px dashed var(--border);color:var(--muted);font-weight:500;
@@ -71,8 +90,8 @@ footer.site-footer{max-width:1100px;margin:0 auto;padding:20px;color:var(--muted
 </header>
 <main>
   <div class="grid">
-  <div class="card">
-    <div class="accent-bar" style="background:#08786D"></div>
+  <div class="card" style="--v-accent-l:#08786d;--v-accent-d:#57dfcb;--v-cta-text-l:#ffffff;--v-cta-text-d:#0b1210;--v-tint-l:#fbf7f0;--v-tint-d:#1b1d19;--v-font:Rockwell, &#x27;Rockwell Nova&#x27;, &#x27;Roboto Slab&#x27;, &#x27;DejaVu Serif&#x27;, &#x27;Sitka Small&#x27;, serif">
+    <div class="accent-bar"></div>
     <h2>Harborcite</h2>
     <p class="one-liner">SEO + AEO visibility for single-location local service businesses in San Diego.</p>
     <p class="desc"><strong>Solves:</strong> Single-location service businesses (dental, PT, trades) are invisible where buyers now look—Google Maps, page-1 organic, and AI-generated answers. 68% of Google searches end without a click, yet AEO today costs $1,500+/mo as enterprise SaaS or bundles into $750-$3K retainers.</p>
@@ -81,8 +100,8 @@ footer.site-footer{max-width:1100px;margin:0 auto;padding:20px;color:var(--muted
     <a class="visit" href="./PITCH-001-seo-aeo-visibility/index.html">View Harborcite (alpha) &rarr;</a>
   </div>
 
-  <div class="card">
-    <div class="accent-bar" style="background:#9d431a"></div>
+  <div class="card" style="--v-accent-l:#a8441a;--v-accent-d:#e07a3d;--v-cta-text-l:#ffffff;--v-cta-text-d:#0b1210;--v-tint-l:#faf7f1;--v-tint-d:#1d1a15;--v-font:&#x27;Iowan Old Style&#x27;, &#x27;Palatino Linotype&#x27;, &#x27;Book Antiqua&#x27;, Palatino, Georgia, serif">
+    <div class="accent-bar"></div>
     <h2>PraxisKB</h2>
     <p class="one-liner">AI-searchable knowledge bases built and curated from practice documents—done-for-you setup, cited answers, HIPAA-aware.</p>
     <p class="desc"><strong>Solves:</strong> Independent healthcare practices run on institutional knowledge living in one person&#x27;s head or scattered PDFs. Onboarding takes weeks, edge cases are answered from memory, and departing staff create crises when their knowledge leaves.</p>
@@ -91,8 +110,8 @@ footer.site-footer{max-width:1100px;margin:0 auto;padding:20px;color:var(--muted
     <a class="visit" href="./PITCH-002-professional-knowledge-bases/index.html">View PraxisKB (alpha) &rarr;</a>
   </div>
 
-  <div class="card">
-    <div class="accent-bar" style="background:#D4804F"></div>
+  <div class="card" style="--v-accent-l:#a03317;--v-accent-d:#d35d31;--v-cta-text-l:#ffffff;--v-cta-text-d:#0b1210;--v-tint-l:#fdf9f4;--v-tint-d:#191a1d;--v-font:Avenir, Montserrat, Corbel, &#x27;URW Gothic&#x27;, &#x27;source-sans-pro&#x27;, sans-serif">
+    <div class="accent-bar"></div>
     <h2>GuestWaypoint</h2>
     <p class="one-liner">White-label day-plan and spend-calibrated food/bar map for San Diego hosts and boutique hotels.</p>
     <p class="desc"><strong>Solves:</strong> Hosts field repeated guest questions about activities, dining, and local spots by text and email. Guests leave bad reviews when they cannot find good nearby recommendations. No product serves this need specifically for the host&#x27;s property in San Diego.</p>
@@ -101,8 +120,8 @@ footer.site-footer{max-width:1100px;margin:0 auto;padding:20px;color:var(--muted
     <a class="visit" href="./PITCH-004-sd-travel-curator/index.html">View GuestWaypoint (alpha) &rarr;</a>
   </div>
 
-  <div class="card">
-    <div class="accent-bar" style="background:#c2540f"></div>
+  <div class="card" style="--v-accent-l:#b5480a;--v-accent-d:#ff9a3c;--v-cta-text-l:#ffffff;--v-cta-text-d:#0b1210;--v-tint-l:#f8f2e8;--v-tint-d:#1c1914;--v-font:Bahnschrift, &#x27;DIN Alternate&#x27;, &#x27;Franklin Gothic Medium&#x27;, &#x27;Nimbus Sans Narrow&#x27;, sans-serif-condensed, sans-serif">
+    <div class="accent-bar"></div>
     <h2>Fareloop</h2>
     <p class="one-liner">Platform that turns patron social posts into food/merch rewards redeemable across partnered venues</p>
     <p class="desc"><strong>Solves:</strong> Independent San Diego bars and restaurants capture no cross-venue value from the organic patron content they already get unprompted. Meanwhile, brands pay $25–110 per video for produced UGC through marketplaces.</p>
@@ -111,8 +130,8 @@ footer.site-footer{max-width:1100px;margin:0 auto;padding:20px;color:var(--muted
     <a class="visit" href="./PITCH-005-ugc-venue-rewards/index.html">View Fareloop (alpha) &rarr;</a>
   </div>
 
-  <div class="card">
-    <div class="accent-bar" style="background:#2A9C8B"></div>
+  <div class="card" style="--v-accent-l:#a65200;--v-accent-d:#f19b37;--v-cta-text-l:#ffffff;--v-cta-text-d:#0b1210;--v-tint-l:#fdfbf8;--v-tint-d:#1e1a15;--v-font:ui-monospace, &#x27;SF Mono&#x27;, &#x27;Cascadia Code&#x27;, &#x27;Source Code Pro&#x27;, Menlo, Consolas, &#x27;DejaVu Sans Mono&#x27;, monospace">
+    <div class="accent-bar"></div>
     <h2>Loadout</h2>
     <p class="one-liner">Setup and curation service that configures a Claude Pro/Max subscription for actual productivity</p>
     <p class="desc"><strong>Solves:</strong> Solo professionals and small-team operators buy Claude Pro/Max subscriptions but never configure them—no CLAUDE.md, no skills, no persistent memory. Every session starts from zero and context gets re-explained.</p>
@@ -121,8 +140,8 @@ footer.site-footer{max-width:1100px;margin:0 auto;padding:20px;color:var(--muted
     <a class="visit" href="./PITCH-006-agentic-env-upsell/index.html">View Loadout (alpha) &rarr;</a>
   </div>
 
-  <div class="card">
-    <div class="accent-bar" style="background:#2A9D7E"></div>
+  <div class="card" style="--v-accent-l:#356224;--v-accent-d:#85c56f;--v-cta-text-l:#ffffff;--v-cta-text-d:#0b1210;--v-tint-l:#f6fbf6;--v-tint-d:#191914;--v-font:&#x27;SF Compact Display&#x27;, &#x27;SF Compact Text&#x27;, &#x27;Segoe UI Semibold&#x27;, &#x27;Roboto Condensed&#x27;, &#x27;Arial Narrow&#x27;, &#x27;Helvetica Neue&#x27;, Arial, sans-serif">
+    <div class="accent-bar"></div>
     <h2>Beachhead Intel</h2>
     <p class="one-liner">City-by-city capability-tagged business intelligence for territory sellers and dealer networks</p>
     <p class="desc"><strong>Solves:</strong> Manufacturer&#x27;s reps, franchise-territory buyers, and dealer-network sales managers need to know who&#x27;s actually in a city×vertical and what equipment they already run before prospecting. Existing tools (ZoomInfo, Apollo, D&amp;B, Regrid, Infofree) sell only contact and firmographic data, not capability or equipment data.</p>
@@ -131,8 +150,8 @@ footer.site-footer{max-width:1100px;margin:0 auto;padding:20px;color:var(--muted
     <a class="visit" href="./PITCH-007-city-scan-network/index.html">View Beachhead Intel (alpha) &rarr;</a>
   </div>
 
-  <div class="card">
-    <div class="accent-bar" style="background:#3fa89d"></div>
+  <div class="card" style="--v-accent-l:#0c6e5c;--v-accent-d:#41b59c;--v-cta-text-l:#ffffff;--v-cta-text-d:#0b1210;--v-tint-l:#fbfdfc;--v-tint-d:#1a1b18;--v-font:Optima, Candara, &#x27;Noto Sans&#x27;, sans-serif">
+    <div class="accent-bar"></div>
     <h2>Cuspid</h2>
     <p class="one-liner">Three add-on modules for dental practices: ambient charting, patient recall SMS, and PMS integration on top of Vornix voice.</p>
     <p class="desc"><strong>Solves:</strong> Dental practices manually handle clinical documentation after calls, patient recall communications, and PMS chart entry across disconnected tools. No integrated layer connects the voice reception Vornix provides to what happens next.</p>
@@ -141,8 +160,8 @@ footer.site-footer{max-width:1100px;margin:0 auto;padding:20px;color:var(--muted
     <a class="visit" href="./PITCH-008-healthcare-platform/index.html">View Cuspid (alpha) &rarr;</a>
   </div>
 
-  <div class="card">
-    <div class="accent-bar" style="background:#1f4e61"></div>
+  <div class="card" style="--v-accent-l:#8d631b;--v-accent-d:#d9b070;--v-cta-text-l:#ffffff;--v-cta-text-d:#0b1210;--v-tint-l:#fbf8f4;--v-tint-d:#211c15;--v-font:Charter, &#x27;Bitstream Charter&#x27;, &#x27;Sitka Text&#x27;, Cambria, Georgia, serif">
+    <div class="accent-bar"></div>
     <h2>TallyHelm</h2>
     <p class="one-liner">KPI dashboard, contact cadence queue, form autofill, and client data entry unified for solo CFP® advisors.</p>
     <p class="desc"><strong>Solves:</strong> Solo and small-team CFP advisors manually track KPI goals, which clients are due for contact, intake form data, and client information across disconnected CRM and forms tools. No single vendor covers more than one of these needs.</p>
@@ -151,8 +170,8 @@ footer.site-footer{max-width:1100px;margin:0 auto;padding:20px;color:var(--muted
     <a class="visit" href="./PITCH-009-cfp-advisor-copilot/index.html">View TallyHelm (alpha) &rarr;</a>
   </div>
 
-  <div class="card">
-    <div class="accent-bar" style="background:#c97a1a"></div>
+  <div class="card" style="--v-accent-l:#8a520c;--v-accent-d:#e8a84a;--v-cta-text-l:#ffffff;--v-cta-text-d:#0b1210;--v-tint-l:#f8f5f0;--v-tint-d:#1c191a;--v-font:ui-monospace, &#x27;SF Mono&#x27;, &#x27;Cascadia Code&#x27;, &#x27;Source Code Pro&#x27;, Menlo, Consolas, &#x27;DejaVu Sans Mono&#x27;, monospace">
+    <div class="accent-bar"></div>
     <h2>Hackerlantern</h2>
     <p class="one-liner">A weekly digest and live directory aggregating all 150+ tech/AI meetups, hackathons, and community events in San Diego.</p>
     <p class="desc"><strong>Solves:</strong> SD tech/AI meetup organizers have no single channel to reach potential attendees beyond their own followers. Residents must manually check Meetup, Luma, sdtechscene.org, and scattered social accounts to discover what&#x27;s happening each week.</p>
@@ -161,8 +180,8 @@ footer.site-footer{max-width:1100px;margin:0 auto;padding:20px;color:var(--muted
     <a class="visit" href="./PITCH-011-niche-source/index.html">View Hackerlantern (alpha) &rarr;</a>
   </div>
 
-  <div class="card">
-    <div class="accent-bar" style="background:#b5541e"></div>
+  <div class="card" style="--v-accent-l:#9c4519;--v-accent-d:#e2884a;--v-cta-text-l:#ffffff;--v-cta-text-d:#0b1210;--v-tint-l:#fbf8f1;--v-tint-d:#1d1913;--v-font:Didot, &#x27;Bodoni MT&#x27;, &#x27;Noto Serif Display&#x27;, &#x27;URW Palladio L&#x27;, P052, Sylfaen, serif">
+    <div class="accent-bar"></div>
     <h2>OneGoodIntro</h2>
     <p class="one-liner">Concierge-scale, one-time human-vetted introductions for pre-threshold San Diego founders seeking investors and advisors.</p>
     <p class="desc"><strong>Solves:</strong> Founders below the EO ($1M+ revenue) and YPO ($16M+ revenue) membership thresholds are structurally excluded from existing peer-network intro channels and not served by free mentor tools like ADPList or SCORE, which are general-purpose rather than curated.</p>
@@ -171,8 +190,8 @@ footer.site-footer{max-width:1100px;margin:0 auto;padding:20px;color:var(--muted
     <a class="visit" href="./PITCH-012-blind-date-networks/index.html">View OneGoodIntro (alpha) &rarr;</a>
   </div>
 
-  <div class="card">
-    <div class="accent-bar" style="background:#D9622B"></div>
+  <div class="card" style="--v-accent-l:#a5540a;--v-accent-d:#ffb020;--v-cta-text-l:#ffffff;--v-cta-text-d:#0b1210;--v-tint-l:#faf8f4;--v-tint-d:#1a1813;--v-font:Bahnschrift, &#x27;DIN Alternate&#x27;, &#x27;Franklin Gothic Medium&#x27;, &#x27;Nimbus Sans Narrow&#x27;, sans-serif-condensed, sans-serif">
+    <div class="accent-bar"></div>
     <h2>IronLine</h2>
     <p class="one-liner">24/7 voice agent answering emergency calls for plumbing, electrical, and HVAC shops—triages safety, quotes the call-out window, and books dispatch before the customer hangs up.</p>
     <p class="desc"><strong>Solves:</strong> Solo-to-5-truck independent trades operators personally field after-hours emergency calls and miss capture-able jobs worth $100–300+ in after-hours premium on top of the base service fee, losing thousands in potential revenue yearly.</p>
@@ -181,8 +200,8 @@ footer.site-footer{max-width:1100px;margin:0 auto;padding:20px;color:var(--muted
     <a class="visit" href="./PITCH-013-emergency-trades-voice/index.html">View IronLine (alpha) &rarr;</a>
   </div>
 
-  <div class="card">
-    <div class="accent-bar" style="background:#4f9cff"></div>
+  <div class="card" style="--v-accent-l:#1f5fb8;--v-accent-d:#4f9cff;--v-cta-text-l:#ffffff;--v-cta-text-d:#0b1210;--v-tint-l:#f9fafc;--v-tint-d:#191817;--v-font:&#x27;Avenir Next&#x27;, Avenir, &#x27;Helvetica Neue&#x27;, &#x27;Arial Nova&#x27;, Helvetica, Arial, sans-serif">
+    <div class="accent-bar"></div>
     <h2>Governframe</h2>
     <p class="one-liner">Hosted MCP/tooling layer for small teams already on Claude—shared memory, curated tool roster per role, admin isolation view; BYO-subscription, credentials never shared.</p>
     <p class="desc"><strong>Solves:</strong> Small teams (3–15 people) running multiple paid Claude seats have no shared memory across the team, no way to curate tool access per role, and no visibility into who&#x27;s using AI agents and how—creating governance gaps and duplicated context work per person.</p>
@@ -191,8 +210,8 @@ footer.site-footer{max-width:1100px;margin:0 auto;padding:20px;color:var(--muted
     <a class="visit" href="./PITCH-014-ai-infra-layer/index.html">View Governframe (alpha) &rarr;</a>
   </div>
 
-  <div class="card">
-    <div class="accent-bar" style="background:#a13d2d"></div>
+  <div class="card" style="--v-accent-l:#93321f;--v-accent-d:#e2695a;--v-cta-text-l:#ffffff;--v-cta-text-d:#0b1210;--v-tint-l:#faf7f0;--v-tint-d:#1c1914;--v-font:&#x27;Iowan Old Style&#x27;, &#x27;Palatino Linotype&#x27;, &#x27;Book Antiqua&#x27;, Palatino, Georgia, serif">
+    <div class="accent-bar"></div>
     <h2>Quillecho</h2>
     <p class="one-liner">Drafts new newsletter pieces in an independent writer&#x27;s own voice by learning from their published back-catalog.</p>
     <p class="desc"><strong>Solves:</strong> Independent newsletter and blog writers spend significant time on first drafts from a blank page, despite having published archives that demonstrate their distinctive voice, cadence, and word choices.</p>
@@ -201,8 +220,8 @@ footer.site-footer{max-width:1100px;margin:0 auto;padding:20px;color:var(--muted
     <a class="visit" href="./PITCH-016-writer-voice-draft/index.html">View Quillecho (alpha) &rarr;</a>
   </div>
 
-  <div class="card">
-    <div class="accent-bar" style="background:#2F5233"></div>
+  <div class="card" style="--v-accent-l:#2f5233;--v-accent-d:#9fce9d;--v-cta-text-l:#ffffff;--v-cta-text-d:#0b1210;--v-tint-l:#fcfbf8;--v-tint-d:#1b1b15;--v-font:&#x27;Segoe UI&#x27;, system-ui, &#x27;Helvetica Neue&#x27;, Helvetica, Arial, sans-serif">
+    <div class="accent-bar"></div>
     <h2>Steady Grants</h2>
     <p class="one-liner">Grant copilot for small nonprofits that drafts proposals grounded in their real documents and mission voice.</p>
     <p class="desc"><strong>Solves:</strong> Small nonprofits under $500K budget pay $1,500–$5,000 per foundation grant proposal, draining resources that should fund programs. Most lack dedicated grant-writing staff, forcing already-stretched EDs and program managers to write proposals from scratch.</p>
@@ -211,8 +230,8 @@ footer.site-footer{max-width:1100px;margin:0 auto;padding:20px;color:var(--muted
     <a class="visit" href="./PITCH-017-nonprofit-grant-copilot/index.html">View Steady Grants (alpha) &rarr;</a>
   </div>
 
-  <div class="card">
-    <div class="accent-bar" style="background:#c8622e"></div>
+  <div class="card" style="--v-accent-l:#9a2b19;--v-accent-d:#f47f55;--v-cta-text-l:#ffffff;--v-cta-text-d:#0b1210;--v-tint-l:#fdf8f2;--v-tint-d:#241d17;--v-font:Superclarendon, &#x27;Bookman Old Style&#x27;, &#x27;URW Bookman&#x27;, &#x27;Georgia Pro&#x27;, Georgia, serif">
+    <div class="accent-bar"></div>
     <h2>Chairside</h2>
     <p class="one-liner">SMS appointment confirmations and reminders from shops&#x27; own numbers with STOP-handling built in</p>
     <p class="desc"><strong>Solves:</strong> Shop owners manually handle appointment confirmations, reminders, and reschedule requests by phone and text.</p>
