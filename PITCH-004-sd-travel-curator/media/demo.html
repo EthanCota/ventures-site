@@ -8,18 +8,20 @@
   :root{
     --navy:#16323f; --navy-2:#0f2530; --ink:#182226; --ink-soft:#4a5a60;
     --terracotta:#d9724a; --terracotta-dark:#b1552f;
+    
+    --accent-text:var(--terracotta-dark);
     --sand:#f6efe3; --sand-2:#eee2cc; --card:#ffffff; --bg:#faf6ee; --border:#e4d9c4;
     --banner-bg:#3a2410; --banner-fg:#ffe8cf;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
       --ink:#eef0ee; --ink-soft:#b9c3c2; --card:#132229; --bg:#0c1a20; --border:#24393f;
-      --sand:#16232a; --sand-2:#1b2b32;
+      --sand:#16232a; --sand-2:#1b2b32; --accent-text:var(--terracotta);
     }
   }
   :root[data-theme="dark"]{
     --ink:#eef0ee; --ink-soft:#b9c3c2; --card:#132229; --bg:#0c1a20; --border:#24393f;
-    --sand:#16232a; --sand-2:#1b2b32;
+    --sand:#16232a; --sand-2:#1b2b32; --accent-text:var(--terracotta);
   }
   *{box-sizing:border-box;}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;overflow-x:hidden;}
@@ -84,6 +86,54 @@
     display:inline-block;margin-bottom:10px;
   }
   footer{text-align:center;padding:20px;color:var(--ink-soft);font-size:12px;}
+
+  
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important;transition:none !important;}
+  }
+
+  
+  .tab{transition:background-color 140ms ease,color 140ms ease,border-color 140ms ease;}
+  .navbtns button{transition:background-color 140ms ease,border-color 140ms ease,color 140ms ease,opacity 140ms ease;}
+  .navbtns button:not(:disabled):not(.primary):hover{border-color:var(--terracotta);color:var(--accent-text);}
+  .dot{transition:background-color 140ms ease,transform 140ms ease;}
+  .dot.on{transform:scale(1.15);}
+
+  
+  .autoplay-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-8px 0 18px;flex-wrap:wrap;}
+  .progress-label{font-size:12px;color:var(--ink-soft);font-variant-numeric:tabular-nums;}
+  .replay-btn{
+    font-size:12.5px;font-weight:700;padding:6px 14px;border-radius:999px;
+    border:1.5px solid var(--terracotta);background:var(--card);color:var(--accent-text);
+    cursor:pointer;transition:background-color 140ms ease,color 140ms ease;
+  }
+  
+  .replay-btn:hover{background:var(--terracotta-dark);color:#fff;}
+  .replay-btn[hidden]{display:none;}
+
+  
+  .skeleton{display:none;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;min-height:340px;}
+  .skeleton.active{display:block;}
+  .skel-label{font-size:12.5px;font-weight:700;color:var(--ink-soft);margin-bottom:16px;letter-spacing:.02em;}
+  .skel-label .skel-tag{font-weight:800;color:var(--accent-text);margin-left:6px;}
+  .skel-block, .skel-card{position:relative;overflow:hidden;background:var(--sand-2);border-radius:8px;margin-bottom:10px;}
+  .skel-title{height:16px;width:55%;}
+  .skel-line{height:11px;width:92%;}
+  .skel-line.short{width:64%;}
+  .skel-card{height:64px;border-radius:12px;background:var(--sand);border:1px solid var(--border);margin-top:14px;}
+  .skel-block::after, .skel-card::after{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent);
+    animation:skelShimmer 1.3s ease-in-out infinite;
+  }
+  @keyframes skelShimmer{
+    0%{transform:translateX(-100%);}
+    100%{transform:translateX(100%);}
+  }
+
+  
+  .stagger-pending{opacity:0;transform:translateY(8px);}
+  .stagger-pending.revealed{opacity:1;transform:translateY(0);transition:opacity 220ms ease,transform 220ms ease;}
 </style>
 </head>
 <body><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
@@ -98,10 +148,16 @@
     are <strong>illustrative examples</strong> built for this demo, plausibility-bounded against
     RESEARCH.md's real San Diego figures — not real bookings, real venues, or real guests.</p>
 
+  <div id="demoRoot">
   <div class="tabs" role="tablist" aria-label="Demo scenarios">
     <button class="tab" role="tab" aria-selected="true" data-scenario="a">Scenario A — Family, Mission Beach</button>
     <button class="tab" role="tab" aria-selected="false" data-scenario="b">Scenario B — Couple, La Jolla</button>
     <button class="tab" role="tab" aria-selected="false" data-scenario="c">Scenario C — Couple, Gaslamp</button>
+  </div>
+
+  <div class="autoplay-row">
+    <span id="progress" class="progress-label" aria-live="polite">Scenario A · Step 1 / 3</span>
+    <button id="replayBtn" class="replay-btn" type="button" hidden>↻ Replay</button>
   </div>
 
   
@@ -113,6 +169,15 @@
         <button data-prev disabled>← Back</button>
         <button data-next class="primary">Next →</button>
       </div>
+    </div>
+
+    <div class="skeleton" data-skeleton>
+      <div class="skel-label">Generating your guide… <span class="skel-tag">simulated — not a live query</span></div>
+      <div class="skel-block skel-title"></div>
+      <div class="skel-block skel-line"></div>
+      <div class="skel-block skel-line short"></div>
+      <div class="skel-card"></div>
+      <div class="skel-card"></div>
     </div>
 
     <div class="panel" data-step="0">
@@ -171,6 +236,14 @@
       <div class="stepper" aria-hidden="true"><div class="dot on" data-dot="0"></div><div class="dot" data-dot="1"></div><div class="dot" data-dot="2"></div></div>
       <div class="navbtns"><button data-prev disabled>← Back</button><button data-next class="primary">Next →</button></div>
     </div>
+    <div class="skeleton" data-skeleton>
+      <div class="skel-label">Generating your guide… <span class="skel-tag">simulated — not a live query</span></div>
+      <div class="skel-block skel-title"></div>
+      <div class="skel-block skel-line"></div>
+      <div class="skel-block skel-line short"></div>
+      <div class="skel-card"></div>
+      <div class="skel-card"></div>
+    </div>
     <div class="panel" data-step="0">
       <h2>Step 1 · Host sets up the property</h2>
       <div class="meta">Property: "The Cormorant Inn" (illustrative example, La Jolla) · boutique inn, 12 rooms</div>
@@ -218,6 +291,14 @@
       <div class="stepper" aria-hidden="true"><div class="dot on" data-dot="0"></div><div class="dot" data-dot="1"></div><div class="dot" data-dot="2"></div></div>
       <div class="navbtns"><button data-prev disabled>← Back</button><button data-next class="primary">Next →</button></div>
     </div>
+    <div class="skeleton" data-skeleton>
+      <div class="skel-label">Generating your guide… <span class="skel-tag">simulated — not a live query</span></div>
+      <div class="skel-block skel-title"></div>
+      <div class="skel-block skel-line"></div>
+      <div class="skel-block skel-line short"></div>
+      <div class="skel-card"></div>
+      <div class="skel-card"></div>
+    </div>
     <div class="panel" data-step="0">
       <h2>Step 1 · Host sets up the property</h2>
       <div class="meta">Property: "Gaslamp Loft 4B" (illustrative example, Gaslamp/Downtown) · STRO Tier 3</div>
@@ -258,6 +339,8 @@
     </div>
   </div>
 
+  </div>
+
 </div>
 
 <footer>GuestWaypoint demo — simulated walkthrough for pitch purposes only. No real product,
@@ -265,34 +348,208 @@
 
 <script>
   (function(){
-    const tabs = document.querySelectorAll('.tab');
-    const scenarios = { a: document.getElementById('scenario-a'), b: document.getElementById('scenario-b'), c: document.getElementById('scenario-c') };
-    tabs.forEach(t => t.addEventListener('click', () => {
-      tabs.forEach(x => x.setAttribute('aria-selected','false'));
-      t.setAttribute('aria-selected','true');
-      Object.values(scenarios).forEach(s => s.classList.remove('active'));
-      scenarios[t.dataset.scenario].classList.add('active');
+    const reducedMotionMQ = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const tabs = Array.from(document.querySelectorAll('.tab'));
+    const scenarioIds = ['a','b','c'];
+    const scenarioEls = { a: document.getElementById('scenario-a'), b: document.getElementById('scenario-b'), c: document.getElementById('scenario-c') };
+    const demoRoot = document.getElementById('demoRoot');
+    const progressEl = document.getElementById('progress');
+    const replayBtn = document.getElementById('replayBtn');
+
+    const STEP_DELAY = 3200; // ms -- within the 2.6-3.5s/step autoplay band (shared conventions §1)
+    const GEN_DELAY = 650;   // ms -- skeleton "generating" duration; skipped entirely under reduced motion
+
+    // Each scenario keeps its own step state, matching the page's original
+    // per-scenario stepper design (tabs pick a scenario; a 3-step stepper walks
+    // profile -> generated day-plan -> generated food/bar map within it).
+    const controllers = {};
+    scenarioIds.forEach((id) => {
+      const sc = scenarioEls[id];
+      controllers[id] = {
+        step: 0,
+        panels: Array.from(sc.querySelectorAll('.panel')),
+        dots: Array.from(sc.querySelectorAll('.dot')),
+        skeleton: sc.querySelector('[data-skeleton]'),
+        prevBtn: sc.querySelector('[data-prev]'),
+        nextBtn: sc.querySelector('[data-next]'),
+      };
+    });
+
+    let curScenarioIdx = 0;
+    let autoplayEnabled = false;
+    let hasPlayedOnce = false;
+    let timer = null;
+    let genTimer = null;
+    let holdCount = 0; // >0 = something is pausing autoplay (hover/focus/touch/hidden tab)
+
+    function clearStepTimer(){ if (timer){ clearTimeout(timer); timer = null; } }
+    function clearGenTimer(){ if (genTimer){ clearTimeout(genTimer); genTimer = null; } }
+
+    function updateProgress(){
+      const id = scenarioIds[curScenarioIdx];
+      progressEl.textContent = 'Scenario ' + id.toUpperCase() + ' · Step ' + (controllers[id].step + 1) + ' / 3';
+    }
+
+    function renderStatic(id){
+      // Shows the controller's current step immediately, no skeleton/stagger --
+      // used for tab switches, manual Back, and any non-"generating" transition.
+      const c = controllers[id];
+      c.panels.forEach((p,i) => { p.style.display = (i===c.step ? '' : 'none'); });
+      c.dots.forEach((d,i) => d.classList.toggle('on', i===c.step));
+      c.prevBtn.disabled = c.step === 0;
+      c.nextBtn.textContent = c.step === c.panels.length-1 ? 'Restart ↻' : 'Next →';
+      if (c.skeleton) c.skeleton.classList.remove('active');
+      updateProgress();
+    }
+
+    function staggerReveal(panel){
+      // Reveals guide-cards/chat bubbles with a short cascade after each
+      // "generating" transition. New JS timer, so per shared conventions §2 it's
+      // separately gated on matchMedia -- reduced motion shows every item at once,
+      // matching the page's original (pre-animation) instant-click behavior.
+      const items = panel.querySelectorAll('.guide-card, .chatline');
+      if (reducedMotionMQ.matches){
+        items.forEach((el) => el.classList.remove('stagger-pending'));
+        return;
+      }
+      items.forEach((el, i) => {
+        el.classList.add('stagger-pending');
+        setTimeout(() => { el.classList.add('revealed'); }, 20 + i*90);
+      });
+    }
+
+    function showForward(id, cb){
+      // Advances one step forward with a brief skeleton-style "generating"
+      // transition (honest: shape placeholders, never a spinner pretending to
+      // call a real service), then reveals the target step with a stagger
+      // cascade. Reduced motion skips the skeleton entirely -- never worse than
+      // the page's original instant-click experience.
+      const c = controllers[id];
+      const targetStep = c.step + 1;
+      const finish = () => {
+        c.step = targetStep;
+        renderStatic(id);
+        staggerReveal(c.panels[targetStep]);
+        if (cb) cb();
+      };
+      if (reducedMotionMQ.matches || !c.skeleton){
+        finish();
+        return;
+      }
+      c.panels.forEach((p) => { p.style.display = 'none'; });
+      c.skeleton.classList.add('active');
+      genTimer = setTimeout(() => {
+        genTimer = null;
+        c.skeleton.classList.remove('active');
+        finish();
+      }, GEN_DELAY);
+    }
+
+    function selectScenario(idx, opts){
+      opts = opts || {};
+      tabs.forEach((t,n) => t.setAttribute('aria-selected', n===idx ? 'true' : 'false'));
+      scenarioIds.forEach((id,n) => scenarioEls[id].classList.toggle('active', n===idx));
+      curScenarioIdx = idx;
+      if (opts.resetStep){ controllers[scenarioIds[idx]].step = 0; }
+      renderStatic(scenarioIds[idx]);
+    }
+
+    function stopAutoplayForManual(){
+      autoplayEnabled = false;
+      clearStepTimer();
+      clearGenTimer();
+      scenarioIds.forEach((id) => { if (controllers[id].skeleton) controllers[id].skeleton.classList.remove('active'); });
+    }
+
+    // ---- manual controls (stay live, take over from autoplay immediately) ----
+    tabs.forEach((t, n) => t.addEventListener('click', () => {
+      stopAutoplayForManual();
+      selectScenario(n);
     }));
 
-    document.querySelectorAll('.scenario').forEach(sc => {
-      let step = 0;
-      const panels = sc.querySelectorAll('.panel');
-      const dots = sc.querySelectorAll('.dot');
-      const prevBtn = sc.querySelector('[data-prev]');
-      const nextBtn = sc.querySelector('[data-next]');
-      function render(){
-        panels.forEach((p,i) => p.style.display = (i===step ? '' : 'none'));
-        dots.forEach((d,i) => d.classList.toggle('on', i===step));
-        prevBtn.disabled = step === 0;
-        nextBtn.textContent = step === panels.length-1 ? 'Restart ↻' : 'Next →';
-      }
-      prevBtn.addEventListener('click', () => { if(step>0){ step--; render(); }});
-      nextBtn.addEventListener('click', () => {
-        if(step < panels.length-1){ step++; } else { step = 0; }
-        render();
+    scenarioIds.forEach((id) => {
+      const c = controllers[id];
+      c.prevBtn.addEventListener('click', () => {
+        stopAutoplayForManual();
+        if (c.step > 0){ c.step--; renderStatic(id); }
       });
-      render();
+      c.nextBtn.addEventListener('click', () => {
+        stopAutoplayForManual();
+        if (c.step < c.panels.length - 1){
+          showForward(id);
+        } else {
+          c.step = 0;
+          renderStatic(id);
+        }
+      });
     });
+
+    replayBtn.addEventListener('click', () => {
+      replayBtn.hidden = true;
+      scenarioIds.forEach((sid) => { controllers[sid].step = 0; });
+      selectScenario(0, { resetStep: true });
+      // Clicking Replay leaves DOM focus on this button, which sits inside
+      // #demoRoot -- that would otherwise fire focusin -> hold() with no
+      // matching release() until focus moves elsewhere, silently blocking the
+      // resumed autoplay forever. Explicit override: a Replay click always
+      // means "play," so drop focus and reset the hold count here.
+      replayBtn.blur();
+      holdCount = 0;
+      if (!reducedMotionMQ.matches){
+        hasPlayedOnce = false;
+        autoplayEnabled = true;
+        tick();
+      }
+    });
+
+    // ---- reusable autoplay pattern (shared conventions §1-2, DEMO-WAVE-PLAN.md) ----
+    function tick(){
+      clearStepTimer();
+      if (!autoplayEnabled || holdCount > 0) return;
+      timer = setTimeout(() => {
+        const id = scenarioIds[curScenarioIdx];
+        const c = controllers[id];
+        if (c.step < c.panels.length - 1){
+          showForward(id, () => { tick(); });
+          return;
+        }
+        if (curScenarioIdx < scenarioIds.length - 1){
+          selectScenario(curScenarioIdx + 1, { resetStep: true });
+          tick();
+          return;
+        }
+        // all 3 scenarios complete -- plays once per page view, then Replay
+        autoplayEnabled = false;
+        hasPlayedOnce = true;
+        replayBtn.hidden = false;
+      }, STEP_DELAY);
+    }
+
+    // hold() only stops the *between-step* pacing timer -- an in-flight
+    // ~650ms generating transition is short enough to just finish naturally;
+    // tick() itself re-checks holdCount before scheduling the next advance, so
+    // pausing mid-generate settles cleanly on the revealed step, never stuck.
+    function hold(){ holdCount++; clearStepTimer(); }
+    function release(){ holdCount = Math.max(0, holdCount - 1); if (holdCount === 0 && autoplayEnabled) tick(); }
+
+    // pause on hover/focus/touch of the demo, resume when released (shared etiquette)
+    demoRoot.addEventListener('mouseenter', hold);
+    demoRoot.addEventListener('mouseleave', release);
+    demoRoot.addEventListener('focusin', hold);
+    demoRoot.addEventListener('focusout', release);
+    demoRoot.addEventListener('touchstart', hold, { passive:true });
+    demoRoot.addEventListener('touchend', release, { passive:true });
+    demoRoot.addEventListener('touchcancel', release, { passive:true });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) hold(); else release();
+    });
+
+    // ---- init ----
+    selectScenario(0, { resetStep: true });
+    if (!reducedMotionMQ.matches){
+      autoplayEnabled = true;
+      tick();
+    }
   })();
 </script>
 

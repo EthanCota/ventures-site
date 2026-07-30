@@ -72,6 +72,10 @@
     *{animation:none !important;transition:none !important;}
   }
 
+  
+  .reveal-pending{opacity:0;transform:translateY(10px);}
+  .reveal-pending.revealed{opacity:1;transform:translateY(0);transition:opacity 260ms ease,transform 260ms ease;}
+
   .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
 
   
@@ -143,10 +147,12 @@
     border:1.5px solid transparent;
     cursor:pointer;
   }
+  .btn{transition:background-color 140ms ease,border-color 140ms ease,color 140ms ease;}
   .btn-primary{background:var(--accent);color:var(--accent-ink);}
   .btn-primary:hover{background:var(--accent-dark);}
   .btn-ghost{background:transparent;color:var(--ink);border-color:var(--ink);}
   .btn-ghost:hover{border-color:var(--accent-dark);color:var(--accent-dark);}
+  .poster-links a{transition:color 140ms ease;}
 
   section{padding:56px 0;}
   .rule-top{border-top:2px dashed var(--line);}
@@ -575,6 +581,32 @@
     this pitch package's RESEARCH.md. Not a live product
   </div>
 </footer>
+
+<script>
+  // ---- reusable scroll-reveal pattern (shared conventions §3, DEMO-WAVE-PLAN.md) ----
+  // Fade+rise, one-shot IntersectionObserver. Hero is never targeted (it's outside
+  // <main>). Only assigns the hidden .reveal-pending class when IntersectionObserver
+  // exists AND reduced-motion is false, so a reduced-motion/no-JS visitor's content
+  // is never hidden in the first place -- no flash, no stuck-hidden risk.
+  (function(){
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || !('IntersectionObserver' in window)) return;
+    var targets = document.querySelectorAll(
+      'main section > .wrap > .eyebrow, main section > .wrap > h2, ' +
+      '.stopgrid, .persona, .menuboard, .routecard, .invite, .ip-block, ' +
+      '.chart-wrap, .table-wrap'
+    );
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting){
+          entry.target.classList.add('revealed');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    targets.forEach(function(el){ el.classList.add('reveal-pending'); io.observe(el); });
+  })();
+</script>
 
 </body>
 </html>
