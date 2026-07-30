@@ -98,17 +98,17 @@
   const t = document.getElementById('t');
   let i = 0;
   function render(){
-    t.innerHTML = lines.map((l,idx)=&gt;`&lt;div class="line ${l.who} ${idx&lt;i?'shown':''}"&gt;&lt;div class="who"&gt;${l.who==='caller'?'Caller':'IronLine'}&lt;/div&gt;${l.text}&lt;/div&gt;`).join('');
+    t.innerHTML = lines.map((l,idx)=>`<div class="line ${l.who} ${idx<i?'shown':''}"><div class="who">${l.who==='caller'?'Caller':'IronLine'}</div>${l.text}</div>`).join('');
   }
   render();
-  document.getElementById('next').addEventListener('click', ()=&gt;{
-    if(i &lt; lines.length){ i++; render(); }
-    if(i &gt;= lines.length){
+  document.getElementById('next').addEventListener('click', ()=>{
+    if(i < lines.length){ i++; render(); }
+    if(i >= lines.length){
       document.getElementById('next').disabled = true;
       document.getElementById('outcome').classList.add('shown');
     }
   });
-  document.getElementById('reset').addEventListener('click', ()=&gt;{
+  document.getElementById('reset').addEventListener('click', ()=>{
     i = 0; render();
     document.getElementById('next').disabled = false;
     document.getElementById('outcome').classList.remove('shown');

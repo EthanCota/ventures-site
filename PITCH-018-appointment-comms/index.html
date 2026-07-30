@@ -185,6 +185,7 @@
     padding:10px 13px;border:1px solid var(--line);border-radius:3px;
     color:var(--ink-2);text-decoration:none;font-weight:700;
     min-height:44px;display:inline-flex;align-items:center;
+    transition:border-color .14s ease, color .14s ease;
   }
   .tabs a:hover{border-color:var(--accent);color:var(--accent-text)}
 
@@ -200,6 +201,7 @@
   }
   .btn-primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent-deep)}
   .btn-ghost{background:transparent;color:var(--ink);border-color:var(--ink)}
+  .btn{transition:transform .14s ease}
   .btn:hover{transform:translateY(-2px)}
   .btn:active{transform:translateY(0)}
 
@@ -275,7 +277,7 @@
 
   .exhibit{margin-top:30px;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:22px 24px}
   .exhibit h3{margin:0 0 10px;font-size:1.02rem}
-  .exhibit &gt; p{margin:0 0 16px;color:var(--ink-2);font-size:.88rem}
+  .exhibit > p{margin:0 0 16px;color:var(--ink-2);font-size:.88rem}
   .chart-wrap{overflow-x:auto}
   .bar-row{display:flex;align-items:center;gap:12px;margin:9px 0;min-width:520px}
   .bar-label{width:200px;flex:none;font-size:.83rem;color:var(--ink-2)}
@@ -333,7 +335,7 @@
   }
   .office h2{color:var(--office-ink)}
   .office h3{color:var(--office-ink);font-size:1.05rem;margin:30px 0 10px;border-bottom:1px solid var(--office-line);padding-bottom:8px}
-  .office &gt; .in &gt; p{max-width:70ch}
+  .office > .in > p{max-width:70ch}
   .office p, .office li{color:var(--office-ink-2);font-size:.93rem}
   .office-grid{display:flex;flex-wrap:wrap;gap:18px;margin-top:10px}
   .office-card{flex:1 1 320px;background:var(--office-bg-2);border:1px solid var(--office-line);border-radius:8px;padding:18px 20px}
@@ -367,8 +369,12 @@
   }
   @media (min-width:1000px){
     .hero-band{padding:44px 0 76px}
-    section.band &gt; .in, section.band &gt; .in-narrow{padding:0 20px}
+    section.band > .in, section.band > .in-narrow{padding:0 20px}
   }
+
+  
+  .reveal-pending{opacity:0;transform:translateY(10px);transition:opacity .5s ease-out, transform .5s ease-out}
+  .reveal-pending.revealed{opacity:1;transform:translateY(0)}
 
   @media (prefers-reduced-motion: reduce){
     *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important}
@@ -606,8 +612,9 @@
   <div class="in">
     <p class="kicker">Demo</p>
     <h2>What a client's phone actually sees</h2>
-    <p class="lede-sm">Three scripted scenarios — a confirmation that turns into a reschedule,
-      a reminder with prep instructions, and a personal post-visit follow-up. Every message below
+    <p class="lede-sm">Four scripted scenarios, playing automatically below — a confirmation that
+      turns into a reschedule, a reminder with prep instructions, a personal post-visit follow-up,
+      and a STOP request honored with an immediate opt-out confirmation. Every message below
       is a simulated example, not a real client conversation.</p>
     <div class="order-pad">
       <iframe src="./media/sms-demo.html" title="Chairside simulated SMS demo" loading="lazy"></iframe>
@@ -689,5 +696,32 @@
 
 
 
+<script>
+/* ── shared scroll-reveal pattern (reusable across the 14 remaining sites) ──
+   One-shot IntersectionObserver fade+rise on section headers/card grids only;
+   hero renders fully visible on first paint and is never targeted. Gated on
+   prefers-reduced-motion at the JS layer (not just CSS) so a reduced-motion
+   visitor's content is never assigned a hidden initial state to begin with. */
+(function(){
+  var reducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  if (reducedMotion || !('IntersectionObserver' in window)) return;
+
+  var targets = document.querySelectorAll(
+    'section.band .kicker, section.band h2, ' +
+    '.seal-row, .trade-row, .menu-board, .exhibit, .ledger, .stub-list, .invite-card, .office-grid'
+  );
+  targets.forEach(function(el){ el.classList.add('reveal-pending'); });
+
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if (entry.isIntersecting){
+        entry.target.classList.add('revealed');
+        io.unobserve(entry.target);
+      }
+    });
+  }, {threshold: .15, rootMargin: '0px 0px -40px 0px'});
+  targets.forEach(function(el){ io.observe(el); });
+})();
+</script>
 </body>
 </html>

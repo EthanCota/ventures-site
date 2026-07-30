@@ -158,15 +158,15 @@
   const nextBtn = document.getElementById('nextBtn');
   function show(n){
     cur = n;
-    btns.forEach(b=&gt;b.classList.toggle('active', +b.dataset.step === n));
-    panels.forEach(p=&gt;p.classList.toggle('active', p.id === 'panel-'+n));
+    btns.forEach(b=>b.classList.toggle('active', +b.dataset.step === n));
+    panels.forEach(p=>p.classList.toggle('active', p.id === 'panel-'+n));
     prevBtn.disabled = n === 1;
     nextBtn.disabled = n === steps.length;
     nextBtn.textContent = n === steps.length ? 'End of demo' : 'Next →';
   }
-  btns.forEach(b=&gt;b.addEventListener('click', ()=&gt;show(+b.dataset.step)));
-  prevBtn.addEventListener('click', ()=&gt;{ if(cur&gt;1) show(cur-1); });
-  nextBtn.addEventListener('click', ()=&gt;{ if(cur&lt;steps.length) show(cur+1); });
+  btns.forEach(b=>b.addEventListener('click', ()=>show(+b.dataset.step)));
+  prevBtn.addEventListener('click', ()=>{ if(cur>1) show(cur-1); });
+  nextBtn.addEventListener('click', ()=>{ if(cur<steps.length) show(cur+1); });
 </script>
 </body>
 </html>

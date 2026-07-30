@@ -110,28 +110,28 @@
 
     function render() {
       container.innerHTML = '';
-      for (let i = 0; i &lt; shown; i++) {
+      for (let i = 0; i < shown; i++) {
         const s = steps[i];
         const div = document.createElement('div');
         if (s.type === 'system') {
           div.className = 'msg system';
-          div.innerHTML = '&lt;div class="bubble"&gt;' + s.text + '&lt;/div&gt;';
+          div.innerHTML = '<div class="bubble">' + s.text + '</div>';
         } else if (s.type === 'reasoning') {
           div.className = 'reasoning';
           div.textContent = s.text;
         } else {
           div.className = 'msg ' + (s.side === 'right' ? 'right' : '');
-          div.innerHTML = '&lt;div&gt;&lt;div class="who"&gt;' + s.who + '&lt;/div&gt;&lt;div class="bubble"&gt;' + s.text + '&lt;/div&gt;&lt;/div&gt;';
+          div.innerHTML = '<div><div class="who">' + s.who + '</div><div class="bubble">' + s.text + '</div></div>';
         }
         container.appendChild(div);
       }
       indicator.textContent = 'Step ' + shown + ' of ' + steps.length;
-      btn.disabled = shown &gt;= steps.length;
-      btn.textContent = shown &gt;= steps.length ? 'Scenario complete' : 'Show next message';
+      btn.disabled = shown >= steps.length;
+      btn.textContent = shown >= steps.length ? 'Scenario complete' : 'Show next message';
     }
 
     btn.addEventListener('click', function () {
-      if (shown &lt; steps.length) { shown++; render(); }
+      if (shown < steps.length) { shown++; render(); }
     });
 
     render();

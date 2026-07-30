@@ -153,14 +153,14 @@
     var re = /\[\[([^\]]+)\]\]/g;
     var last = 0, m;
     while ((m = re.exec(text))) {
-      if (m.index &gt; last) container.appendChild(document.createTextNode(text.slice(last, m.index)));
+      if (m.index > last) container.appendChild(document.createTextNode(text.slice(last, m.index)));
       var cite = document.createElement("span");
       cite.className = "cite";
       cite.textContent = "📄 " + m[1];
       container.appendChild(cite);
       last = re.lastIndex;
     }
-    if (last &lt; text.length) container.appendChild(document.createTextNode(text.slice(last)));
+    if (last < text.length) container.appendChild(document.createTextNode(text.slice(last)));
   }
 
   function lineNode(m) {

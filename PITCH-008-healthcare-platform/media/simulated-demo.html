@@ -180,9 +180,9 @@
 <script>
   function wireTabs(){
     const tabs=document.querySelectorAll('.tab');
-    tabs.forEach(t=&gt;t.addEventListener('click',()=&gt;{
-      tabs.forEach(x=&gt;x.classList.remove('active'));
-      document.querySelectorAll('.scenario').forEach(s=&gt;s.classList.remove('active'));
+    tabs.forEach(t=>t.addEventListener('click',()=>{
+      tabs.forEach(x=>x.classList.remove('active'));
+      document.querySelectorAll('.scenario').forEach(s=>s.classList.remove('active'));
       t.classList.add('active');
       document.getElementById(t.dataset.t).classList.add('active');
     }));
@@ -193,7 +193,7 @@
     const next=document.getElementById(prefix+'-next');
     const count=document.getElementById(prefix+'-count');
     function render(){
-      for(let n=0;n&lt;=max;n++){
+      for(let n=0;n<=max;n++){
         const el=document.getElementById(prefix+'-step'+n);
         if(el) el.style.display = (n===i)?'block':'none';
       }
@@ -201,8 +201,8 @@
       prev.disabled = i===0;
       next.disabled = i===max;
     }
-    prev.addEventListener('click',()=&gt;{ if(i&gt;0){i--;render();} });
-    next.addEventListener('click',()=&gt;{ if(i&lt;max){i++;render();} });
+    prev.addEventListener('click',()=>{ if(i>0){i--;render();} });
+    next.addEventListener('click',()=>{ if(i<max){i++;render();} });
     render();
   }
   wireTabs();

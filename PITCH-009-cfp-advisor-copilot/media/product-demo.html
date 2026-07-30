@@ -232,13 +232,13 @@
   let idx = 0;
   function show(i){
     idx = (i + panels.length) % panels.length;
-    panels.forEach((p,n)=&gt;p.classList.toggle('active', n===idx));
-    tabs.forEach((t,n)=&gt;t.setAttribute('aria-selected', n===idx ? 'true':'false'));
-    dots.forEach((d,n)=&gt;d.classList.toggle('on', n===idx));
+    panels.forEach((p,n)=>p.classList.toggle('active', n===idx));
+    tabs.forEach((t,n)=>t.setAttribute('aria-selected', n===idx ? 'true':'false'));
+    dots.forEach((d,n)=>d.classList.toggle('on', n===idx));
   }
-  tabs.forEach((t,n)=&gt;t.addEventListener('click', ()=&gt;show(n)));
-  document.getElementById('nextBtn').addEventListener('click', ()=&gt;show(idx+1));
-  document.getElementById('prevBtn').addEventListener('click', ()=&gt;show(idx-1));
+  tabs.forEach((t,n)=>t.addEventListener('click', ()=>show(n)));
+  document.getElementById('nextBtn').addEventListener('click', ()=>show(idx+1));
+  document.getElementById('prevBtn').addEventListener('click', ()=>show(idx-1));
 </script>
 </body>
 </html>

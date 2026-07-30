@@ -168,28 +168,28 @@
     const steps = sc.querySelectorAll('.step');
     const dotsWrap = sc.querySelector('.dots');
     dotsWrap.innerHTML = '';
-    steps.forEach((_,i)=&gt;{ const d=document.createElement('span'); if(i===0)d.className='on'; dotsWrap.appendChild(d); });
+    steps.forEach((_,i)=>{ const d=document.createElement('span'); if(i===0)d.className='on'; dotsWrap.appendChild(d); });
     let cur = 0;
     const prevBtn = sc.querySelector('.prev');
     const nextBtn = sc.querySelector('.next');
     const label = sc.querySelector('.step-n');
     function render(){
-      steps.forEach((s,i)=&gt;{ s.style.display = i===cur ? '' : 'none'; });
-      Array.from(dotsWrap.children).forEach((d,i)=&gt;{ d.className = i===cur ? 'on' : ''; });
+      steps.forEach((s,i)=>{ s.style.display = i===cur ? '' : 'none'; });
+      Array.from(dotsWrap.children).forEach((d,i)=>{ d.className = i===cur ? 'on' : ''; });
       prevBtn.disabled = cur===0;
       nextBtn.textContent = cur===steps.length-1 ? 'Restart' : 'Next';
       label.textContent = cur+1;
     }
-    prevBtn.addEventListener('click', ()=&gt;{ if(cur&gt;0){cur--; render();} });
-    nextBtn.addEventListener('click', ()=&gt;{ if(cur&lt;steps.length-1){cur++;} else {cur=0;} render(); });
+    prevBtn.addEventListener('click', ()=>{ if(cur>0){cur--; render();} });
+    nextBtn.addEventListener('click', ()=>{ if(cur<steps.length-1){cur++;} else {cur=0;} render(); });
     render();
   }
   scenarios.forEach(initScenario);
-  tabs.forEach(t=&gt;{
-    t.addEventListener('click', ()=&gt;{
-      tabs.forEach(x=&gt;x.classList.remove('active'));
+  tabs.forEach(t=>{
+    t.addEventListener('click', ()=>{
+      tabs.forEach(x=>x.classList.remove('active'));
       t.classList.add('active');
-      scenarios.forEach(s=&gt;s.classList.remove('active'));
+      scenarios.forEach(s=>s.classList.remove('active'));
       document.querySelector('.scenario[data-scenario="'+t.dataset.tab+'"]').classList.add('active');
     });
   });

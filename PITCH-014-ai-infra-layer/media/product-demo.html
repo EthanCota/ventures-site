@@ -129,13 +129,13 @@
   const tabs = [...document.querySelectorAll('.tab')];
   const scenes = [...document.querySelectorAll('.scene')];
   function show(n){
-    tabs.forEach(t=&gt;t.setAttribute('aria-selected', t.dataset.scene===String(n) ? 'true':'false'));
-    scenes.forEach(s=&gt;s.classList.toggle('active', s.dataset.scene===String(n)));
+    tabs.forEach(t=>t.setAttribute('aria-selected', t.dataset.scene===String(n) ? 'true':'false'));
+    scenes.forEach(s=>s.classList.toggle('active', s.dataset.scene===String(n)));
   }
-  tabs.forEach(t=&gt;t.addEventListener('click', ()=&gt;show(t.dataset.scene)));
+  tabs.forEach(t=>t.addEventListener('click', ()=>show(t.dataset.scene)));
   let cur=1;
-  document.getElementById('nextBtn').addEventListener('click', ()=&gt;{ cur = cur&gt;=3?1:cur+1; show(cur); });
-  document.getElementById('prevBtn').addEventListener('click', ()=&gt;{ cur = cur&lt;=1?3:cur-1; show(cur); });
+  document.getElementById('nextBtn').addEventListener('click', ()=>{ cur = cur>=3?1:cur+1; show(cur); });
+  document.getElementById('prevBtn').addEventListener('click', ()=>{ cur = cur<=1?3:cur-1; show(cur); });
 </script>
 </body>
 </html>

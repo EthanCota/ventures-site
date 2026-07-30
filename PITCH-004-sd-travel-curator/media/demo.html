@@ -267,28 +267,28 @@
   (function(){
     const tabs = document.querySelectorAll('.tab');
     const scenarios = { a: document.getElementById('scenario-a'), b: document.getElementById('scenario-b'), c: document.getElementById('scenario-c') };
-    tabs.forEach(t =&gt; t.addEventListener('click', () =&gt; {
-      tabs.forEach(x =&gt; x.setAttribute('aria-selected','false'));
+    tabs.forEach(t => t.addEventListener('click', () => {
+      tabs.forEach(x => x.setAttribute('aria-selected','false'));
       t.setAttribute('aria-selected','true');
-      Object.values(scenarios).forEach(s =&gt; s.classList.remove('active'));
+      Object.values(scenarios).forEach(s => s.classList.remove('active'));
       scenarios[t.dataset.scenario].classList.add('active');
     }));
 
-    document.querySelectorAll('.scenario').forEach(sc =&gt; {
+    document.querySelectorAll('.scenario').forEach(sc => {
       let step = 0;
       const panels = sc.querySelectorAll('.panel');
       const dots = sc.querySelectorAll('.dot');
       const prevBtn = sc.querySelector('[data-prev]');
       const nextBtn = sc.querySelector('[data-next]');
       function render(){
-        panels.forEach((p,i) =&gt; p.style.display = (i===step ? '' : 'none'));
-        dots.forEach((d,i) =&gt; d.classList.toggle('on', i===step));
+        panels.forEach((p,i) => p.style.display = (i===step ? '' : 'none'));
+        dots.forEach((d,i) => d.classList.toggle('on', i===step));
         prevBtn.disabled = step === 0;
         nextBtn.textContent = step === panels.length-1 ? 'Restart ↻' : 'Next →';
       }
-      prevBtn.addEventListener('click', () =&gt; { if(step&gt;0){ step--; render(); }});
-      nextBtn.addEventListener('click', () =&gt; {
-        if(step &lt; panels.length-1){ step++; } else { step = 0; }
+      prevBtn.addEventListener('click', () => { if(step>0){ step--; render(); }});
+      nextBtn.addEventListener('click', () => {
+        if(step < panels.length-1){ step++; } else { step = 0; }
         render();
       });
       render();

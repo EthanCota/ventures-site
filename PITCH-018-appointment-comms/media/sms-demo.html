@@ -11,6 +11,7 @@
     --brand:#c8622e; --brand-deep:#9c481d;
     --bubble-in:#eef0ee; --bubble-out:#2a78d6; --bubble-out-ink:#ffffff;
     --sim:#c98500;
+    --good:#14532d; --good-ink:#ffffff;
   }
   @media (prefers-color-scheme: dark){
     :root:where(:not([data-theme="light"])){
@@ -18,6 +19,7 @@
       --bg:#161310; --panel:#1e1a15; --ink:#f5efe4; --ink-2:#cdc0af; --line:#3a3126;
       --brand:#e0854f; --brand-deep:#f0a36c;
       --bubble-in:#2c2721; --bubble-out:#3987e5; --bubble-out-ink:#ffffff;
+      --good:#166534; --good-ink:#ffffff;
     }
   }
   :root[data-theme="dark"]{
@@ -25,6 +27,7 @@
     --bg:#161310; --panel:#1e1a15; --ink:#f5efe4; --ink-2:#cdc0af; --line:#3a3126;
     --brand:#e0854f; --brand-deep:#f0a36c;
     --bubble-in:#2c2721; --bubble-out:#3987e5; --bubble-out-ink:#ffffff;
+    --good:#166534; --good-ink:#ffffff;
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:ui-sans-serif,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
@@ -39,8 +42,9 @@
   .tab{
     border:1px solid var(--line);background:var(--panel);color:var(--ink);
     padding:8px 12px;border-radius:999px;font-size:12.5px;font-weight:700;cursor:pointer;
+    transition:background-color .14s ease, color .14s ease, border-color .14s ease, transform .14s ease;
   }
-  .tab.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .tab.active{background:var(--brand);color:#fff;border-color:var(--brand);transform:scale(1.04)}
   .phone{
     background:var(--panel);border:1px solid var(--line);border-radius:20px;
     padding:16px;min-height:420px;display:flex;flex-direction:column;gap:10px;
@@ -57,20 +61,33 @@
   button.nav{
     border:1px solid var(--line);background:var(--panel);color:var(--ink);
     padding:9px 16px;border-radius:9px;font-weight:700;font-size:13.5px;cursor:pointer;
+    transition:background-color .14s ease, border-color .14s ease, transform .14s ease;
   }
+  button.nav:hover:not(:disabled){border-color:var(--brand);transform:translateY(-1px)}
   button.nav:disabled{opacity:.4;cursor:default}
   .progress{font-size:12.5px;color:var(--ink-2)}
   .fadein{animation:fadein .25s ease}
   @keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
   .caption{font-size:12.5px;color:var(--ink-2);margin-top:10px;min-height:32px}
+  .optout-badge{
+    display:inline-block;margin-top:8px;font-weight:800;font-size:11.5px;letter-spacing:.03em;
+    color:var(--good-ink);background:var(--good);padding:5px 11px;border-radius:999px;
+  }
+  #replayBtn{display:none}
+
+  
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important}
+  }
 </style>
 </head>
 <body><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
 
-<div class="wrap">
+<div class="wrap" id="demoRoot">
   <h1>Chairside — sample SMS threads</h1>
-  <p class="sub">Three scripted scenarios. Every message below is illustrative, plausibility-bounded
-    against researched no-show/consent figures — not a real conversation.</p>
+  <p class="sub">Four scripted scenarios, playing automatically below. Every message is
+    illustrative, plausibility-bounded against researched no-show/consent figures — not a real
+    conversation. Hover, focus, or touch the demo any time to pause it.</p>
 
   <div class="tabs" id="tabs"></div>
 
@@ -80,6 +97,7 @@
     <button class="nav" id="prevBtn">← Back</button>
     <span class="progress" id="progress"></span>
     <button class="nav" id="nextBtn">Next →</button>
+    <button class="nav" id="replayBtn">↻ Replay</button>
   </div>
   <div class="caption" id="caption"></div>
 </div>
@@ -90,7 +108,7 @@ const scenarios = [
     name: "Confirm → reschedule",
     caption: "A booking confirmation that turns into a two-way reschedule — Starter tier handles the yes/no, Pro handles the negotiation.",
     messages: [
-      {who:"out", text:"Hi Marcus, this is Fade &amp; Line Barbershop — you're booked for a haircut Thu 7/31 at 2:00pm with James. Reply C to confirm or R to reschedule.", meta:"Sent automatically at booking · SIMULATED"},
+      {who:"out", text:"Hi Marcus, this is Fade & Line Barbershop — you're booked for a haircut Thu 7/31 at 2:00pm with James. Reply C to confirm or R to reschedule.", meta:"Sent automatically at booking · SIMULATED"},
       {who:"in", text:"R"},
       {who:"out", text:"No problem. James has openings Thu 4:30pm or Fri 11:00am — reply 1 or 2, or tell us a day/time that works.", meta:"SIMULATED"},
       {who:"in", text:"Fri 11 works better"},
@@ -117,6 +135,15 @@ const scenarios = [
       {who:"in", text:"Yes please, morning if possible"},
       {who:"out", text:"Booked — Fri 8/16, 9:00am. See you then!", meta:"SIMULATED"}
     ]
+  },
+  {
+    name: "Opt-out (STOP)",
+    caption: "A client texts STOP and gets an immediate, automatic opt-out confirmation — the same consent handling described above, honored well inside the FCC's 10-business-day window.",
+    messages: [
+      {who:"out", text:"Reminder: your color + cut at Fade & Line Barbershop is tomorrow, 8/9 at 3:30pm with James. Reply C to confirm or STOP to opt out.", meta:"Sent automatically before appointment · SIMULATED"},
+      {who:"in", text:"STOP"},
+      {who:"out", text:"You're unsubscribed from Fade & Line Barbershop texts. You won't receive any more messages. Reply START to opt back in.", meta:"Processed immediately · SIMULATED", badge:"✓ Opted out — no further texts sent"}
+    ]
   }
 ];
 
@@ -129,20 +156,22 @@ const progressEl = document.getElementById('progress');
 const captionEl = document.getElementById('caption');
 const prevBtn = document.getElementById('prevBtn');
 const nextBtn = document.getElementById('nextBtn');
+const replayBtn = document.getElementById('replayBtn');
+const demoRoot = document.getElementById('demoRoot');
 
-scenarios.forEach((s, i) =&gt; {
+scenarios.forEach((s, i) => {
   const b = document.createElement('button');
   b.className = 'tab' + (i === 0 ? ' active' : '');
   b.textContent = s.name;
-  b.onclick = () =&gt; { scenarioIdx = i; msgIdx = 1; render(); };
+  b.onclick = () => { stopAutoplayForManual(); scenarioIdx = i; msgIdx = 1; render(); };
   tabsEl.appendChild(b);
 });
 
 function render(){
   const scenario = scenarios[scenarioIdx];
-  [...tabsEl.children].forEach((b, i) =&gt; b.classList.toggle('active', i === scenarioIdx));
-  phoneEl.innerHTML = '&lt;div class="scene-label"&gt;' + scenario.name + '&lt;/div&gt;';
-  scenario.messages.slice(0, msgIdx).forEach(m =&gt; {
+  [...tabsEl.children].forEach((b, i) => b.classList.toggle('active', i === scenarioIdx));
+  phoneEl.innerHTML = '<div class="scene-label">' + scenario.name + '</div>';
+  scenario.messages.slice(0, msgIdx).forEach(m => {
     const row = document.createElement('div');
     row.className = 'row ' + m.who + ' fadein';
     const bubble = document.createElement('div');
@@ -156,36 +185,111 @@ function render(){
       meta.textContent = m.meta;
       phoneEl.appendChild(meta);
     }
+    if (m.badge){
+      const badge = document.createElement('div');
+      badge.className = 'optout-badge fadein';
+      badge.textContent = m.badge;
+      phoneEl.appendChild(badge);
+    }
   });
   progressEl.textContent = msgIdx + ' / ' + scenario.messages.length;
   captionEl.textContent = scenario.caption;
-  prevBtn.disabled = (scenarioIdx === 0 &amp;&amp; msgIdx &lt;= 1);
-  nextBtn.disabled = (scenarioIdx === scenarios.length - 1 &amp;&amp; msgIdx &gt;= scenario.messages.length);
+  prevBtn.disabled = (scenarioIdx === 0 && msgIdx <= 1);
+  nextBtn.disabled = (scenarioIdx === scenarios.length - 1 && msgIdx >= scenario.messages.length);
   phoneEl.scrollTop = phoneEl.scrollHeight;
 }
 
-nextBtn.onclick = () =&gt; {
+function advanceOne(){
   const scenario = scenarios[scenarioIdx];
-  if (msgIdx &lt; scenario.messages.length){
+  if (msgIdx < scenario.messages.length){
     msgIdx++;
-  } else if (scenarioIdx &lt; scenarios.length - 1){
+    return true;
+  } else if (scenarioIdx < scenarios.length - 1){
     scenarioIdx++;
     msgIdx = 1;
+    return true;
   }
-  render();
-};
-prevBtn.onclick = () =&gt; {
-  if (msgIdx &gt; 1){
+  return false;
+}
+function retreatOne(){
+  if (msgIdx > 1){
     msgIdx--;
-  } else if (scenarioIdx &gt; 0){
+  } else if (scenarioIdx > 0){
     scenarioIdx--;
     msgIdx = scenarios[scenarioIdx].messages.length;
   }
+}
+
+nextBtn.onclick = () => { stopAutoplayForManual(); advanceOne(); render(); };
+prevBtn.onclick = () => { stopAutoplayForManual(); retreatOne(); render(); };
+replayBtn.onclick = () => { scenarioIdx = 0; msgIdx = 1; render(); startAutoplay(); };
+
+/* ── reusable autoplay pattern (shared conventions §1-2, DEMO-WAVE-PLAN.md) ──
+   Auto-advances through every scenario/message at 2.6-3.5s/step, scaled by the
+   message just shown so short replies don't linger and long ones aren't rushed.
+   Pauses on hover/focus/touch + tab visibility; plays once per page view, then
+   hands off to a Replay affordance. Fully gated on prefers-reduced-motion so a
+   reduced-motion user gets exactly today's manual-only experience. Lift this
+   block (renaming DOM ids as needed) for the other 14 sites' demo artifacts. */
+const reducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+let autoplayActive = false;
+let autoplayPaused = false;
+let autoplayTimer = null;
+
+function stepDelay(text){
+  const len = (text || '').length;
+  return Math.max(2600, Math.min(3500, 2600 + Math.max(0, len - 60) * 12));
+}
+function scheduleNext(){
+  clearTimeout(autoplayTimer);
+  if (!autoplayActive || autoplayPaused) return;
+  const scenario = scenarios[scenarioIdx];
+  const lastText = scenario.messages[msgIdx - 1] ? scenario.messages[msgIdx - 1].text : '';
+  autoplayTimer = setTimeout(tick, stepDelay(lastText));
+}
+function tick(){
+  if (!autoplayActive || autoplayPaused) return;
+  const advanced = advanceOne();
   render();
-};
+  if (advanced){
+    scheduleNext();
+  } else {
+    finishAutoplay();
+  }
+}
+function finishAutoplay(){
+  autoplayActive = false;
+  clearTimeout(autoplayTimer);
+  replayBtn.style.display = 'inline-flex';
+}
+function startAutoplay(){
+  if (reducedMotion) return; // manual-only for reduced-motion users, never worse
+  autoplayActive = true;
+  autoplayPaused = false;
+  replayBtn.style.display = 'none';
+  scheduleNext();
+}
+function stopAutoplayForManual(){
+  autoplayActive = false;
+  clearTimeout(autoplayTimer);
+}
+function pauseAutoplay(){ autoplayPaused = true; clearTimeout(autoplayTimer); }
+function resumeAutoplay(){
+  if (!autoplayActive) return;
+  autoplayPaused = false;
+  scheduleNext();
+}
+
+['mouseenter', 'focusin'].forEach(evt => demoRoot.addEventListener(evt, pauseAutoplay));
+['mouseleave', 'focusout'].forEach(evt => demoRoot.addEventListener(evt, resumeAutoplay));
+demoRoot.addEventListener('touchstart', pauseAutoplay, {passive: true});
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) pauseAutoplay(); else resumeAutoplay();
+});
 
 msgIdx = 1;
 render();
+startAutoplay();
 </script>
 </body>
 </html>
