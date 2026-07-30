@@ -1,3 +1,6 @@
+<!doctype html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
 <title>Beachhead Intel — territory query demo (simulated)</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -5,21 +8,21 @@
   :root {
     color-scheme: light;
     --surface-0: #f7f4ea; --surface-1: #fffdf6; --surface-2: #eee8d6;
-    --ink-primary: #211f16; --ink-secondary: #55503e; --ink-muted: #837c64;
+    --ink-primary: #211f16; --ink-secondary: #55503e; --ink-muted: #655f49;
     --line: #ddd4b8; --brass: #9c6a1d; --olive: #4b5a2c; --rust: #8f3220; --rust-strong: #6f2618;
   }
   @media (prefers-color-scheme: dark) {
     :root:where(:not([data-theme="light"])) {
       color-scheme: dark;
       --surface-0: #18170f; --surface-1: #211f16; --surface-2: #2b281b;
-      --ink-primary: #f3efe0; --ink-secondary: #cbc3a4; --ink-muted: #948c6d;
+      --ink-primary: #f3efe0; --ink-secondary: #cbc3a4; --ink-muted: #9d9575;
       --line: #40402c; --brass: #d9a13e; --olive: #8fae4e; --rust: #d97a5f; --rust-strong: #e8917a;
     }
   }
   :root[data-theme="dark"] {
     color-scheme: dark;
     --surface-0: #18170f; --surface-1: #211f16; --surface-2: #2b281b;
-    --ink-primary: #f3efe0; --ink-secondary: #cbc3a4; --ink-muted: #948c6d;
+    --ink-primary: #f3efe0; --ink-secondary: #cbc3a4; --ink-muted: #9d9575;
     --line: #40402c; --brass: #d9a13e; --olive: #8fae4e; --rust: #d97a5f; --rust-strong: #e8917a;
   }
   * { box-sizing: border-box; }
@@ -32,13 +35,16 @@
   .concept-banner { background: var(--rust); border-bottom: 2px solid var(--rust-strong); }
   .sim-banner { top: 38px; background: var(--brass); color: #241a06; border-bottom: 2px solid #7c5316; }
   h1 { font-size: 1.4rem; margin: 30px 0 4px; }
-  .sub { color: var(--ink-muted); margin-bottom: 26px; font-size: 0.9rem; }
+  .sub { color: var(--ink-muted); margin-bottom: 22px; font-size: 0.9rem; }
   .query-bar {
     display: flex; gap: 8px; background: var(--surface-1); border: 1px solid var(--line);
     border-radius: 8px; padding: 12px 14px; margin-bottom: 22px; font-family: monospace;
   }
-  .query-bar input { flex:1; border:none; background:transparent; color: var(--ink-primary); font-family: monospace; font-size: 0.95rem; }
-  .query-bar button { background: var(--olive); color: #fbf9ef; border:none; border-radius: 6px; padding: 6px 14px; font-weight:700; cursor:pointer; }
+  .query-bar input { flex:1; min-width:0; border:none; background:transparent; color: var(--ink-primary); font-family: monospace; font-size: 0.95rem; }
+  .table-wrap { overflow-x: auto; }
+  .query-bar button { background: var(--olive); color: #fbf9ef; border:none; border-radius: 6px; padding: 6px 14px; font-weight:700; cursor:pointer; min-width: 76px; transition: background-color 0.14s ease, transform 0.14s ease; }
+  .query-bar button:disabled { opacity: 0.75; cursor: default; }
+  .scan-status { font-size: 0.78rem; color: var(--ink-muted); min-height: 1.2em; margin: -8px 0 14px; font-family: monospace; }
   table { width: 100%; border-collapse: collapse; font-size: 0.86rem; background: var(--surface-1); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
   th, td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; }
   th { background: var(--surface-2); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--ink-muted); }
@@ -46,47 +52,72 @@
   .badge { display:inline-block; font-size:0.68rem; font-weight:700; padding:2px 7px; border-radius: 4px; background: var(--surface-2); color: var(--ink-secondary); margin: 1px 2px 1px 0; }
   .badge.rank1 { background: rgba(75,90,44,0.2); color: var(--olive); }
   .illus-note { margin-top: 22px; font-size: 0.82rem; color: var(--ink-muted); border-top: 1px dashed var(--line); padding-top: 14px; }
-</style><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
+  .result-row { opacity: 0; transform: translateY(8px); transition: opacity 0.3s ease, transform 0.3s ease; }
+  .result-row.shown { opacity: 1; transform: translateY(0); }
+  .note-block { opacity: 0; transform: translateY(8px); transition: opacity 0.3s ease, transform 0.3s ease; }
+  .note-block.shown { opacity: 1; transform: translateY(0); }
+  .controls { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 22px; flex-wrap: wrap; }
+  button.nav {
+    border: 1px solid var(--line); background: var(--surface-1); color: var(--ink-primary);
+    padding: 9px 16px; border-radius: 8px; font-weight: 700; font-size: 0.83rem; cursor: pointer;
+    transition: background-color 0.14s ease, border-color 0.14s ease, transform 0.14s ease;
+  }
+  button.nav:hover:not(:disabled) { border-color: var(--olive); transform: translateY(-1px); }
+  button.nav:disabled { opacity: 0.4; cursor: default; }
+  .progress { font-size: 0.78rem; color: var(--ink-muted); font-family: monospace; }
+  #replayBtn { display: none; }
 
+  
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important; animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important; scroll-behavior: auto !important;
+    }
+  }
+</style>
+</head>
+<body><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
 
 <div class="sim-banner">SIMULATED PRODUCT WALKTHROUGH — scripted, not a live system</div>
 
-<div class="wrap">
+<div class="wrap" id="demoRoot">
   <h1>Territory query → ranked prospect list</h1>
   <p class="sub">Scenario: a territory seller types a plain-language query for a city &amp; vertical and gets back a
-    ranked, capability-tagged roster. All rows below are an <strong>illustrative example</strong> — not a real
-    query result.</p>
+    ranked, capability-tagged roster. All rows below are an <strong>illustrative example</strong> — not a
+    real query result. Playing automatically below; hover, focus, or touch the demo any time to pause it.</p>
 
   <div class="query-bar">
     <span style="color:var(--ink-muted)">&gt;</span>
     <input value="espresso-machine service companies, Portland OR — rank by likely-to-buy" readonly>
-    <button>Scan</button>
+    <button id="scanBtn" disabled>Scan</button>
   </div>
+  <div class="scan-status" id="scanStatus"> </div>
 
+  <div class="table-wrap">
   <table>
     <thead>
       <tr><th>Business</th><th>Capability tags</th><th>Signal</th><th>Buyer-intel note</th></tr>
     </thead>
-    <tbody>
-      <tr>
+    <tbody id="resultsBody">
+      <tr class="result-row" data-row="0">
         <td>Willamette Coffee Equip. Co.<br><span style="color:var(--ink-muted);font-size:0.78rem;">SE Portland</span></td>
         <td><span class="badge rank1">espresso repair</span><span class="badge">commercial kitchen</span></td>
         <td>Website mentions service on 3 named brands</td>
         <td>Runs a competitor brand primarily — displacement candidate</td>
       </tr>
-      <tr>
+      <tr class="result-row" data-row="1">
         <td>Cascade Cafe Supply<br><span style="color:var(--ink-muted);font-size:0.78rem;">NE Portland</span></td>
         <td><span class="badge rank1">espresso repair</span><span class="badge">wholesale</span></td>
         <td>State registry: active, registered 2019</td>
         <td>No equipment-brand mention found — addressable, unqualified on brand</td>
       </tr>
-      <tr>
+      <tr class="result-row" data-row="2">
         <td>Rose City Roasters Service<br><span style="color:var(--ink-muted);font-size:0.78rem;">Beaverton</span></td>
         <td><span class="badge">espresso repair</span><span class="badge">roasting equip</span></td>
         <td>Site down / unreachable — registry-only match</td>
         <td>Capability inferred from registry SIC code, not website-confirmed</td>
       </tr>
-      <tr>
+      <tr class="result-row" data-row="3">
         <td>McMinnville Cafe Tech<br><span style="color:var(--ink-muted);font-size:0.78rem;">McMinnville — edge of metro</span></td>
         <td><span class="badge rank1">espresso repair</span></td>
         <td>City-by-city registry sweep catch (missed by 30-mile radius sweep)</td>
@@ -94,10 +125,122 @@
       </tr>
     </tbody>
   </table>
+  </div>
 
-  <p class="illus-note"><strong>Illustrative example.</strong> Business names, addresses, and signal notes above are
+  <p class="illus-note note-block" id="illusNote"><strong>Illustrative example.</strong> Business names, addresses, and signal notes above are
     synthetic and constructed to demonstrate the output shape — not real businesses. Row count, tag vocabulary,
     and the “edge of metro” catch pattern are plausibility-bounded against the real Portland proof build
     (1,463 businesses, 4.9% measured brand-detection yield, and the documented radius-sweep blind spot) but this
     specific query and its results were never run.</p>
+
+  <div class="controls">
+    <button class="nav" id="prevBtn">← Back</button>
+    <span class="progress" id="progressEl"></span>
+    <button class="nav" id="nextBtn">Next →</button>
+    <button class="nav" id="replayBtn">↻ Replay</button>
+  </div>
 </div>
+
+<script>
+/* ── reveal-step model ──
+   Step 0: query bar only, "Scan" idle.
+   Step 1: "Scanning…" status, Scan button shows busy state.
+   Steps 2-5: rows 0..3 revealed one at a time.
+   Step 6: illustrative-example note revealed.
+   Lifted structure from the reusable autoplay/etiquette pattern used across the
+   fleet's demo artifacts (see PITCH-018 media/sms-demo.html) — same pause/replay/
+   reduced-motion gating, adapted here for a stagger-reveal instead of a chat log. */
+const rows = [...document.querySelectorAll('.result-row')];
+const TOTAL_STEPS = 2 + rows.length + 1; // idle+scanning, N rows, note
+let step = 0;
+
+const scanBtn = document.getElementById('scanBtn');
+const scanStatus = document.getElementById('scanStatus');
+const illusNote = document.getElementById('illusNote');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const replayBtn = document.getElementById('replayBtn');
+const progressEl = document.getElementById('progressEl');
+const demoRoot = document.getElementById('demoRoot');
+
+function render(){
+  scanBtn.classList.toggle('scanning', step >= 1);
+  scanBtn.textContent = step >= 1 ? 'Scan…' : 'Scan';
+  scanStatus.textContent = step === 1
+    ? 'Scanning registries + web signals…'
+    : (step > 1 ? 'Scan complete — ' + Math.min(step - 1, rows.length) + ' of ' + rows.length + ' matches ranked' : ' ');
+  rows.forEach((row, i) => row.classList.toggle('shown', step >= i + 2));
+  illusNote.classList.toggle('shown', step >= TOTAL_STEPS - 1);
+  progressEl.textContent = (step + 1) + ' / ' + TOTAL_STEPS;
+  prevBtn.disabled = step <= 0;
+  nextBtn.disabled = step >= TOTAL_STEPS - 1;
+}
+
+function advanceOne(){
+  if (step < TOTAL_STEPS - 1){ step++; return true; }
+  return false;
+}
+function retreatOne(){ if (step > 0) step--; }
+
+nextBtn.onclick = () => { stopAutoplayForManual(); advanceOne(); render(); };
+prevBtn.onclick = () => { stopAutoplayForManual(); retreatOne(); render(); };
+replayBtn.onclick = () => { replayBtn.blur(); step = 0; render(); startAutoplay(); };
+
+/* ── reusable autoplay pattern (shared conventions §1-2, DEMO-WAVE-PLAN.md) ── */
+const reducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+let autoplayActive = false;
+let autoplayPaused = false;
+let autoplayTimer = null;
+
+function stepDelay(){ return 3000; } // flat 3.0s/step — mid-band of 2.6-3.5s
+function scheduleNext(){
+  clearTimeout(autoplayTimer);
+  if (!autoplayActive || autoplayPaused) return;
+  autoplayTimer = setTimeout(tick, stepDelay());
+}
+function tick(){
+  if (!autoplayActive || autoplayPaused) return;
+  const advanced = advanceOne();
+  render();
+  if (advanced) scheduleNext(); else finishAutoplay();
+}
+function finishAutoplay(){
+  autoplayActive = false;
+  clearTimeout(autoplayTimer);
+  replayBtn.style.display = 'inline-flex';
+}
+function startAutoplay(){
+  if (reducedMotion) return; // manual-only for reduced-motion users, never worse
+  autoplayActive = true;
+  autoplayPaused = false;
+  replayBtn.style.display = 'none';
+  scheduleNext();
+}
+function stopAutoplayForManual(){
+  autoplayActive = false;
+  clearTimeout(autoplayTimer);
+}
+function pauseAutoplay(){ autoplayPaused = true; clearTimeout(autoplayTimer); }
+function resumeAutoplay(){
+  if (!autoplayActive) return;
+  autoplayPaused = false;
+  scheduleNext();
+}
+
+['mouseenter', 'focusin'].forEach(evt => demoRoot.addEventListener(evt, pauseAutoplay));
+['mouseleave', 'focusout'].forEach(evt => demoRoot.addEventListener(evt, resumeAutoplay));
+demoRoot.addEventListener('touchstart', pauseAutoplay, {passive: true});
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) pauseAutoplay(); else resumeAutoplay();
+});
+
+/* under reduced-motion, jump to final step so all content is visible from
+   first paint (DEMO-WAVE-PLAN.md Convention 3: "render at final value/opacity
+   from first paint" — the CSS kill-switch makes the class-add instant, but the
+   initial opacity:0 state would persist until manual nav without this jump). */
+if (reducedMotion) step = TOTAL_STEPS - 1;
+render();
+startAutoplay();
+</script>
+</body>
+</html>

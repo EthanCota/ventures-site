@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Harborcite — Simulated audit + citation demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+  --display-font: Rockwell, 'Rockwell Nova', 'Roboto Slab', 'DejaVu Serif', 'Sitka Small', serif;
+  --body-font: system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --paper:#F7F1E3; --paper-2:#EEE1C2; --card:#FFFFFF;
+  --ink:#17262A; --ink-2:#3A4F53; --muted:#53656A; --border:#D9CBA6;
+  --accent:#08786D; --accent-dark:#055B53; --accent-ink:#FFFFFF;
+  --warn:#7A4E10; --danger:#A8431F; --danger-ink:#FFFFFF;
+  --band-bg:#17262A; --band-fg:#F7F1E3; --warn-on-band:#E7B15C;
+  --tag-sourced-bg:#DCEFEC; --tag-sourced-fg:#0A5A52;
+  --tag-derived-bg:#EFE1BE; --tag-derived-fg:#5C4B1E;
+  --tag-miss-bg:#F8DED2; --tag-miss-fg:#7A2E12;
+}
+:root[data-theme="dark"]{
+  --paper:#101B19; --paper-2:#172723; --card:#1B2C29;
+  --ink:#EEF4F1; --ink-2:#C4D3CE; --muted:#9DB1AC; --border:#33473F;
+  --accent:#57DFCB; --accent-dark:#3BBFAC; --accent-ink:#08201C;
+  --warn:#E7AC63; --danger:#F0916D; --danger-ink:#2B1208;
+  --band-bg:#0A1614; --band-fg:#EEF4F1; --warn-on-band:#F0C179;
+  --tag-sourced-bg:#123832; --tag-sourced-fg:#8CEBDA;
+  --tag-derived-bg:#3B331B; --tag-derived-fg:#E9D8A6;
+  --tag-miss-bg:#3A2013; --tag-miss-fg:#F5B79C;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#101B19; --paper-2:#172723; --card:#1B2C29;
+    --ink:#EEF4F1; --ink-2:#C4D3CE; --muted:#9DB1AC; --border:#33473F;
+    --accent:#57DFCB; --accent-dark:#3BBFAC; --accent-ink:#08201C;
+    --warn:#E7AC63; --danger:#F0916D; --danger-ink:#2B1208;
+    --band-bg:#0A1614; --band-fg:#EEF4F1; --warn-on-band:#F0C179;
+    --tag-sourced-bg:#123832; --tag-sourced-fg:#8CEBDA;
+    --tag-derived-bg:#3B331B; --tag-derived-fg:#E9D8A6;
+    --tag-miss-bg:#3A2013; --tag-miss-fg:#F5B79C;
+  }
+}
+:root[data-theme="light"]{
+  --paper:#F7F1E3; --paper-2:#EEE1C2; --card:#FFFFFF;
+  --ink:#17262A; --ink-2:#3A4F53; --muted:#53656A; --border:#D9CBA6;
+  --accent:#08786D; --accent-dark:#055B53; --accent-ink:#FFFFFF;
+  --warn:#7A4E10; --danger:#A8431F; --danger-ink:#FFFFFF;
+  --band-bg:#17262A; --band-fg:#F7F1E3; --warn-on-band:#E7B15C;
+  --tag-sourced-bg:#DCEFEC; --tag-sourced-fg:#0A5A52;
+  --tag-derived-bg:#EFE1BE; --tag-derived-fg:#5C4B1E;
+  --tag-miss-bg:#F8DED2; --tag-miss-fg:#7A2E12;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+html{overflow-x:hidden;}
+body{
+  font-family:var(--body-font); background:var(--paper); color:var(--ink);
+  line-height:1.5; overflow-x:hidden; max-width:100vw;
+}
+:focus-visible{outline:3px solid var(--accent-dark); outline-offset:2px;}
+
+.banner{
+  background:var(--band-bg); color:var(--band-fg); text-align:center;
+  font:700 12.5px/1.4 var(--body-font); padding:9px 12px;
+}
+.illustrative{
+  background:var(--tag-derived-bg); color:var(--tag-derived-fg); text-align:center;
+  font:600 12px/1.4 var(--body-font); padding:8px 12px;
+}
+
+#demoRoot{max-width:760px; margin:0 auto; padding:22px 18px 26px;}
+
+.stepnote{
+  font:800 11.5px/1 var(--body-font); text-transform:uppercase; letter-spacing:.05em;
+  color:var(--accent-dark); margin:0 0 14px;
+}
+
+.phase{transition:opacity .35s ease, transform .35s ease;}
+.phase-hidden{opacity:0; transform:translateY(8px); pointer-events:none; height:0; overflow:hidden;}
+
+h3.demo-h{font-family:var(--display-font); font-size:16px; margin:0 0 4px; font-weight:700;}
+p.demo-sub{color:var(--ink-2); font-size:12.5px; margin:0 0 16px;}
+
+.score-row{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-bottom:6px;}
+.score-card{
+  background:var(--card); border:1px solid var(--border); border-radius:10px;
+  padding:14px 10px; text-align:center; min-width:0;
+}
+.score-card .num{
+  font-family:var(--display-font); font-weight:800; font-size:clamp(15px,5vw,22px); color:var(--danger);
+  font-variant-numeric:tabular-nums; overflow-wrap:anywhere; white-space:nowrap;
+}
+.score-card .label{font-size:11px; color:var(--muted); margin-top:4px; line-height:1.3;}
+
+.query{font-size:12.5px; color:var(--muted); font-style:italic; margin:0 0 12px;}
+
+.assistant-grid{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-bottom:12px;}
+@media (max-width:620px){ .assistant-grid{grid-template-columns:1fr;} }
+.assistant-card{
+  background:var(--card); border:1px solid var(--border); border-radius:10px;
+  overflow:hidden; min-width:0; display:flex; flex-direction:column;
+}
+.a-head{
+  padding:8px 12px; font:800 11px/1 var(--body-font); text-transform:uppercase;
+  letter-spacing:.04em; color:var(--ink-2); border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between; gap:8px;
+}
+.a-status{
+  font:800 10px/1 var(--body-font); text-transform:uppercase; letter-spacing:.03em;
+  padding:3px 7px; border-radius:5px; white-space:nowrap;
+  background:var(--tag-miss-bg); color:var(--tag-miss-fg);
+  transition:background-color .3s ease, color .3s ease;
+}
+.show-after .a-status{background:var(--tag-sourced-bg); color:var(--tag-sourced-fg);}
+.a-body{
+  display:grid; padding:12px; font-size:12.5px; color:var(--ink-2); line-height:1.55;
+}
+.a-body p{grid-area:1/1; margin:0; transition:opacity .4s ease;}
+.a-body .after-text{opacity:0;}
+.show-after .a-body .before-text{opacity:0;}
+.show-after .a-body .after-text{opacity:1;}
+.a-body .named{
+  background:rgba(8,120,109,.16); border-radius:3px; padding:0 3px; font-weight:700; color:var(--ink);
+}
+:root[data-theme="dark"] .a-body .named,
+@media (prefers-color-scheme:dark){.a-body .named{background:rgba(87,223,203,.2);}}
+
+.footnote{
+  font-size:11.5px; color:var(--muted); border-top:1px dashed var(--border);
+  padding-top:12px; margin-top:4px; line-height:1.55;
+}
+
+.controls{
+  display:flex; align-items:center; gap:10px; margin-top:18px; flex-wrap:wrap;
+}
+.controls button{
+  font:800 12.5px/1 var(--body-font); padding:9px 14px; border-radius:7px;
+  border:2px solid var(--ink); background:transparent; color:var(--ink);
+  cursor:pointer; transition:background-color .15s ease, border-color .15s ease, color .15s ease;
+  min-height:38px;
+}
+.controls button:hover{border-color:var(--accent-dark); color:var(--accent-dark);}
+.controls button:disabled{opacity:.45; cursor:default;}
+.controls button:disabled:hover{border-color:var(--ink); color:var(--ink);}
+#replayBtn{border-color:var(--accent); background:var(--accent); color:var(--accent-ink);}
+#replayBtn:hover{background:var(--accent-dark); border-color:var(--accent-dark); color:var(--accent-ink);}
+#progress{
+  font:700 12px/1 var(--body-font); color:var(--muted); margin-left:auto;
+  font-variant-numeric:tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{transition:none !important; animation:none !important;}
+}
+</style>
+</head>
+<body><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
+<div class="banner">SIMULATED — illustrative reconstruction of the audit deliverable</div>
+<div class="illustrative">Not a live scan. No query is sent to ChatGPT, Google, or Perplexity — every number and answer below is invented for a fictional business, shaped by real market research.</div>
+
+<div id="demoRoot">
+  <p class="stepnote" id="stepNote">Step 1 of 3 — running the sample audit…</p>
+
+  <section class="phase" id="phaseAudit">
+    <h3 class="demo-h">Sample audit — Cabrillo Family Dental <em>(fictional business)</em></h3>
+    <p class="demo-sub">Single-location dental practice. No real business by this description was scanned.</p>
+    <div class="score-row">
+      <div class="score-card">
+        <div class="num" data-target="3" data-suffix="/10">0/10</div>
+        <div class="label">Google Business Profile score</div>
+      </div>
+      <div class="score-card">
+        <div class="num" data-target="0" data-suffix="/5">0/5</div>
+        <div class="label">AI-answer citations found</div>
+      </div>
+      <div class="score-card">
+        <div class="num" id="rankNum">—</div>
+        <div class="label">Organic rank, “dentist [city]”</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="phase phase-hidden" id="phaseCards">
+    <h3 class="demo-h">What a missed citation looks like — and what fixing it looks like</h3>
+    <p class="query">Sample query pattern: “best physical therapist near North Park, San Diego”</p>
+    <div class="assistant-grid">
+      <div class="assistant-card">
+        <div class="a-head">ChatGPT <span class="a-status">Not cited</span></div>
+        <div class="a-body">
+          <p class="before-text">“There are several physical therapy clinics in the North Park area. Options include chains like [large regional PT group] and [large regional PT group], which offer sports-injury and post-surgical rehab. You may want to check reviews on Google or Yelp before choosing one.”</p>
+          <p class="after-text">“In North Park, <span class="named">Balboa Mesa Physical Therapy</span> is a well-reviewed, single-location clinic offering sports-injury and post-surgical rehab, known for same-week appointment availability and a manual-therapy focus. Larger regional chains are also available nearby.”</p>
+        </div>
+      </div>
+      <div class="assistant-card">
+        <div class="a-head">Google AI Overview <span class="a-status">Not cited</span></div>
+        <div class="a-body">
+          <p class="before-text">“There are several physical therapy clinics in the North Park area. Options include chains like [large regional PT group] and [large regional PT group], which offer sports-injury and post-surgical rehab. You may want to check reviews on Google or Yelp before choosing one.”</p>
+          <p class="after-text">“In North Park, <span class="named">Balboa Mesa Physical Therapy</span> is a well-reviewed, single-location clinic offering sports-injury and post-surgical rehab, known for same-week appointment availability and a manual-therapy focus. Larger regional chains are also available nearby.”</p>
+        </div>
+      </div>
+      <div class="assistant-card">
+        <div class="a-head">Perplexity <span class="a-status">Not cited</span></div>
+        <div class="a-body">
+          <p class="before-text">“There are several physical therapy clinics in the North Park area. Options include chains like [large regional PT group] and [large regional PT group], which offer sports-injury and post-surgical rehab. You may want to check reviews on Google or Yelp before choosing one.”</p>
+          <p class="after-text">“In North Park, <span class="named">Balboa Mesa Physical Therapy</span> is a well-reviewed, single-location clinic offering sports-injury and post-surgical rehab, known for same-week appointment availability and a manual-therapy focus. Larger regional chains are also available nearby.”</p>
+        </div>
+      </div>
+    </div>
+    <p class="footnote">Both the before and after lines are the same invented illustration used for all three assistants here (see <code>ai-citation-before-after.html</code>) — not three distinct real transcripts, and not a captured screenshot of any real assistant. Plausibility-bounded against RESEARCH.md's findings on how AI answers currently favor larger/chain entities absent a stronger local signal.</p>
+  </section>
+
+  <div class="controls" role="group" aria-label="Demo controls">
+    <button id="prevBtn" type="button">◀ Prev</button>
+    <button id="nextBtn" type="button">Next ▶</button>
+    <button id="replayBtn" type="button" hidden>↻ Replay</button>
+    <span id="progress" aria-live="polite">1 / 3</span>
+  </div>
+</div>
+
+<script>
+(function(){
+  var root = document.getElementById('demoRoot');
+  var phaseAudit = document.getElementById('phaseAudit');
+  var phaseCards = document.getElementById('phaseCards');
+  var stepNote = document.getElementById('stepNote');
+  var progressEl = document.getElementById('progress');
+  var prevBtn = document.getElementById('prevBtn');
+  var nextBtn = document.getElementById('nextBtn');
+  var replayBtn = document.getElementById('replayBtn');
+  var rankEl = document.getElementById('rankNum');
+
+  var STEP_MS = 3200;
+  var step = 0;
+  var timer = null;
+  var holdCount = 0;
+  var finished = false;
+
+  function reduceMotion(){
+    return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  function runCountUp(instant){
+    var nums = document.querySelectorAll('.num[data-target]');
+    for (var i = 0; i < nums.length; i++){
+      (function(el){
+        var target = parseFloat(el.getAttribute('data-target'));
+        var suffix = el.getAttribute('data-suffix') || '';
+        if (instant){ el.textContent = target + suffix; return; }
+        var start = null;
+        var dur = 900;
+        function frame(ts){
+          if (start === null) start = ts;
+          var t = Math.min(1, (ts - start) / dur);
+          var eased = 1 - Math.pow(1 - t, 3);
+          el.textContent = Math.round(eased * target) + suffix;
+          if (t < 1) requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+      })(nums[i]);
+    }
+    if (instant){
+      rankEl.textContent = 'p.2';
+    } else {
+      rankEl.textContent = '…';
+      setTimeout(function(){ rankEl.textContent = 'p.2'; }, 650);
+    }
+  }
+
+  function applyStep(instant){
+    progressEl.textContent = (step + 1) + ' / 3';
+    prevBtn.disabled = (step === 0);
+    if (step === 0){
+      phaseCards.classList.add('phase-hidden');
+      phaseCards.classList.remove('show-after');
+      stepNote.textContent = 'Step 1 of 3 — running the sample audit…';
+      runCountUp(instant);
+    } else if (step === 1){
+      phaseCards.classList.remove('phase-hidden');
+      phaseCards.classList.remove('show-after');
+      stepNote.textContent = 'Step 2 of 3 — before: invisible in AI answers';
+    } else {
+      phaseCards.classList.remove('phase-hidden');
+      phaseCards.classList.add('show-after');
+      stepNote.textContent = 'Step 3 of 3 — after: cited by name';
+    }
+    setStatusLabels(step === 2);
+  }
+
+  function setStatusLabels(cited){
+    var pills = document.querySelectorAll('.a-status');
+    for (var i = 0; i < pills.length; i++){
+      pills[i].textContent = cited ? 'Cited' : 'Not cited';
+    }
+  }
+
+  function clearTimer(){
+    if (timer){ clearTimeout(timer); timer = null; }
+  }
+
+  function tick(){
+    if (holdCount > 0){
+      timer = setTimeout(tick, 400);
+      return;
+    }
+    if (step < 2){
+      step++;
+      applyStep(false);
+      if (step === 2){
+        finished = true;
+        replayBtn.hidden = false;
+      } else {
+        timer = setTimeout(tick, STEP_MS);
+      }
+    }
+  }
+
+  function startAutoplay(){
+    clearTimer();
+    if (reduceMotion()) return;
+    timer = setTimeout(tick, STEP_MS);
+  }
+
+  function stopAutoplayForManual(){
+    clearTimer();
+  }
+
+  function hold(){ holdCount++; }
+  function release(){ holdCount = Math.max(0, holdCount - 1); }
+
+  ['mouseenter','focusin','touchstart'].forEach(function(ev){ root.addEventListener(ev, hold); });
+  ['mouseleave','focusout','touchend','touchcancel'].forEach(function(ev){ root.addEventListener(ev, release); });
+  document.addEventListener('visibilitychange', function(){
+    if (document.hidden) hold(); else release();
+  });
+
+  prevBtn.addEventListener('click', function(){
+    stopAutoplayForManual();
+    step = Math.max(0, step - 1);
+    replayBtn.hidden = true;
+    finished = false;
+    applyStep(true);
+  });
+  nextBtn.addEventListener('click', function(){
+    stopAutoplayForManual();
+    step = Math.min(2, step + 1);
+    applyStep(true);
+    if (step === 2){ finished = true; replayBtn.hidden = false; }
+  });
+  replayBtn.addEventListener('click', function(){
+    replayBtn.blur();
+    holdCount = 0;
+    step = 0;
+    finished = false;
+    replayBtn.hidden = true;
+    applyStep(reduceMotion());
+    startAutoplay();
+  });
+
+  applyStep(reduceMotion());
+  startAutoplay();
+})();
+</script>
+</body>
+</html>

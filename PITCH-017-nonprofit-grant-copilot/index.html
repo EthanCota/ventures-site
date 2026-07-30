@@ -34,6 +34,8 @@
   @media (prefers-reduced-motion: reduce){
     *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important; }
   }
+  .reveal-pending{ opacity:0; transform:translateY(10px); }
+  .reveal-visible{ opacity:1; transform:none; transition:opacity .5s ease, transform .5s ease; }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);}
   body{font-family:'Segoe UI',system-ui,'Helvetica Neue',Helvetica,Arial,sans-serif; line-height:1.55; overflow-x:hidden;}
@@ -70,7 +72,7 @@
   nav.toc .toc-label{ text-transform:uppercase; letter-spacing:.08em; font-size:11px; font-weight:700; color:var(--ink-2); margin-bottom:10px; }
   nav.toc ol{ list-style:none; margin:0; padding:0; border-left:2px solid var(--line); }
   nav.toc li{ margin-bottom:2px; }
-  nav.toc a{ display:block; padding:6px 0 6px 14px; color:var(--ink-2); text-decoration:none; border-left:2px solid transparent; margin-left:-2px; }
+  nav.toc a{ display:block; padding:6px 0 6px 14px; color:var(--ink-2); text-decoration:none; border-left:2px solid transparent; margin-left:-2px; transition:color .14s ease, border-color .14s ease; }
   nav.toc a:hover, nav.toc a:focus-visible{ color:var(--ink); border-left-color:var(--accent); }
   @media (max-width:979px){
     nav.toc{ position:static; border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px; background:var(--card); }
@@ -93,21 +95,23 @@
   .summary-box dd{ margin:0; color:var(--ink-2); font-size:15px; }
   .summary-actions{ display:flex; gap:12px; flex-wrap:wrap; padding:0 20px 20px; }
 
-  .btn{ font-family:'Segoe UI',system-ui,sans-serif; font-weight:700; font-size:14.5px; padding:11px 18px; border-radius:6px; border:1.5px solid var(--accent); cursor:pointer; text-decoration:none; display:inline-block; }
+  .btn{ font-family:'Segoe UI',system-ui,sans-serif; font-weight:700; font-size:14.5px; padding:11px 18px; border-radius:6px; border:1.5px solid var(--accent); cursor:pointer; text-decoration:none; display:inline-block; transition:filter .14s ease, transform .14s ease; }
   .btn-primary{ background:var(--accent); color:var(--accent-ink); }
   .btn-ghost{ background:transparent; border-color:var(--line); color:var(--ink); }
-  .btn:hover{ filter:brightness(0.97); }
+  .btn:hover{ filter:brightness(0.97); transform:translateY(-1px); }
 
   
   .icp-list{ list-style:none; margin:20px 0 0; padding:0; display:grid; gap:10px; }
-  .icp-list li{ display:flex; gap:12px; align-items:flex-start; background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:13px 15px; font-size:15px; }
+  .icp-list li{ display:flex; gap:12px; align-items:flex-start; background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:13px 15px; font-size:15px; transition:box-shadow .14s ease, border-color .14s ease; }
+  .icp-list li:hover{ box-shadow:var(--shadow); border-color:var(--accent); }
   .icp-list li .mark{ color:var(--good); font-weight:800; flex:none; }
   .icp-list .not{ opacity:.92; }
   .icp-list .not .mark{ color:var(--danger); }
 
   
   .process{ margin-top:22px; display:grid; gap:14px; }
-  .process .step{ display:grid; grid-template-columns:40px 1fr; gap:16px; background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:16px 18px; }
+  .process .step{ display:grid; grid-template-columns:40px 1fr; gap:16px; background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:16px 18px; transition:box-shadow .14s ease, border-color .14s ease; }
+  .process .step:hover{ box-shadow:var(--shadow); border-color:var(--accent); }
   .process .step .num{ font-weight:800; font-size:16px; color:var(--accent); border:1.5px solid var(--accent); border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center; }
   .process .step h3{ font-size:15.5px; margin-bottom:6px; }
   .process .step p{ color:var(--ink-2); font-size:14.5px; margin-bottom:0; }
@@ -151,7 +155,8 @@
   .demo-links{ display:flex; gap:12px; flex-wrap:wrap; margin-top:14px; }
 
   
-  .faq details{ background:var(--card); border:1px solid var(--line); border-radius:6px; padding:2px 16px; margin-bottom:10px; }
+  .faq details{ background:var(--card); border:1px solid var(--line); border-radius:6px; padding:2px 16px; margin-bottom:10px; transition:box-shadow .14s ease; }
+  .faq details:hover{ box-shadow:var(--shadow); }
   .faq summary{ cursor:pointer; font-weight:700; padding:14px 0; list-style:none; display:flex; justify-content:space-between; gap:12px; align-items:center; font-size:15px; }
   .faq summary::-webkit-details-marker{ display:none; }
   .faq summary::after{ content:"+"; font-size:19px; color:var(--accent); flex:none; }
@@ -415,5 +420,36 @@
 
 
 
+<script>
+(function(){
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduceMotion || !('IntersectionObserver' in window)) return;
+  var selector = [
+    'main.doc-col > section:not(.first) > .eyebrow',
+    'main.doc-col > section:not(.first) > h2',
+    'main.doc-col > section:not(.first) > .lede',
+    'main.doc-col > section:not(.first) > .icp-list',
+    'main.doc-col > section:not(.first) > .process',
+    'main.doc-col > section:not(.first) > .table-scroll',
+    'main.doc-col > section:not(.first) > .setup-note',
+    'main.doc-col > section:not(.first) > .fee-band',
+    'main.doc-col > section:not(.first) > .demo-panel',
+    'main.doc-col > section:not(.first) .faq',
+    'main.doc-col > section:not(.first) > .kill-grid',
+    'main.doc-col > section:not(.first) > .interest-box'
+  ].join(',');
+  var targets = document.querySelectorAll(selector);
+  targets.forEach(function(el){ el.classList.add('reveal-pending'); });
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        entry.target.classList.add('reveal-visible');
+        io.unobserve(entry.target);
+      }
+    });
+  }, {threshold:0.12, rootMargin:'0px 0px -40px 0px'});
+  targets.forEach(function(el){ io.observe(el); });
+})();
+</script>
 </body>
 </html>

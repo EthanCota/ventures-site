@@ -8,20 +8,20 @@
   :root{
     color-scheme: light;
     --ink:#12181f; --ink-soft:#42505f; --paper:#f7f5f0; --card:#ffffff;
-    --line:#dcd7cc; --accent:#b3661a; --blue:#2a78d6; --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-    --good:#1baf7a;
+    --line:#dcd7cc; --accent:#b3661a; --blue:#2a78d6; --blue-solid:#1f5fb8; --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --good:#1baf7a; --good-soft:#e3f7ef; --good-text:#0d7551; --off:#8a8f96; --off-text:#5a6370; --accent-text:#95530f;
   }
   @media (prefers-color-scheme: dark){
     :root:where(:not([data-theme="light"])){
       color-scheme: dark;
       --ink:#f0efe8; --ink-soft:#c3c2b7; --paper:#14181d; --card:#1c2129;
-      --line:#333c46; --accent:#e0a558; --blue:#3987e5; --good:#199e70;
+      --line:#333c46; --accent:#e0a558; --blue:#3987e5; --blue-solid:#1f5fb8; --good:#199e70; --good-soft:#12281f; --good-text:#20a878; --off:#7c8698; --off-text:#7c8698; --accent-text:#e0a558;
     }
   }
   :root[data-theme="dark"]{
     color-scheme: dark;
     --ink:#f0efe8; --ink-soft:#c3c2b7; --paper:#14181d; --card:#1c2129;
-    --line:#333c46; --accent:#e0a558; --blue:#3987e5; --good:#199e70;
+    --line:#333c46; --accent:#e0a558; --blue:#3987e5; --blue-solid:#1f5fb8; --good:#199e70; --good-soft:#12281f; --good-text:#20a878; --off:#7c8698; --off-text:#7c8698; --accent-text:#e0a558;
   }
   *{box-sizing:border-box;}
   body{margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; background:var(--paper); color:var(--ink); line-height:1.5;}
@@ -32,29 +32,64 @@
   h1{font-size:1.5rem; margin:.4rem 0 .1rem;}
   .sub{color:var(--ink-soft); font-size:.95rem; margin-bottom:1.5rem;}
   .tabs{display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:1.25rem;}
-  .tab{border:1px solid var(--line); background:var(--card); color:var(--ink); padding:.5rem .85rem; border-radius:8px; font-size:.85rem; cursor:pointer; font-weight:600;}
-  .tab[aria-selected="true"]{background:var(--blue); color:#fff; border-color:var(--blue);}
+  .tab{border:1px solid var(--line); background:var(--card); color:var(--ink); padding:.5rem .85rem; border-radius:8px; font-size:.85rem; cursor:pointer; font-weight:600; transition:background 140ms ease, color 140ms ease, border-color 140ms ease;}
+  .tab:hover{border-color:var(--blue);}
+  .tab[aria-selected="true"]{background:var(--blue-solid); color:#fff; border-color:var(--blue-solid);}
   .scene{display:none; border:1px solid var(--line); border-radius:12px; background:var(--card); padding:1.25rem;}
   .scene.active{display:block;}
   .scene h2{margin-top:0; font-size:1.15rem;}
   .tag{display:inline-block; font-size:.68rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; background:var(--accent); color:#fff; padding:.15rem .5rem; border-radius:4px; margin-bottom:.6rem;}
   .thread{display:flex; flex-direction:column; gap:.6rem; margin:1rem 0;}
   .msg{max-width:82%; padding:.6rem .8rem; border-radius:10px; font-size:.9rem; font-family:var(--mono);}
-  .msg.user{align-self:flex-end; background:var(--blue); color:#fff; border-bottom-right-radius:2px;}
+  .msg.user{align-self:flex-end; background:var(--blue-solid); color:#fff; border-bottom-right-radius:2px;}
   .msg.sys{align-self:flex-start; background:var(--paper); border:1px solid var(--line); border-bottom-left-radius:2px;}
   .msg.tool{align-self:flex-start; background:transparent; border:1px dashed var(--line); font-size:.8rem; color:var(--ink-soft);}
-  .roster{display:flex; flex-wrap:wrap; gap:.4rem; margin:.75rem 0;}
-  .pill{border:1px solid var(--line); border-radius:999px; padding:.25rem .65rem; font-size:.78rem; background:var(--paper);}
-  .pill.on{border-color:var(--good); color:var(--good); font-weight:700;}
+
+  .roletoggle{display:flex; gap:.4rem; flex-wrap:wrap; margin:.9rem 0 .4rem;}
+  .roletoggle button{border:1px solid var(--line); background:var(--card); color:var(--ink); padding:.4rem .85rem; border-radius:999px; font-size:.78rem; font-weight:700; cursor:pointer; transition:background 140ms ease, color 140ms ease, border-color 140ms ease;}
+  .roletoggle button:hover{border-color:var(--blue);}
+  .roletoggle button[aria-pressed="true"]{background:var(--blue-solid); color:#fff; border-color:var(--blue-solid);}
+  .roster-label{font-size:.78rem; color:var(--ink-soft); margin:.3rem 0 .1rem;}
+  .roster{display:flex; flex-wrap:wrap; gap:.4rem; margin:.5rem 0 .75rem;}
+  .pill{border:1px solid var(--line); border-radius:999px; padding:.25rem .65rem; font-size:.78rem; background:var(--paper); color:var(--ink-soft);
+        transition:background 160ms ease, color 160ms ease, border-color 160ms ease, opacity 160ms ease, transform 160ms ease;}
+  .pill.on{border-color:var(--good); color:var(--good-text); font-weight:700; background:var(--good-soft);}
+  .pill.off{color:var(--off-text); border-style:dashed; opacity:.9;}
+  .pill.just-on{animation:pillgrant 420ms ease;}
+  @keyframes pillgrant{
+    0%{transform:scale(1);}
+    35%{transform:scale(1.08);}
+    100%{transform:scale(1);}
+  }
+
   table{width:100%; border-collapse:collapse; font-size:.85rem; margin-top:.75rem;}
   th,td{text-align:left; padding:.45rem .5rem; border-bottom:1px solid var(--line);}
   th{color:var(--ink-soft); font-weight:700; font-size:.72rem; text-transform:uppercase; letter-spacing:.04em;}
-  .ok{color:var(--good); font-weight:700;}
-  .warn{color:var(--accent); font-weight:700;}
-  .stepnav{display:flex; justify-content:space-between; margin-top:1.25rem;}
-  .stepnav button{border:1px solid var(--line); background:var(--card); color:var(--ink); padding:.5rem .9rem; border-radius:8px; cursor:pointer; font-weight:600;}
+  .ok{color:var(--good-text); font-weight:700;}
+  .warn{color:var(--accent-text); font-weight:700;}
+
+  .audit-label{font-size:.78rem; color:var(--ink-soft); margin:.9rem 0 .3rem;}
+  .audit-stream{display:flex; flex-direction:column; gap:.4rem; margin:.4rem 0 .9rem;}
+  .audit-row{display:flex; flex-wrap:wrap; gap:.55rem; align-items:baseline; font-family:var(--mono); font-size:.76rem; padding:.42rem .6rem; border:1px solid var(--line); border-radius:6px; background:var(--paper); color:var(--ink-soft);
+              opacity:1; transform:translateY(0); transition:opacity 320ms ease, transform 320ms ease;}
+  .audit-row.pending{opacity:0; transform:translateY(6px);}
+  .audit-row .t{color:var(--ink-mute,var(--ink-soft)); flex:none; font-weight:700;}
+  .audit-row .kind{flex:none; color:var(--ink); font-weight:700;}
+  .audit-row .who{flex:none;}
+  .audit-row .detail{color:var(--ink-soft);}
+
+  .stepnav{display:flex; justify-content:space-between; align-items:center; gap:.75rem; margin-top:1.25rem; flex-wrap:wrap;}
+  .stepnav-left{display:flex; gap:.5rem;}
+  .stepnav button{border:1px solid var(--line); background:var(--card); color:var(--ink); padding:.5rem .9rem; border-radius:8px; cursor:pointer; font-weight:600; transition:background 140ms ease, border-color 140ms ease, filter 140ms ease;}
+  .stepnav button:hover{border-color:var(--blue);}
+  #replayBtn{display:none; background:var(--blue-solid); color:#fff; border-color:var(--blue-solid);}
+  #replayBtn:hover{filter:brightness(1.08);}
   .note{font-size:.78rem; color:var(--ink-soft); margin-top:1rem; border-top:1px solid var(--line); padding-top:.75rem;}
   footer{text-align:center; font-size:.72rem; color:var(--ink-soft); margin-top:2rem;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important;}
+  }
 </style>
 </head>
 <body><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
@@ -62,80 +97,275 @@
   <div class="banner sim">SIMULATED WALKTHROUGH — every message, tool call, and figure below is illustrative example data, not a real client or a live system.</div>
   <main>
     <h1>Governframe — what using it looks like</h1>
-    <p class="sub">Three scripted scenes: a team member's session connecting to the hosted layer, a knowledge-base query answered from the team's own docs, and the admin's isolation/audit view. Click through — nothing here calls a live system.</p>
+    <p class="sub">Three scripted scenes: a team member's session connecting to the hosted layer, a knowledge-base query answered from the team's own docs, and the admin's isolation/audit view. Plays through once automatically — click a tab, role, or Prev/Next any time to take over.</p>
 
-    <div class="tabs" role="tablist">
-      <button class="tab" role="tab" aria-selected="true" data-scene="1">1. Connect</button>
-      <button class="tab" role="tab" aria-selected="false" data-scene="2">2. KB query</button>
-      <button class="tab" role="tab" aria-selected="false" data-scene="3">3. Admin isolation view</button>
+    <div id="demoRoot">
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" aria-selected="true" data-scene="1">1. Connect</button>
+        <button class="tab" role="tab" aria-selected="false" data-scene="2">2. KB query</button>
+        <button class="tab" role="tab" aria-selected="false" data-scene="3">3. Admin isolation view</button>
+      </div>
+
+      <section class="scene active" data-scene="1">
+        
+        <h2>Scene 1 — a team member connects their own Claude session</h2>
+        <p>Illustrative example: a designer on a 9-person agency team opens Claude Code and points it at the team's Governframe MCP endpoint using their <em>own</em> existing subscription. No account or credential is shared with Governframe — the session is theirs.</p>
+        <div class="thread">
+          <div class="msg user">connect mcp://agencyname.governframe.app --as jordan</div>
+          <div class="msg sys">Connected. Signed in as Jordan (Design), team "Agencyname" (Team tier, 9/15 seats). Your own Claude session — Governframe never sees your account credentials.</div>
+          <div class="msg tool">tool_roster.load() → curated for role</div>
+        </div>
+
+        <p class="roster-label">Illustrative example: the admin curates the tool roster per role. Toggle a role to see what changes — nothing here calls a live system.</p>
+        <div class="roletoggle" role="group" aria-label="Preview roster by role">
+          <button type="button" data-role="design" aria-pressed="true">Design (Jordan)</button>
+          <button type="button" data-role="ops" aria-pressed="false">Ops (Priya)</button>
+          <button type="button" data-role="admin" aria-pressed="false">Admin</button>
+        </div>
+        <div class="roster" id="rosterBox" aria-live="polite">
+          
+        </div>
+        <p style="font-size:.85rem;color:var(--ink-soft)">Illustrative example: the roster is curated per role by the team's own admin — a role sees the tools relevant to its work, not the full catalog. This is the "don't want everyone using it willy-nilly" framing the offer is built around.</p>
+      </section>
+
+      <section class="scene" data-scene="2">
+        
+        <h2>Scene 2 — a KB query answered from the team's own data</h2>
+        <p>Illustrative example: Jordan asks a question that used to mean pinging a teammate or searching six old Slack threads.</p>
+        <div class="thread">
+          <div class="msg user">what's our current file-naming convention for client deliverables, and did we change it after the Meridian project?</div>
+          <div class="msg tool">brand-kb.search("file naming convention", scope=team) → 3 hits, ranked</div>
+          <div class="msg sys">Yes — updated after Meridian (2026-03). Convention is now &lt;client&gt;_&lt;deliverable&gt;_&lt;v#&gt;_&lt;YYYYMMDD&gt;. Source: "Ops SOP v4," updated by Priya, last edited 4 months ago. The pre-Meridian convention (no date suffix) is flagged deprecated in the same doc.</div>
+        </div>
+        <p style="font-size:.85rem;color:var(--ink-soft)">Illustrative example only — this is the hosted memory/KB slice of the offer (Starter tier and up), not a real team's real documents.</p>
+      </section>
+
+      <section class="scene" data-scene="3">
+        
+        <h2>Scene 3 — the admin's isolation &amp; audit view</h2>
+        <p>Illustrative example: the team lead's dashboard. This is the honesty-load-bearing screen — it shows what isolation actually is at this price tier, not an inflated claim.</p>
+        <table>
+          <thead><tr><th>Client / workspace</th><th>Seats active</th><th>Data boundary</th><th>Last audit event</th></tr></thead>
+          <tbody>
+            <tr><td>Agencyname (this team)</td><td>9 / 15</td><td class="ok">Logical per-tenant separation</td><td>2026-07-28 — KB query, Jordan (Design)</td></tr>
+            <tr><td>— other Governframe teams —</td><td>—</td><td class="ok">Not visible from this workspace</td><td>—</td></tr>
+          </tbody>
+        </table>
+        <p class="warn" style="font-size:.85rem;">Isolation note (shown to every buyer, not buried): this is logical per-tenant separation at Starter/Team pricing — not dedicated infrastructure and not a SOC2/VPC-level compliance certification. Teams that need that level should ask before buying.</p>
+
+        <p class="audit-label">Illustrative example — sample of the last 24h audit stream (activity, not credentials):</p>
+        <div class="audit-stream" id="auditStream" aria-live="polite">
+          <div class="audit-row" data-row="0"><span class="t">09:14</span><span class="kind">KB query</span><span class="who">Jordan (Design)</span><span class="detail">brand-kb.search("file naming convention")</span></div>
+          <div class="audit-row" data-row="1"><span class="t">09:22</span><span class="kind">KB query</span><span class="who">Priya (Ops)</span><span class="detail">asset-memory.recall("Meridian handoff notes")</span></div>
+          <div class="audit-row" data-row="2"><span class="t">09:31</span><span class="kind">Tool-roster change</span><span class="who">Admin</span><span class="detail">granted asset-memory.recall → Ops</span></div>
+          <div class="audit-row" data-row="3"><span class="t">09:40</span><span class="kind">Seat added</span><span class="who">Jordan (Design)</span><span class="detail">9/15 seats now active</span></div>
+          <div class="audit-row" data-row="4"><span class="t">09:52</span><span class="kind">KB query</span><span class="who">Jordan (Design)</span><span class="detail">client-brief.lookup("Meridian")</span></div>
+        </div>
+        <div class="thread" style="margin-top:.25rem;">
+          <div class="msg sys">Full tally (illustrative example, last 24h): 14 KB queries · 2 tool-roster changes by admin · 0 cross-tenant access attempts · 1 seat added (Jordan, Design)</div>
+        </div>
+      </section>
+
+      <div class="stepnav">
+        <div class="stepnav-left">
+          <button id="prevBtn">← Previous</button>
+          <button id="nextBtn">Next →</button>
+        </div>
+        <button id="replayBtn" type="button">↻ Replay</button>
+      </div>
     </div>
-
-    <section class="scene active" data-scene="1">
-      
-      <h2>Scene 1 — a team member connects their own Claude session</h2>
-      <p>Illustrative example: a designer on a 9-person agency team opens Claude Code and points it at the team's Governframe MCP endpoint using their <em>own</em> existing subscription. No account or credential is shared with Governframe — the session is theirs.</p>
-      <div class="thread">
-        <div class="msg user">connect mcp://agencyname.governframe.app --as jordan</div>
-        <div class="msg sys">Connected. Signed in as Jordan (Design), team "Agencyname" (Team tier, 9/15 seats). Your own Claude session — Governframe never sees your account credentials.</div>
-        <div class="msg tool">tool_roster.load() → curated for role: Design</div>
-      </div>
-      <div class="roster">
-        <span class="pill on">brand-kb.search</span>
-        <span class="pill on">client-brief.lookup</span>
-        <span class="pill on">asset-memory.recall</span>
-        <span class="pill">prod-db.query — not granted to Design role</span>
-        <span class="pill">billing.export — admin only</span>
-      </div>
-      <p style="font-size:.85rem;color:var(--ink-soft)">Illustrative example: the roster is curated per role by the team's own admin — Jordan sees the tools relevant to design work, not the full catalog. This is the "don't want everyone using it willy-nilly" framing the offer is built around.</p>
-    </section>
-
-    <section class="scene" data-scene="2">
-      
-      <h2>Scene 2 — a KB query answered from the team's own data</h2>
-      <p>Illustrative example: Jordan asks a question that used to mean pinging a teammate or searching six old Slack threads.</p>
-      <div class="thread">
-        <div class="msg user">what's our current file-naming convention for client deliverables, and did we change it after the Meridian project?</div>
-        <div class="msg tool">brand-kb.search("file naming convention", scope=team) → 3 hits, ranked</div>
-        <div class="msg sys">Yes — updated after Meridian (2026-03). Convention is now &lt;client&gt;_&lt;deliverable&gt;_&lt;v#&gt;_&lt;YYYYMMDD&gt;. Source: "Ops SOP v4," updated by Priya, last edited 4 months ago. The pre-Meridian convention (no date suffix) is flagged deprecated in the same doc.</div>
-      </div>
-      <p style="font-size:.85rem;color:var(--ink-soft)">Illustrative example only — this is the hosted memory/KB slice of the offer (Starter tier and up), not a real team's real documents.</p>
-    </section>
-
-    <section class="scene" data-scene="3">
-      
-      <h2>Scene 3 — the admin's isolation &amp; audit view</h2>
-      <p>Illustrative example: the team lead's dashboard. This is the honesty-load-bearing screen — it shows what isolation actually is at this price tier, not an inflated claim.</p>
-      <table>
-        <thead><tr><th>Client / workspace</th><th>Seats active</th><th>Data boundary</th><th>Last audit event</th></tr></thead>
-        <tbody>
-          <tr><td>Agencyname (this team)</td><td>9 / 15</td><td class="ok">Logical per-tenant separation</td><td>2026-07-28 — KB query, Jordan (Design)</td></tr>
-          <tr><td>— other Governframe teams —</td><td>—</td><td class="ok">Not visible from this workspace</td><td>—</td></tr>
-        </tbody>
-      </table>
-      <p class="warn" style="font-size:.85rem;">Isolation note (shown to every buyer, not buried): this is logical per-tenant separation at Starter/Team pricing — not dedicated infrastructure and not a SOC2/VPC-level compliance certification. Teams that need that level should ask before buying.</p>
-      <div class="thread" style="margin-top:1rem;">
-        <div class="msg sys">Audit log (illustrative example, last 24h): 14 KB queries · 2 tool-roster changes by admin · 0 cross-tenant access attempts · 1 seat added (Jordan, Design)</div>
-      </div>
-    </section>
-
-    <div class="stepnav">
-      <button id="prevBtn">← Previous</button>
-      <button id="nextBtn">Next →</button>
-    </div>
-    <p class="note">All names ("Agencyname," "Jordan," "Priya," "Meridian project"), all figures, and all messages on this page are illustrative example data built to be plausible against Governframe's real pricing and real seat ranges (see the pitch site) — not a real client, not a real conversation, not a real audit log.</p>
+    <p class="note">All names ("Agencyname," "Jordan," "Priya," "Meridian project"), all figures, and all messages on this page are illustrative example data built to be plausible against Governframe's real pricing and real seat ranges (see the pitch site) — not a real client, not a real conversation, not a real audit log. No credentials, account logins, or API keys are shown, stored, or implied anywhere on this page.</p>
   </main>
   <footer>Governframe — CONCEPT, early-access. Simulated walkthrough for pitch purposes only.</footer>
 <script>
+(function(){
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   const tabs = [...document.querySelectorAll('.tab')];
   const scenes = [...document.querySelectorAll('.scene')];
-  function show(n){
+  const roleBtns = [...document.querySelectorAll('.roletoggle button')];
+  const rosterBox = document.getElementById('rosterBox');
+  const auditRows = [...document.querySelectorAll('.audit-row')];
+  const replayBtn = document.getElementById('replayBtn');
+  const demoRoot = document.getElementById('demoRoot');
+
+  const ROSTERS = {
+    design: [
+      {id:'brand-kb.search', on:true},
+      {id:'client-brief.lookup', on:true},
+      {id:'asset-memory.recall', on:true},
+      {id:'prod-db.query', on:false, note:'not granted to Design role'},
+      {id:'billing.export', on:false, note:'admin only'}
+    ],
+    ops: [
+      {id:'brand-kb.search', on:false, note:'not needed for Ops role'},
+      {id:'client-brief.lookup', on:false, note:'not needed for Ops role'},
+      {id:'asset-memory.recall', on:true},
+      {id:'prod-db.query', on:true},
+      {id:'billing.export', on:false, note:'admin only'}
+    ],
+    admin: [
+      {id:'brand-kb.search', on:true},
+      {id:'client-brief.lookup', on:true},
+      {id:'asset-memory.recall', on:true},
+      {id:'prod-db.query', on:true},
+      {id:'billing.export', on:true}
+    ]
+  };
+  let curRole = 'design';
+
+  function renderRoster(role, animate){
+    const prevOn = new Set([...rosterBox.querySelectorAll('.pill.on')].map(p=>p.dataset.tool));
+    rosterBox.innerHTML = '';
+    ROSTERS[role].forEach(t=>{
+      const span = document.createElement('span');
+      span.className = 'pill ' + (t.on ? 'on' : 'off');
+      span.dataset.tool = t.id;
+      span.textContent = t.on ? t.id : (t.id + ' — ' + t.note);
+      if (animate && !reduceMotion && t.on && !prevOn.has(t.id)){
+        span.classList.add('just-on');
+        span.addEventListener('animationend', ()=>span.classList.remove('just-on'), {once:true});
+      }
+      rosterBox.appendChild(span);
+    });
+  }
+  renderRoster(curRole, false);
+
+  function setRole(role, manual){
+    if (role === curRole && !manual) return;
+    curRole = role;
+    roleBtns.forEach(b=>b.setAttribute('aria-pressed', b.dataset.role===role ? 'true':'false'));
+    renderRoster(role, true);
+  }
+  roleBtns.forEach(b=>b.addEventListener('click', ()=>{ stopAutoplayForManual(); setRole(b.dataset.role, true); }));
+
+  function resetAuditStream(){
+    auditRows.forEach(r=>r.classList.add('pending'));
+  }
+  function revealAuditStream(){
+    if (reduceMotion){
+      auditRows.forEach(r=>r.classList.remove('pending'));
+      return;
+    }
+    auditRows.forEach((r, i)=>{
+      setTimeout(()=>r.classList.remove('pending'), i * 380);
+    });
+  }
+  resetAuditStream();
+
+  let cur = 1;
+  function show(n, opts){
+    opts = opts || {};
+    cur = n;
     tabs.forEach(t=>t.setAttribute('aria-selected', t.dataset.scene===String(n) ? 'true':'false'));
     scenes.forEach(s=>s.classList.toggle('active', s.dataset.scene===String(n)));
+    if (n === 3){
+      resetAuditStream();
+      revealAuditStream();
+    }
+    if (n === 1 && opts.resetRole !== false){
+      setRole('design', false);
+    }
   }
-  tabs.forEach(t=>t.addEventListener('click', ()=>show(t.dataset.scene)));
-  let cur=1;
-  document.getElementById('nextBtn').addEventListener('click', ()=>{ cur = cur>=3?1:cur+1; show(cur); });
-  document.getElementById('prevBtn').addEventListener('click', ()=>{ cur = cur<=1?3:cur-1; show(cur); });
+  tabs.forEach(t=>t.addEventListener('click', ()=>{ stopAutoplayForManual(); show(Number(t.dataset.scene)); }));
+  document.getElementById('nextBtn').addEventListener('click', ()=>{ stopAutoplayForManual(); show(cur>=3?1:cur+1); });
+  document.getElementById('prevBtn').addEventListener('click', ()=>{ stopAutoplayForManual(); show(cur<=1?3:cur-1); });
+
+  // ---- Autoplay ----
+  let autoTimer = null;
+  let roleTimer = null;
+  let played = false;
+  let manualOverride = false;
+  let holdCount = 0;
+
+  const SCENE_MS = 3200;
+  const ROLE_SEQUENCE = ['design','ops','admin'];
+
+  function clearTimers(){
+    if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; }
+    if (roleTimer) { clearTimeout(roleTimer); roleTimer = null; }
+  }
+
+  function runScene1RoleCycle(){
+    if (reduceMotion || manualOverride) return;
+    let i = 0;
+    setRole(ROLE_SEQUENCE[i], false);
+    const step = SCENE_MS / ROLE_SEQUENCE.length;
+    roleTimer = setInterval(()=>{
+      i++;
+      if (i >= ROLE_SEQUENCE.length || manualOverride) { clearInterval(roleTimer); roleTimer=null; return; }
+      setRole(ROLE_SEQUENCE[i], false);
+    }, step);
+  }
+
+  function advanceAutoplay(){
+    if (manualOverride || reduceMotion) return;
+    if (cur === 1 && roleTimer) { clearInterval(roleTimer); roleTimer = null; }
+    const next = cur >= 3 ? null : cur + 1;
+    if (next === null){
+      played = true;
+      showReplay();
+      return;
+    }
+    show(next, {resetRole:false});
+    if (next === 1) runScene1RoleCycle();
+    autoTimer = setTimeout(advanceAutoplay, SCENE_MS);
+  }
+
+  function startAutoplay(){
+    if (reduceMotion || manualOverride || played) return;
+    clearTimers();
+    show(1, {resetRole:false});
+    setRole('design', false);
+    runScene1RoleCycle();
+    autoTimer = setTimeout(advanceAutoplay, SCENE_MS);
+  }
+
+  function showReplay(){
+    replayBtn.style.display = 'inline-block';
+  }
+  function hideReplay(){
+    replayBtn.style.display = 'none';
+  }
+
+  function stopAutoplayForManual(){
+    manualOverride = true;
+    clearTimers();
+  }
+
+  replayBtn.addEventListener('click', ()=>{
+    replayBtn.blur();
+    holdCount = 0;
+    hideReplay();
+    manualOverride = false;
+    played = false;
+    show(1, {resetRole:false});
+    startAutoplay();
+  });
+
+  function hold(){ holdCount++; if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; } if (roleTimer){ clearInterval(roleTimer); roleTimer = null; } }
+  function release(){
+    holdCount = Math.max(0, holdCount - 1);
+    if (holdCount === 0 && !manualOverride && !played && !reduceMotion){
+      autoTimer = setTimeout(advanceAutoplay, SCENE_MS);
+      if (cur === 1) runScene1RoleCycle();
+    }
+  }
+  demoRoot.addEventListener('mouseenter', hold);
+  demoRoot.addEventListener('mouseleave', release);
+  demoRoot.addEventListener('focusin', hold);
+  demoRoot.addEventListener('focusout', release);
+  demoRoot.addEventListener('touchstart', hold, {passive:true});
+  document.addEventListener('visibilitychange', ()=>{
+    if (document.hidden) hold(); else release();
+  });
+
+  if (!reduceMotion){
+    startAutoplay();
+  } else {
+    hideReplay();
+  }
+})();
 </script>
 </body>
 </html>

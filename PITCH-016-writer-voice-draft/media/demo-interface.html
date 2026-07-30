@@ -7,22 +7,25 @@
 <style>
   :root{
     --ink:#1c2333; --parchment:#f6f1e4; --parchment-2:#efe7d3; --card:#ffffff;
-    --gold:#a97a1f; --gold-deep:#8a6416; --rust:#a13d2d; --line:#ddd3ba;
+    --gold:#a97a1f; --gold-deep:#8a6416; --gold-deep-solid:#8a6416; --rust:#a13d2d; --line:#ddd3ba;
     --text:#241f14; --text-soft:#5a5342; --shadow:0 6px 20px rgba(28,35,51,0.10);
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
       --ink:#f6f1e4; --parchment:#181510; --parchment-2:#1f1b13; --card:#221d15;
-      --gold:#e0b354; --gold-deep:#c99a3c; --rust:#e2695a; --line:#3a3325;
+      --gold:#e0b354; --gold-deep:#c99a3c; --gold-deep-solid:#6e4a0d; --rust:#e2695a; --line:#3a3325;
       --text:#f1e9d6; --text-soft:#c8bda0; --shadow:0 6px 20px rgba(0,0,0,0.4);
     }
   }
   :root[data-theme="dark"]{
     --ink:#f6f1e4; --parchment:#181510; --parchment-2:#1f1b13; --card:#221d15;
-    --gold:#e0b354; --gold-deep:#c99a3c; --rust:#e2695a; --line:#3a3325;
+    --gold:#e0b354; --gold-deep:#c99a3c; --gold-deep-solid:#6e4a0d; --rust:#e2695a; --line:#3a3325;
     --text:#f1e9d6; --text-soft:#c8bda0; --shadow:0 6px 20px rgba(0,0,0,0.4);
   }
   *{box-sizing:border-box;}
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important;}
+  }
   body{margin:0; background:var(--parchment); color:var(--text);
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
   .banner{ text-align:center; padding:.5rem 1rem; font-weight:700; font-size:.78rem;
@@ -32,14 +35,19 @@
   main{max-width:820px; margin:0 auto; padding:1.6rem 1.2rem 3rem;}
   h1{font-size:1.5rem; margin:.4rem 0 .2rem; font-family:Georgia,serif;}
   .sub{color:var(--text-soft); margin-bottom:1.4rem; font-size:.95rem;}
-  .stepper{display:flex; gap:.5rem; margin-bottom:1.4rem; flex-wrap:wrap;}
+  .stepper{display:flex; gap:.5rem; margin-bottom:.8rem; flex-wrap:wrap;}
   .step-btn{
     flex:1; min-width:150px; padding:.6rem .8rem; border-radius:10px; border:1px solid var(--line);
     background:var(--card); cursor:pointer; font-size:.82rem; text-align:left; color:var(--text-soft);
+    transition:border-color .15s ease-out, box-shadow .15s ease-out, color .15s ease-out;
   }
+  .step-btn:hover{ border-color:var(--gold-deep); }
   .step-btn.active{ border-color:var(--gold-deep); color:var(--ink); box-shadow:var(--shadow); font-weight:600;}
   .step-btn .num{ display:inline-block; width:1.4rem; height:1.4rem; border-radius:50%; background:var(--gold-deep);
     color:#fff9ec; text-align:center; line-height:1.4rem; font-size:.75rem; margin-right:.4rem;}
+  .autoplay-bar{ display:flex; align-items:center; justify-content:space-between; gap:.8rem;
+    margin-bottom:1rem; flex-wrap:wrap; }
+  .autoplay-note{ font-size:.82rem; color:var(--text-soft); margin:0; }
   .panel{ display:none; background:var(--card); border:1px solid var(--line); border-radius:14px;
     padding:1.4rem; box-shadow:var(--shadow);}
   .panel.active{display:block;}
@@ -47,29 +55,54 @@
     font-weight:700; padding:.15rem .5rem; border-radius:5px; background:var(--parchment-2); color:var(--gold-deep);
     border:1px solid var(--gold-deep); margin-bottom:.8rem;}
   .archive-list{ list-style:none; padding:0; margin:.8rem 0; }
-  .archive-list li{ padding:.5rem .7rem; border:1px solid var(--line); border-radius:8px; margin-bottom:.4rem; font-size:.88rem; background:var(--parchment-2);}
-  .arrow{ text-align:center; font-size:1.4rem; color:var(--gold-deep); margin:.6rem 0;}
-  .voice-model{ background:var(--parchment-2); border:1px dashed var(--gold-deep); border-radius:10px; padding:.9rem 1rem; font-size:.87rem;}
+  .archive-list li{ padding:.5rem .7rem; border:1px solid var(--line); border-radius:8px; margin-bottom:.4rem;
+    font-size:.88rem; background:var(--parchment-2);
+    opacity:0; transform:translateY(6px); transition:opacity .4s ease-out, transform .4s ease-out; }
+  .archive-list li.seen{ opacity:1; transform:translateY(0); animation:seenFlash .6s ease-out; }
+  @keyframes seenFlash{
+    0%{ box-shadow:0 0 0 3px var(--gold-deep) inset; }
+    100%{ box-shadow:0 0 0 0 rgba(0,0,0,0) inset; }
+  }
+  .arrow{ text-align:center; font-size:1.4rem; color:var(--gold-deep); margin:.6rem 0;
+    opacity:0; transform:translateY(6px); transition:opacity .45s ease-out, transform .45s ease-out; }
+  .arrow.revealed{ opacity:1; transform:translateY(0); }
+  .voice-model{ background:var(--parchment-2); border:1px dashed var(--gold-deep); border-radius:10px; padding:.9rem 1rem; font-size:.87rem;
+    opacity:0; transform:translateY(6px); transition:opacity .45s ease-out, transform .45s ease-out; }
+  .voice-model.revealed{ opacity:1; transform:translateY(0); }
   .compare{ display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1rem;}
   @media (max-width:640px){ .compare{grid-template-columns:1fr;} }
   .compare-col h4{ margin:0 0 .5rem; font-size:.85rem; text-transform:uppercase; letter-spacing:.03em; color:var(--text-soft);}
   .excerpt{ background:var(--parchment-2); border:1px solid var(--line); border-radius:10px; padding:.9rem; font-size:.87rem; line-height:1.6; min-height:180px;}
   .draft-box{ background:var(--card); border:2px solid var(--gold-deep); border-radius:10px; padding:.9rem; font-size:.87rem; line-height:1.6; min-height:180px;}
+  .draft-box p{ margin:0 0 .55rem; }
+  .draft-box p:last-child{ margin-bottom:0; }
+  .drafting-tag{ display:inline-block; font-size:.68rem; text-transform:uppercase; letter-spacing:.04em;
+    font-weight:700; padding:.15rem .5rem; border-radius:5px; background:var(--parchment-2); color:var(--rust);
+    border:1px solid var(--rust); margin-bottom:.5rem;
+    opacity:0; transform:translateY(4px); transition:opacity .4s ease-out, transform .4s ease-out; }
+  .drafting-tag.revealed{ opacity:1; transform:translateY(0); }
+  .chunk{ opacity:0; clip-path:inset(0 100% 0 0); transition:opacity .5s ease-out, clip-path .5s ease-out; }
+  .chunk.in{ opacity:1; clip-path:inset(0 0 0 0); }
   .chat{ margin-top:1rem; }
-  .msg{ max-width:80%; padding:.65rem .9rem; border-radius:12px; margin-bottom:.6rem; font-size:.88rem; line-height:1.5;}
-  .msg.user{ background:var(--gold-deep); color:#fff9ec; margin-left:auto; border-bottom-right-radius:2px;}
+  .msg{ max-width:80%; padding:.65rem .9rem; border-radius:12px; margin-bottom:.6rem; font-size:.88rem; line-height:1.5;
+    opacity:0; transform:translateY(6px); transition:opacity .4s ease-out, transform .4s ease-out; }
+  .msg.in{ opacity:1; transform:translateY(0); }
+  .msg.user{ background:var(--gold-deep-solid); color:#fff9ec; margin-left:auto; border-bottom-right-radius:2px;}
   .msg.tool{ background:var(--parchment-2); border:1px solid var(--line); border-bottom-left-radius:2px;}
   .nav-btns{ display:flex; justify-content:space-between; margin-top:1.2rem;}
   button.nav{ font-family:inherit; padding:.55rem 1.1rem; border-radius:999px; border:2px solid var(--gold-deep);
-    background:transparent; color:var(--ink); cursor:pointer; font-weight:600; font-size:.85rem;}
+    background:transparent; color:var(--ink); cursor:pointer; font-weight:600; font-size:.85rem;
+    transition:background-color .15s ease-out, opacity .15s ease-out; }
+  button.nav:hover:not(:disabled){ background:var(--parchment-2); }
   button.nav:disabled{ opacity:.35; cursor:default; }
+  button.nav.replay{ border-color:var(--rust); color:var(--rust); white-space:nowrap; }
   .caption{ font-size:.8rem; color:var(--text-soft); margin-top:.6rem;}
 </style>
 </head>
 <body><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
 
 <div class="banner banner-sim">SIMULATED — scripted mockup, not a live tool or real output</div>
-<main>
+<main id="demoRoot">
   <h1>Quillecho: a walk through what using it looks like</h1>
   <p class="sub">Three scripted scenarios. Every screen below is staged for this pitch — no real
     archive was ingested and no model generated these drafts.</p>
@@ -78,6 +111,10 @@
     <button class="step-btn active" data-step="1"><span class="num">1</span>Connect your archive</button>
     <button class="step-btn" data-step="2"><span class="num">2</span>Get a voice-matched draft</button>
     <button class="step-btn" data-step="3"><span class="num">3</span>Revise in your voice</button>
+  </div>
+  <div class="autoplay-bar">
+    <p class="autoplay-note" id="autoplayNote" aria-live="polite">Autoplaying — simulated: learning from the archive (step 1 of 3)</p>
+    <button class="nav replay" id="replayBtn" hidden>↻ Replay</button>
   </div>
 
   <div class="panel active" id="panel-1">
@@ -117,11 +154,16 @@
       </div>
       <div class="compare-col">
         <h4>Draft, from Quillecho</h4>
-        <div class="draft-box">"I used to think showing up online every day was the job. It isn't
-          — the job is writing something worth someone's five minutes, and posting is just the
-          delivery truck. I found this out by accident, cutting back for a week and watching nothing
-          break. Which leaves an obvious question I can't fully answer yet: what was I actually
-          optimizing for?"</div>
+        <span class="drafting-tag" id="draftTag">Drafting in your voice… simulated</span>
+        <div class="draft-box" id="draftBox">
+          <p class="chunk">"I used to think showing up online every day was the job.</p>
+          <p class="chunk">It isn't — the job is writing something worth someone's five
+            minutes, and posting is just the delivery truck.</p>
+          <p class="chunk">I found this out by accident, cutting back for a week and watching
+            nothing break.</p>
+          <p class="chunk">Which leaves an obvious question I can't fully answer yet: what was I
+            actually optimizing for?"</p>
+        </div>
       </div>
     </div>
     <p class="caption">Both blocks above are invented for this demo — no real writer's archive
@@ -156,6 +198,17 @@
   const panels = document.querySelectorAll('.panel');
   const prevBtn = document.getElementById('prevBtn');
   const nextBtn = document.getElementById('nextBtn');
+  const demoRoot = document.getElementById('demoRoot');
+  const replayBtn = document.getElementById('replayBtn');
+  const autoplayNote = document.getElementById('autoplayNote');
+  const archiveItems = document.querySelectorAll('#panel-1 .archive-list li');
+  const arrowEl = document.querySelector('#panel-1 .arrow');
+  const voiceModelEl = document.querySelector('#panel-1 .voice-model');
+  const draftTag = document.getElementById('draftTag');
+  const chunks = document.querySelectorAll('#draftBox .chunk');
+  const msgs = document.querySelectorAll('#panel-3 .msg');
+  const reducedMotionMQ = window.matchMedia('(prefers-reduced-motion: reduce)');
+
   function show(n){
     cur = n;
     btns.forEach(b=>b.classList.toggle('active', +b.dataset.step === n));
@@ -164,9 +217,139 @@
     nextBtn.disabled = n === steps.length;
     nextBtn.textContent = n === steps.length ? 'End of demo' : 'Next →';
   }
-  btns.forEach(b=>b.addEventListener('click', ()=>show(+b.dataset.step)));
-  prevBtn.addEventListener('click', ()=>{ if(cur>1) show(cur-1); });
-  nextBtn.addEventListener('click', ()=>{ if(cur<steps.length) show(cur+1); });
+
+  function revealAll(n){
+    if (n === 1){
+      archiveItems.forEach(li=>li.classList.add('seen'));
+      arrowEl.classList.add('revealed');
+      voiceModelEl.classList.add('revealed');
+    }
+    if (n === 2){
+      draftTag.classList.add('revealed');
+      chunks.forEach(c=>c.classList.add('in'));
+    }
+    if (n === 3){
+      msgs.forEach(m=>m.classList.add('in'));
+    }
+  }
+
+  function resetAllVisuals(){
+    archiveItems.forEach(li=>li.classList.remove('seen'));
+    arrowEl.classList.remove('revealed');
+    voiceModelEl.classList.remove('revealed');
+    draftTag.classList.remove('revealed');
+    chunks.forEach(c=>c.classList.remove('in'));
+    msgs.forEach(m=>m.classList.remove('in'));
+  }
+
+  // ---- Autoplay driver: a flat queue of {delay, run} steps, walked one at a time. ----
+  let queue = [];
+  let queueIdx = 0;
+  let timer = null;
+  let autoStopped = true; // true once manual mode takes over, or before first start
+  let hoverPaused = false, focusPaused = false, hiddenPaused = false;
+  function paused(){ return hoverPaused || focusPaused || hiddenPaused; }
+
+  function switchStep(n, label){
+    show(n);
+    autoplayNote.textContent = 'Autoplaying — ' + label + ' (step ' + n + ' of 3)';
+  }
+
+  function buildQueue(){
+    queue = [
+      { delay: 500, run: ()=>archiveItems[0].classList.add('seen') },
+      { delay: 320, run: ()=>archiveItems[1].classList.add('seen') },
+      { delay: 320, run: ()=>archiveItems[2].classList.add('seen') },
+      { delay: 320, run: ()=>archiveItems[3].classList.add('seen') },
+      { delay: 500, run: ()=>{ arrowEl.classList.add('revealed'); voiceModelEl.classList.add('revealed'); } },
+      { delay: 1100, run: ()=>switchStep(2, 'drafting a voice-matched piece') },
+      { delay: 450, run: ()=>draftTag.classList.add('revealed') },
+      { delay: 500, run: ()=>chunks[0].classList.add('in') },
+      { delay: 650, run: ()=>chunks[1].classList.add('in') },
+      { delay: 650, run: ()=>chunks[2].classList.add('in') },
+      { delay: 650, run: ()=>chunks[3].classList.add('in') },
+      { delay: 1100, run: ()=>switchStep(3, 'running the revision loop') },
+      { delay: 550, run: ()=>msgs[0].classList.add('in') },
+      { delay: 700, run: ()=>msgs[1].classList.add('in') },
+      { delay: 700, run: ()=>msgs[2].classList.add('in') },
+      { delay: 700, run: ()=>msgs[3].classList.add('in') },
+      { delay: 1200, run: finishAuto }
+    ];
+    queueIdx = 0;
+  }
+
+  function runNext(){
+    if (autoStopped) return;
+    if (queueIdx >= queue.length) return;
+    const item = queue[queueIdx];
+    timer = setTimeout(function fire(){
+      if (autoStopped) return;
+      if (paused()){ timer = setTimeout(fire, 150); return; }
+      queueIdx++;
+      item.run();
+      runNext();
+    }, item.delay);
+  }
+
+  function finishAuto(){
+    replayBtn.hidden = false;
+    autoplayNote.textContent = 'Autoplay finished — replay it, or use the step buttons / Back / Next to browse manually.';
+  }
+
+  function startAuto(){
+    autoStopped = false;
+    buildQueue();
+    runNext();
+  }
+
+  function stopToManual(){
+    if (autoStopped) return;
+    autoStopped = true;
+    clearTimeout(timer);
+    replayBtn.hidden = true;
+    autoplayNote.textContent = 'Manual mode — use the step buttons or Back / Next to browse.';
+  }
+
+  // Manual controls always take over immediately and reveal the target panel in full.
+  btns.forEach(b=>b.addEventListener('click', ()=>{
+    stopToManual();
+    const n = +b.dataset.step;
+    show(n);
+    revealAll(n);
+  }));
+  prevBtn.addEventListener('click', ()=>{
+    stopToManual();
+    if (cur > 1){ show(cur - 1); revealAll(cur); }
+  });
+  nextBtn.addEventListener('click', ()=>{
+    stopToManual();
+    if (cur < steps.length){ show(cur + 1); revealAll(cur); }
+  });
+  replayBtn.addEventListener('click', ()=>{
+    replayBtn.blur();
+    hoverPaused = false; focusPaused = false; hiddenPaused = false;
+    resetAllVisuals();
+    show(1);
+    replayBtn.hidden = true;
+    autoplayNote.textContent = 'Autoplaying — simulated: learning from the archive (step 1 of 3)';
+    startAuto();
+  });
+
+  demoRoot.addEventListener('mouseenter', ()=>{ hoverPaused = true; });
+  demoRoot.addEventListener('mouseleave', ()=>{ hoverPaused = false; });
+  demoRoot.addEventListener('focusin', ()=>{ focusPaused = true; });
+  demoRoot.addEventListener('focusout', ()=>{ focusPaused = false; });
+  demoRoot.addEventListener('touchstart', ()=>{ hoverPaused = true; }, {passive:true});
+  demoRoot.addEventListener('touchend', ()=>{ hoverPaused = false; });
+  document.addEventListener('visibilitychange', ()=>{ hiddenPaused = document.hidden; });
+
+  if (reducedMotionMQ.matches){
+    // Reduced-motion visitors get today's manual, fully-visible experience — no timers at all.
+    revealAll(1);
+    autoplayNote.textContent = 'Reduced motion: autoplay is off. Use the step buttons or Back / Next to browse.';
+  } else {
+    startAuto();
+  }
 </script>
 </body>
 </html>

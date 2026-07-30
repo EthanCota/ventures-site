@@ -1,3 +1,6 @@
+<!doctype html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
 <title>Beachhead Intel — dealer briefing sheet demo (simulated)</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -5,22 +8,27 @@
   :root {
     color-scheme: light;
     --surface-0: #f7f4ea; --surface-1: #fffdf6; --surface-2: #eee8d6;
-    --ink-primary: #211f16; --ink-secondary: #55503e; --ink-muted: #837c64;
+    --ink-primary: #211f16; --ink-secondary: #55503e; --ink-muted: #655f49;
     --line: #ddd4b8; --brass: #9c6a1d; --olive: #4b5a2c; --rust: #8f3220; --rust-strong: #6f2618;
+    
+    --brass-text: #7a5418;
   }
   @media (prefers-color-scheme: dark) {
     :root:where(:not([data-theme="light"])) {
       color-scheme: dark;
       --surface-0: #18170f; --surface-1: #211f16; --surface-2: #2b281b;
-      --ink-primary: #f3efe0; --ink-secondary: #cbc3a4; --ink-muted: #948c6d;
+      --ink-primary: #f3efe0; --ink-secondary: #cbc3a4; --ink-muted: #9d9575;
       --line: #40402c; --brass: #d9a13e; --olive: #8fae4e; --rust: #d97a5f; --rust-strong: #e8917a;
+      
+      --brass-text: #d9a13e;
     }
   }
   :root[data-theme="dark"] {
     color-scheme: dark;
     --surface-0: #18170f; --surface-1: #211f16; --surface-2: #2b281b;
-    --ink-primary: #f3efe0; --ink-secondary: #cbc3a4; --ink-muted: #948c6d;
+    --ink-primary: #f3efe0; --ink-secondary: #cbc3a4; --ink-muted: #9d9575;
     --line: #40402c; --brass: #d9a13e; --olive: #8fae4e; --rust: #d97a5f; --rust-strong: #e8917a;
+    --brass-text: #d9a13e;
   }
   * { box-sizing: border-box; }
   body { margin:0; background: var(--surface-0); color: var(--ink-primary); font-family: -apple-system, "Segoe UI", sans-serif; line-height:1.5; }
@@ -32,64 +40,90 @@
   .concept-banner { background: var(--rust); border-bottom: 2px solid var(--rust-strong); }
   .sim-banner { top: 38px; background: var(--brass); color: #241a06; border-bottom: 2px solid #7c5316; }
   h1 { font-size: 1.4rem; margin: 30px 0 4px; }
-  .sub { color: var(--ink-muted); margin-bottom: 26px; font-size: 0.9rem; }
+  .sub { color: var(--ink-muted); margin-bottom: 22px; font-size: 0.9rem; }
   .sheet {
     background: var(--surface-1); border: 1px solid var(--line); border-radius: 10px; padding: 24px 26px;
   }
-  .sheet h2 { font-size: 1.05rem; margin: 0 0 4px; }
-  .sheet .meta { color: var(--ink-muted); font-size: 0.8rem; margin-bottom: 18px; }
+  .sheet h2 { font-size: 1.05rem; margin: 0 0 4px; opacity: 0; transform: translateY(8px); transition: opacity 0.3s ease, transform 0.3s ease; }
+  .sheet h2.shown { opacity: 1; transform: translateY(0); }
+  .sheet .meta { color: var(--ink-muted); font-size: 0.8rem; margin-bottom: 18px; opacity: 0; transform: translateY(8px); transition: opacity 0.3s ease, transform 0.3s ease; }
+  .sheet .meta.shown { opacity: 1; transform: translateY(0); }
   .stat-row { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 20px; }
-  .stat { background: var(--surface-2); border-radius: 8px; padding: 10px 14px; }
-  .stat b { display:block; font-size:1.2rem; color: var(--olive); }
+  .stat { background: var(--surface-2); border-radius: 8px; padding: 10px 14px; opacity: 0; transform: translateY(8px); transition: opacity 0.3s ease, transform 0.3s ease; }
+  .stat.shown { opacity: 1; transform: translateY(0); }
+  .stat b { display:block; font-size:1.2rem; color: var(--olive); font-variant-numeric: tabular-nums; }
   .stat span { font-size: 0.72rem; color: var(--ink-muted); text-transform: uppercase; }
   .target-list { list-style: none; margin: 0; padding: 0; }
-  .target-list li { border-top: 1px solid var(--line); padding: 12px 0; display: grid; grid-template-columns: 1fr auto; gap: 6px; }
+  .target-list li { border-top: 1px solid var(--line); padding: 12px 0; display: grid; grid-template-columns: 1fr auto; gap: 6px; opacity: 0; transform: translateY(8px); transition: opacity 0.3s ease, transform 0.3s ease; }
+  .target-list li.shown { opacity: 1; transform: translateY(0); }
   .target-list .name { font-weight: 700; }
   .target-list .why { color: var(--ink-secondary); font-size: 0.86rem; grid-column: 1 / -1; }
   .flag { font-size: 0.68rem; font-weight: 800; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; height: fit-content; }
   .flag.displace { background: rgba(143,50,32,0.16); color: var(--rust-strong); }
   .flag.new { background: rgba(75,90,44,0.18); color: var(--olive); }
-  .illus-note { margin-top: 22px; font-size: 0.82rem; color: var(--ink-muted); border-top: 1px dashed var(--line); padding-top: 14px; }
-</style><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
+  .illus-note { margin-top: 22px; font-size: 0.82rem; color: var(--ink-muted); border-top: 1px dashed var(--line); padding-top: 14px; opacity: 0; transform: translateY(8px); transition: opacity 0.3s ease, transform 0.3s ease; }
+  .illus-note.shown { opacity: 1; transform: translateY(0); }
+  .assembling-tag { display: inline-block; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--brass-text); margin-bottom: 10px; font-family: monospace; min-height: 1.2em; }
+  .controls { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 22px; flex-wrap: wrap; }
+  button.nav {
+    border: 1px solid var(--line); background: var(--surface-1); color: var(--ink-primary);
+    padding: 9px 16px; border-radius: 8px; font-weight: 700; font-size: 0.83rem; cursor: pointer;
+    transition: background-color 0.14s ease, border-color 0.14s ease, transform 0.14s ease;
+  }
+  button.nav:hover:not(:disabled) { border-color: var(--olive); transform: translateY(-1px); }
+  button.nav:disabled { opacity: 0.4; cursor: default; }
+  .progress { font-size: 0.78rem; color: var(--ink-muted); font-family: monospace; }
+  #replayBtn { display: none; }
 
+  
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important; animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important; scroll-behavior: auto !important;
+    }
+  }
+</style>
+</head>
+<body><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
 
 <div class="sim-banner">SIMULATED PRODUCT WALKTHROUGH — scripted, not a live system</div>
 
-<div class="wrap">
+<div class="wrap" id="demoRoot">
   <h1>Dealer-rep briefing sheet</h1>
   <p class="sub">Scenario: a wide-format-equipment dealer rep opens their weekly territory briefing sheet before a
     call day. All names, counts, and notes below are an <strong>illustrative example</strong>, not a real territory
-    run.</p>
+    run. Sections assemble automatically below, as if compiled; hover, focus, or touch the demo any time to pause it.</p>
 
+  <div class="assembling-tag" id="assemblingTag"> </div>
   <div class="sheet">
-    <h2>Territory Briefing — Portland Metro, Wide-Format &amp; Wrap</h2>
-    <div class="meta">Rep: (assigned territory placeholder) · Week of — illustrative example</div>
+    <h2 id="sheetTitle">Territory Briefing — Portland Metro, Wide-Format &amp; Wrap</h2>
+    <div class="meta" id="sheetMeta">Rep: (assigned territory placeholder) · Week of — illustrative example</div>
     <div class="stat-row">
-      <div class="stat"><b>164</b><span>wide-format tagged</span></div>
-      <div class="stat"><b>91</b><span>wrap-capable</span></div>
-      <div class="stat"><b>9</b><span>flagged this week</span></div>
+      <div class="stat" data-stat="0" data-target="164"><b data-num>0</b><span>wide-format tagged</span></div>
+      <div class="stat" data-stat="1" data-target="91"><b data-num>0</b><span>wrap-capable</span></div>
+      <div class="stat" data-stat="2" data-target="9"><b data-num>0</b><span>flagged this week</span></div>
     </div>
 
     <ul class="target-list">
-      <li>
+      <li data-row="0">
         <span class="name">Cascade Signworks</span>
         
         <span class="why">Runs a named competitor wide-format unit per website copy; wrap capability tag present; no
           service-contract signal found. Suggested opener: capability upgrade path, not a cold intro.</span>
       </li>
-      <li>
+      <li data-row="1">
         <span class="name">Portland Wrap &amp; Graphics</span>
         
         <span class="why">Registered with the state in the last 18 months; wide-format + wrap tags both present;
           no equipment brand mentioned on site — unqualified on brand, addressable on capability.</span>
       </li>
-      <li>
+      <li data-row="2">
         <span class="name">Salem Sign Collective</span>
         
         <span class="why">Edge-of-metro catch from the city-by-city registry sweep — missed by a fixed-radius
           search from downtown Portland. Wide-format tag only, single location.</span>
       </li>
-      <li>
+      <li data-row="3">
         <span class="name">McMinnville Print &amp; Wrap Co.</span>
         
         <span class="why">Site mentions a specific competitor engraving unit alongside wide-format printing —
@@ -98,9 +132,148 @@
     </ul>
   </div>
 
-  <p class="illus-note"><strong>Illustrative example.</strong> Business names and briefing details above are
+  <p class="illus-note" id="illusNote"><strong>Illustrative example.</strong> Business names and briefing details above are
     synthetic, constructed to demonstrate the output shape a dealer rep would receive — not a real territory
     run. Counts and the “edge of metro” catch pattern are plausibility-bounded against the real Portland
     proof build (164 wide-format-tagged, 91 wrap-tagged businesses measured; only 3 of 713 reachable sites named the
     flagship equipment brand specifically) but this specific weekly sheet was never generated by a live system.</p>
+
+  <div class="controls">
+    <button class="nav" id="prevBtn">← Back</button>
+    <span class="progress" id="progressEl"></span>
+    <button class="nav" id="nextBtn">Next →</button>
+    <button class="nav" id="replayBtn">↻ Replay</button>
+  </div>
 </div>
+
+<script>
+/* ── reveal-step model: sections auto-assemble as if compiled ──
+   Step 0: heading + meta line only.
+   Step 1: stat row appears, KPI numbers count up.
+   Steps 2-5: target-list rows 0..3 revealed one at a time.
+   Step 6: illustrative-example note.
+   Same reusable pause/replay/reduced-motion pattern as territory-query-demo.html
+   and PITCH-018 media/sms-demo.html. */
+const statEls = [...document.querySelectorAll('.stat')];
+const rowEls = [...document.querySelectorAll('.target-list li')];
+const TOTAL_STEPS = 2 + rowEls.length + 1; // title/meta, stat-row, N rows, note
+let step = 0;
+let statsAnimated = false;
+
+const assemblingTag = document.getElementById('assemblingTag');
+const sheetTitle = document.getElementById('sheetTitle');
+const sheetMeta = document.getElementById('sheetMeta');
+const illusNote = document.getElementById('illusNote');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const replayBtn = document.getElementById('replayBtn');
+const progressEl = document.getElementById('progressEl');
+const demoRoot = document.getElementById('demoRoot');
+const reducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+function setNum(el, val){ el.textContent = String(val); }
+
+function animateCountUp(){
+  if (statsAnimated) return;
+  statsAnimated = true;
+  if (reducedMotion){
+    statEls.forEach(s => setNum(s.querySelector('[data-num]'), s.dataset.target));
+    return;
+  }
+  statEls.forEach(s => {
+    const numEl = s.querySelector('[data-num]');
+    const target = parseInt(s.dataset.target, 10);
+    const duration = 600;
+    const startTime = performance.now();
+    function frame(now){
+      const t = Math.min(1, (now - startTime) / duration);
+      setNum(numEl, Math.round(target * t));
+      if (t < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  });
+}
+
+function render(){
+  assemblingTag.textContent = step < TOTAL_STEPS - 1 ? 'Compiling briefing sheet…' : 'Briefing sheet complete';
+  sheetTitle.classList.toggle('shown', step >= 0);
+  sheetMeta.classList.toggle('shown', step >= 0);
+  statEls.forEach(s => s.classList.toggle('shown', step >= 1));
+  if (step >= 1) animateCountUp();
+  rowEls.forEach((row, i) => row.classList.toggle('shown', step >= i + 2));
+  illusNote.classList.toggle('shown', step >= TOTAL_STEPS - 1);
+  progressEl.textContent = (step + 1) + ' / ' + TOTAL_STEPS;
+  prevBtn.disabled = step <= 0;
+  nextBtn.disabled = step >= TOTAL_STEPS - 1;
+}
+
+function advanceOne(){
+  if (step < TOTAL_STEPS - 1){ step++; return true; }
+  return false;
+}
+function retreatOne(){ if (step > 0) step--; }
+
+nextBtn.onclick = () => { stopAutoplayForManual(); advanceOne(); render(); };
+prevBtn.onclick = () => { stopAutoplayForManual(); retreatOne(); render(); };
+replayBtn.onclick = () => {
+  replayBtn.blur(); step = 0; statsAnimated = false;
+  statEls.forEach(s => setNum(s.querySelector('[data-num]'), 0));
+  render(); startAutoplay();
+};
+
+/* ── reusable autoplay pattern (shared conventions §1-2, DEMO-WAVE-PLAN.md) ── */
+let autoplayActive = false;
+let autoplayPaused = false;
+let autoplayTimer = null;
+
+function stepDelay(){ return 3000; } // flat 3.0s/step — mid-band of 2.6-3.5s
+function scheduleNext(){
+  clearTimeout(autoplayTimer);
+  if (!autoplayActive || autoplayPaused) return;
+  autoplayTimer = setTimeout(tick, stepDelay());
+}
+function tick(){
+  if (!autoplayActive || autoplayPaused) return;
+  const advanced = advanceOne();
+  render();
+  if (advanced) scheduleNext(); else finishAutoplay();
+}
+function finishAutoplay(){
+  autoplayActive = false;
+  clearTimeout(autoplayTimer);
+  replayBtn.style.display = 'inline-flex';
+}
+function startAutoplay(){
+  if (reducedMotion) return; // manual-only for reduced-motion users, never worse
+  autoplayActive = true;
+  autoplayPaused = false;
+  replayBtn.style.display = 'none';
+  scheduleNext();
+}
+function stopAutoplayForManual(){
+  autoplayActive = false;
+  clearTimeout(autoplayTimer);
+}
+function pauseAutoplay(){ autoplayPaused = true; clearTimeout(autoplayTimer); }
+function resumeAutoplay(){
+  if (!autoplayActive) return;
+  autoplayPaused = false;
+  scheduleNext();
+}
+
+['mouseenter', 'focusin'].forEach(evt => demoRoot.addEventListener(evt, pauseAutoplay));
+['mouseleave', 'focusout'].forEach(evt => demoRoot.addEventListener(evt, resumeAutoplay));
+demoRoot.addEventListener('touchstart', pauseAutoplay, {passive: true});
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) pauseAutoplay(); else resumeAutoplay();
+});
+
+/* under reduced-motion, jump to final step so all content is visible from
+   first paint (DEMO-WAVE-PLAN.md Convention 3). animateCountUp() at step>=1
+   already skips the rAF loop under reducedMotion and sets final values directly. */
+if (reducedMotion) step = TOTAL_STEPS - 1;
+render();
+startAutoplay();
+</script>
+</body>
+</html>

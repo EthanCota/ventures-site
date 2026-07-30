@@ -25,18 +25,34 @@
     --accent:#E3A15A; --warn-bg:#2E2210; --warn-ink:#FFE6BE; --warn-line:#E3A15A;
     --bubble-user:#22301F; --bubble-bot:#1C2317;
   }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important; }
+  }
   *{box-sizing:border-box;}
   body{margin:0; background:var(--bg); color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
   .top-banner{ background:var(--warn-bg); color:var(--warn-ink); text-align:center; padding:10px 14px; font-size:13px; font-weight:700; border-bottom:2px solid var(--warn-line); }
+  .ethics-strip{ background:var(--warn-bg); color:var(--warn-ink); border:1px solid var(--warn-line); border-radius:8px; padding:9px 13px; font-size:12.5px; font-weight:700; margin:0 0 14px; }
+  .ethics-strip .glyph{ text-transform:uppercase; font-size:10px; letter-spacing:.06em; font-weight:800; opacity:.85; margin-right:7px; }
+  .autoplay-bar{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; font-size:12px; color:var(--ink-soft); }
+  .autoplay-status{ display:flex; align-items:center; gap:6px; }
+  .autoplay-dot{ width:7px; height:7px; border-radius:99px; background:var(--primary); transition:background .14s ease; }
+  .autoplay-dot.paused{ background:var(--line); }
+  button.replay{ font-weight:700; font-size:12.5px; padding:6px 12px; border-radius:8px; border:1px solid var(--primary); background:var(--primary-tint); color:var(--primary); cursor:pointer; display:none; transition:filter .14s ease; }
+  button.replay:hover{ filter:brightness(0.95); }
+  button.replay.show{ display:inline-block; }
+  .stagger-item{ opacity:0; transform:translateY(8px); transition:opacity .38s ease, transform .38s ease; }
+  .stagger-item.show{ opacity:1; transform:translateY(0); }
+  .doc-refs{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+  .doc-chip{ font-size:12px; font-weight:700; padding:5px 10px; border-radius:99px; background:var(--primary-tint); color:var(--primary); border:1px solid var(--line); }
   .wrap{ max-width:720px; margin:0 auto; padding:18px 16px 40px; }
   h1{ font-size:19px; margin:14px 0 4px; }
   .sub{ color:var(--ink-soft); font-size:13.5px; margin:0 0 18px; }
   .tabs{ display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
-  .tab{ font-size:13px; font-weight:700; padding:8px 14px; border-radius:99px; border:1px solid var(--line); background:var(--surface); color:var(--ink); cursor:pointer; }
+  .tab{ font-size:13px; font-weight:700; padding:8px 14px; border-radius:99px; border:1px solid var(--line); background:var(--surface); color:var(--ink); cursor:pointer; transition:background .14s ease, color .14s ease, border-color .14s ease; }
   .tab.active{ background:var(--primary); color:var(--primary-ink); border-color:var(--primary); }
   .scenario{ display:none; }
   .scenario.active{ display:block; }
-  .stage-card{ background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px; min-height:340px; }
+  .stage-card{ background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px; min-height:360px; }
   .stage-label{ font-size:11px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; color:var(--accent); margin-bottom:10px; }
   .bubble{ max-width:88%; padding:11px 14px; border-radius:12px; margin-bottom:10px; font-size:14.5px; line-height:1.45; }
   .bubble.bot{ background:var(--bubble-bot); border:1px solid var(--line); }
@@ -49,11 +65,12 @@
   .draft{ border:1px dashed var(--accent); border-radius:10px; padding:14px; background:var(--surface-2); font-size:14px; line-height:1.55; }
   .draft .h{ font-size:11px; font-weight:800; color:var(--accent); text-transform:uppercase; letter-spacing:.05em; margin-bottom:8px; }
   .controls{ display:flex; justify-content:space-between; align-items:center; margin-top:14px; gap:10px; }
-  button.nav{ font-weight:700; font-size:13.5px; padding:9px 16px; border-radius:9px; border:1px solid var(--line); background:var(--surface); color:var(--ink); cursor:pointer; }
+  button.nav{ font-weight:700; font-size:13.5px; padding:9px 16px; border-radius:9px; border:1px solid var(--line); background:var(--surface); color:var(--ink); cursor:pointer; transition:filter .14s ease, background .14s ease; }
   button.nav.primary{ background:var(--primary); color:var(--primary-ink); border-color:var(--primary); }
+  button.nav:hover:not(:disabled){ filter:brightness(0.96); }
   button.nav:disabled{ opacity:.4; cursor:default; }
   .dots{ display:flex; gap:6px; }
-  .dots span{ width:7px; height:7px; border-radius:99px; background:var(--line); }
+  .dots span{ width:7px; height:7px; border-radius:99px; background:var(--line); transition:background .14s ease; }
   .dots span.on{ background:var(--primary); }
   .example-tag{ display:inline-block; font-size:10.5px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; background:var(--warn-bg); color:var(--warn-ink); padding:2px 7px; border-radius:99px; margin-left:6px; vertical-align:middle; }
   .foot-note{ font-size:12px; color:var(--ink-soft); margin-top:14px; }
@@ -64,6 +81,11 @@
 <div class="wrap">
   <h1>See it work <span class="example-tag">Simulated</span></h1>
   <p class="sub">Three scripted scenarios showing the intended product experience. Click Next to step through each one.</p>
+  <div class="ethics-strip"><span class="glyph">Pricing, always</span>Flat setup fee, flat monthly subscription — never a percentage of your grant award.</div>
+  <div class="autoplay-bar">
+    <div class="autoplay-status"><span class="autoplay-dot" id="apDot"></span><span id="apLabel">Auto-playing</span></div>
+    <button class="replay" id="replayBtn" type="button">↻ Replay</button>
+  </div>
   <div class="tabs">
     <button class="tab active" data-tab="0">1. Discovery scan</button>
     <button class="tab" data-tab="1">2. Draft interview</button>
@@ -78,16 +100,16 @@
         <div class="bubble bot"><div class="who">Steady Grants</div>Good morning. I ran this week's scan against your org profile for <strong>Casa Semilla Youth Arts</strong> <span class="example-tag">illustrative example</span> — a San Diego after-school arts program. Found 3 opportunities worth your time.</div>
       </div>
       <div class="step" data-step="1" style="display:none;">
-        <div class="match-card">
-          <div class="row1"><span>Neighborhood Arts &amp; Culture Fund</span><span class="score">91% match</span></div>
+        <div class="match-card stagger-item">
+          <div class="row1"><span>Neighborhood Arts &amp; Culture Fund</span><span class="score"><span class="score-num" data-target="91">0</span>% match</span></div>
           <div class="meta">Local family foundation · $15,000 typical award · Deadline in 34 days</div>
         </div>
-        <div class="match-card">
-          <div class="row1"><span>Youth Creative Pathways Grant</span><span class="score">84% match</span></div>
+        <div class="match-card stagger-item">
+          <div class="row1"><span>Youth Creative Pathways Grant</span><span class="score"><span class="score-num" data-target="84">0</span>% match</span></div>
           <div class="meta">Regional community foundation · $8,000–$25,000 range · Deadline in 61 days</div>
         </div>
-        <div class="match-card">
-          <div class="row1"><span>Community Enrichment Micro-Grant</span><span class="score">73% match</span></div>
+        <div class="match-card stagger-item">
+          <div class="row1"><span>Community Enrichment Micro-Grant</span><span class="score"><span class="score-num" data-target="73">0</span>% match</span></div>
           <div class="meta">Local foundation · $2,500 typical award · Rolling deadline</div>
         </div>
       </div>
@@ -119,8 +141,12 @@
         <div class="bubble bot"><div class="who">Steady Grants</div>Got it — noting that for this application and saving it to your org profile so I don't have to ask again next time.</div>
       </div>
       <div class="step" data-step="2" style="display:none;">
-        <div class="bubble bot"><div class="who">Steady Grants</div>Here's a first draft of the Statement of Need, grounded in your documents plus what you just told me:</div>
-        <div class="draft"><div class="h">Draft — Statement of Need <span class="example-tag">illustrative example</span></div>Casa Semilla Youth Arts served 142 youth across two San Diego sites in the 2025 program year, a 49% increase over the prior year. Demand continues to outpace capacity: our 2025 annual report notes a waitlist at both sites for the first time in the program's history. [Draft continues — review, edit, and finalize in your own voice before submitting.]</div>
+        <div class="doc-refs">
+          <span class="doc-chip stagger-item">📄 2025 annual report</span>
+          <span class="doc-chip stagger-item">📄 Program budget</span>
+        </div>
+        <div class="bubble bot stagger-item"><div class="who">Steady Grants</div>Here's a first draft of the Statement of Need, grounded in your documents plus what you just told me:</div>
+        <div class="draft stagger-item"><div class="h">Draft — Statement of Need <span class="example-tag">illustrative example</span></div>Casa Semilla Youth Arts served 142 youth across two San Diego sites in the 2025 program year, a 49% increase over the prior year. Demand continues to outpace capacity: our 2025 annual report notes a waitlist at both sites for the first time in the program's history. [Draft continues — review, edit, and finalize in your own voice before submitting.]</div>
       </div>
       <div class="step" data-step="3" style="display:none;">
         <div class="bubble bot"><div class="who">Steady Grants</div>This is a first pass for you to edit — not a finished application. You stay the author of record; nothing here gets submitted automatically.</div>
@@ -162,10 +188,41 @@
   <p class="foot-note">All organization names (Casa Semilla Youth Arts), dollar figures, dates, and conversations on this page are synthetic and illustrative. The proposal-cost figures referenced indirectly (via this pitch's pricing/breakeven) are bounded to stay within this pitch's sourced research (foundation proposal cost $1,500–$5,000, RESEARCH.md §1). The grant AWARD-size figures shown on screen ($15,000 typical award, $8,000–$25,000 range, $2,500 typical, $12,000 requested) are illustrative only — this pitch's research does not source a grant award-size range to check them against, so they are plausible-but-unverified, not range-checked. None of it was produced by a real AI system.</p>
 </div>
 <script>
-  const tabs = document.querySelectorAll('.tab');
-  const scenarios = document.querySelectorAll('.scenario');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const tabs = Array.from(document.querySelectorAll('.tab'));
+  const scenarios = Array.from(document.querySelectorAll('.scenario'));
+
+  function animateStagger(stepEl){
+    const items = stepEl.querySelectorAll('.stagger-item');
+    items.forEach((el,i)=>{
+      el.classList.remove('show');
+      if(reduceMotion){
+        el.classList.add('show');
+      } else {
+        setTimeout(()=>{ el.classList.add('show'); }, 90 + i*90);
+      }
+    });
+  }
+
+  function countUp(stepEl, countedUp){
+    const nums = stepEl.querySelectorAll('.score-num');
+    nums.forEach(n=>{
+      if(countedUp.has(n)) return;
+      countedUp.add(n);
+      const target = parseInt(n.dataset.target, 10);
+      if(reduceMotion){ n.textContent = target; return; }
+      const dur = 500; const start = performance.now();
+      function tick(now){
+        const p = Math.min((now-start)/dur, 1);
+        n.textContent = Math.round(target*p);
+        if(p<1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    });
+  }
+
   function initScenario(sc){
-    const steps = sc.querySelectorAll('.step');
+    const steps = Array.from(sc.querySelectorAll('.step'));
     const dotsWrap = sc.querySelector('.dots');
     dotsWrap.innerHTML = '';
     steps.forEach((_,i)=>{ const d=document.createElement('span'); if(i===0)d.className='on'; dotsWrap.appendChild(d); });
@@ -173,26 +230,126 @@
     const prevBtn = sc.querySelector('.prev');
     const nextBtn = sc.querySelector('.next');
     const label = sc.querySelector('.step-n');
+    const countedUp = new WeakSet();
     function render(){
       steps.forEach((s,i)=>{ s.style.display = i===cur ? '' : 'none'; });
       Array.from(dotsWrap.children).forEach((d,i)=>{ d.className = i===cur ? 'on' : ''; });
       prevBtn.disabled = cur===0;
       nextBtn.textContent = cur===steps.length-1 ? 'Restart' : 'Next';
       label.textContent = cur+1;
+      const activeStep = steps[cur];
+      animateStagger(activeStep);
+      countUp(activeStep, countedUp);
     }
-    prevBtn.addEventListener('click', ()=>{ if(cur>0){cur--; render();} });
-    nextBtn.addEventListener('click', ()=>{ if(cur<steps.length-1){cur++;} else {cur=0;} render(); });
+    prevBtn.addEventListener('click', ()=>{ stopAutoplayForManual(); if(cur>0){cur--; render();} });
+    nextBtn.addEventListener('click', ()=>{ stopAutoplayForManual(); if(cur<steps.length-1){cur++;} else {cur=0;} render(); });
     render();
+    return {
+      advance(){ if(cur<steps.length-1){ cur++; render(); return true; } return false; },
+      reset(){ cur = 0; render(); }
+    };
   }
-  scenarios.forEach(initScenario);
-  tabs.forEach(t=>{
+
+  const controllers = scenarios.map(initScenario);
+
+  let activeScenarioIdx = 0;
+  let autoplayActive = false;
+  let autoplayEverStarted = false;
+  let manualOverride = false;
+  let paused = false;
+  let autoplayTimer = null;
+  const AUTOPLAY_MS = 3200;
+
+  function selectTab(idx){
+    tabs.forEach(t=>t.classList.remove('active'));
+    tabs[idx].classList.add('active');
+    scenarios.forEach(s=>s.classList.remove('active'));
+    scenarios[idx].classList.add('active');
+    activeScenarioIdx = idx;
+  }
+
+  tabs.forEach((t,i)=>{
     t.addEventListener('click', ()=>{
-      tabs.forEach(x=>x.classList.remove('active'));
-      t.classList.add('active');
-      scenarios.forEach(s=>s.classList.remove('active'));
-      document.querySelector('.scenario[data-scenario="'+t.dataset.tab+'"]').classList.add('active');
+      stopAutoplayForManual();
+      selectTab(i);
     });
   });
+
+  function setApLabel(text){
+    const dot = document.getElementById('apDot');
+    const label = document.getElementById('apLabel');
+    label.textContent = text;
+    dot.classList.toggle('paused', text !== 'Auto-playing');
+  }
+
+  function stopAutoplayForManual(){
+    manualOverride = true;
+    autoplayActive = false;
+    clearTimeout(autoplayTimer);
+    setApLabel('Manual');
+  }
+
+  function scheduleNext(){
+    clearTimeout(autoplayTimer);
+    if(!autoplayActive || paused) return;
+    autoplayTimer = setTimeout(advanceAutoplay, AUTOPLAY_MS);
+  }
+
+  function advanceAutoplay(){
+    if(!autoplayActive || paused) return;
+    const controller = controllers[activeScenarioIdx];
+    if(controller.advance()){
+      scheduleNext();
+    } else if(activeScenarioIdx < scenarios.length - 1){
+      selectTab(activeScenarioIdx + 1);
+      scheduleNext();
+    } else {
+      autoplayActive = false;
+      setApLabel('Done');
+      showReplay();
+    }
+  }
+
+  function showReplay(){ document.getElementById('replayBtn').classList.add('show'); }
+  function hideReplay(){ document.getElementById('replayBtn').classList.remove('show'); }
+
+  function startAutoplay(){
+    if(reduceMotion || manualOverride || autoplayEverStarted) return;
+    autoplayEverStarted = true;
+    autoplayActive = true;
+    setApLabel('Auto-playing');
+    scheduleNext();
+  }
+
+  document.getElementById('replayBtn').addEventListener('click', ()=>{
+    document.getElementById('replayBtn').blur(); // Conv-2 fix: release focus so focusin/paused-flag doesn't silently block autoplay
+    paused = false;                              // Conv-2 fix: reset hold counter (paused may be stuck true if hover occurred during prior run)
+    manualOverride = false;
+    autoplayEverStarted = false;
+    hideReplay();
+    controllers.forEach(c=>c.reset());
+    selectTab(0);
+    startAutoplay();
+  });
+
+  const root = document.querySelector('.wrap');
+  function pauseFor(){ if(autoplayActive){ paused = true; clearTimeout(autoplayTimer); setApLabel('Paused'); } }
+  function resumeFor(){ if(autoplayActive && !manualOverride){ paused = false; setApLabel('Auto-playing'); scheduleNext(); } }
+  root.addEventListener('mouseenter', pauseFor);
+  root.addEventListener('mouseleave', resumeFor);
+  root.addEventListener('focusin', pauseFor);
+  root.addEventListener('focusout', resumeFor);
+  root.addEventListener('touchstart', pauseFor, {passive:true});
+  root.addEventListener('touchend', ()=>{ setTimeout(resumeFor, 400); }, {passive:true});
+  document.addEventListener('visibilitychange', ()=>{
+    if(document.hidden){ pauseFor(); } else { resumeFor(); }
+  });
+
+  if(reduceMotion){
+    setApLabel('Autoplay off (reduced motion)');
+  } else {
+    startAutoplay();
+  }
 </script>
 </body>
 </html>

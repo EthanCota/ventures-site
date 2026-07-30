@@ -9,18 +9,22 @@
     --bg:#faf7f0; --card:#ffffff; --ink:#191830; --ink-soft:#4a4763;
     --line:rgba(25,24,48,0.14); --amber:#c97a1a; --amber-strong:#a5620f;
     --teal:#0f7d78; --teal-strong:#0a5a56; --shadow:0 8px 22px rgba(25,24,48,0.08);
+    
+    --on-teal: #f3fffd;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
       --bg:#0f0e1c; --card:#181632; --ink:#f1ecdf; --ink-soft:#c3bfd9;
       --line:rgba(241,236,223,0.14); --amber:#e8a84a; --amber-strong:#f5c477;
       --teal:#3fd6ce; --teal-strong:#7ee7e1; --shadow:0 8px 22px rgba(0,0,0,0.5);
+      --on-teal: #04211f;
     }
   }
   :root[data-theme="dark"]{
     --bg:#0f0e1c; --card:#181632; --ink:#f1ecdf; --ink-soft:#c3bfd9;
     --line:rgba(241,236,223,0.14); --amber:#e8a84a; --amber-strong:#f5c477;
     --teal:#3fd6ce; --teal-strong:#7ee7e1; --shadow:0 8px 22px rgba(0,0,0,0.5);
+    --on-teal: #04211f;
   }
   *{box-sizing:border-box;}
   body{margin:0;background:var(--bg);color:var(--ink);
@@ -32,21 +36,43 @@
     letter-spacing:.03em;border-bottom:2px solid var(--amber);
   }
   .sim-banner{
-    position:sticky;top:34px;z-index:900;background:var(--teal);color:#04211f;
+    position:sticky;top:34px;z-index:900;background:var(--teal);color:var(--on-teal);
     text-align:center;padding:7px 12px;font-size:12.5px;font-weight:800;
     letter-spacing:.05em;text-transform:uppercase;
   }
   .wrap{max-width:720px;margin:0 auto;padding:24px 18px 60px;}
   h1{font-size:22px;margin:6px 0 4px;}
   .sub{color:var(--ink-soft);font-size:14px;margin:0 0 22px;}
-  .stepper{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px;}
+  .stepper{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
   .step-btn{
     flex:1;min-width:150px;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);
     background:var(--card);color:var(--ink);font-size:13px;font-weight:700;cursor:pointer;
-    text-align:left;
+    text-align:left;transition:border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
   }
+  .step-btn:hover{border-color:var(--amber-strong);transform:translateY(-1px);}
   .step-btn small{display:block;font-weight:500;color:var(--ink-soft);font-size:11.5px;margin-top:2px;}
   .step-btn.active{border-color:var(--amber);box-shadow:0 0 0 2px rgba(201,122,26,0.25);}
+
+  
+  .autoplay-bar{
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px;
+    font-size:12.5px;color:var(--ink-soft);
+  }
+  .autoplay-bar button{
+    border:1.5px solid var(--line);background:var(--card);color:var(--ink);
+    border-radius:999px;padding:6px 13px;font-size:12.5px;font-weight:700;cursor:pointer;
+    transition:border-color 140ms ease, background 140ms ease, color 140ms ease;
+  }
+  .autoplay-bar button:hover{border-color:var(--teal-strong);}
+  .autoplay-bar .replay-btn{
+    background:var(--teal);color:var(--on-teal);border-color:var(--teal);
+  }
+  .autoplay-bar .replay-btn:hover{background:var(--teal-strong);}
+  .autoplay-bar [hidden]{display:none;}
+  .progress-pill{
+    font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:11.5px;color:var(--ink-soft);
+  }
+
   .scene{display:none;}
   .scene.active{display:block;}
   .panel{
@@ -61,11 +87,52 @@
   
   .chat-thread{display:flex;flex-direction:column;gap:12px;}
   .bubble{max-width:82%;padding:12px 14px;border-radius:14px;font-size:14.5px;line-height:1.45;}
-  .bubble.user{align-self:flex-end;background:var(--teal);color:#04211f;border-bottom-right-radius:4px;}
+  .bubble.user{align-self:flex-end;background:var(--teal);color:var(--on-teal);border-bottom-right-radius:4px;}
   .bubble.bot{align-self:flex-start;background:var(--bg);border:1px solid var(--line);border-bottom-left-radius:4px;}
   .event-card{margin-top:8px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);}
   .event-card .name{font-weight:700;font-size:14px;}
   .event-card .meta{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
+
+  
+  .dir-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px;}
+  .dir-search{
+    flex:1 1 200px;min-width:0;padding:9px 12px;border-radius:9px;border:1.5px solid var(--line);
+    background:var(--bg);color:var(--ink);font-size:13.5px;transition:border-color 140ms ease;
+  }
+  .dir-search:focus{outline:none;border-color:var(--teal-strong);}
+  .dir-chips{display:flex;gap:6px;flex-wrap:wrap;}
+  .chip{
+    border:1.5px solid var(--line);background:var(--bg);color:var(--ink-soft);
+    border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;
+    transition:background 140ms ease, color 140ms ease, border-color 140ms ease;
+  }
+  .chip:hover{border-color:var(--teal-strong);}
+  .chip.active{background:var(--teal);border-color:var(--teal);color:var(--on-teal);}
+  .dir-count{
+    flex:none;font-size:12.5px;color:var(--ink-soft);font-variant-numeric:tabular-nums;
+    white-space:nowrap;padding:4px 0;
+  }
+  .dir-count strong{color:var(--ink);font-size:15px;font-weight:800;}
+  .dir-list{list-style:none;margin:0;padding:0;min-height:60px;}
+  .dir-item{
+    display:flex;justify-content:space-between;align-items:flex-start;gap:10px;
+    padding:10px 0;border-top:1px solid var(--line);
+    opacity:0;transform:translateY(8px);
+    transition:opacity 220ms ease, transform 220ms ease;
+  }
+  .dir-item:first-child{border-top:none;}
+  .dir-item.in{opacity:1;transform:translateY(0);}
+  .dir-item.filtered-out{
+    display:none;
+  }
+  .dir-item .name{font-weight:700;font-size:14px;}
+  .dir-item .meta{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+  .dir-item .src-tag{
+    flex:none;font-size:10.5px;font-weight:700;color:var(--teal-strong);
+    background:rgba(15,125,120,0.12);border-radius:999px;padding:3px 8px;white-space:nowrap;
+  }
+  .dir-empty{padding:16px 0;color:var(--ink-soft);font-size:13px;font-style:italic;}
+
   
   .dash-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
   @media (max-width:520px){.dash-grid{grid-template-columns:1fr 1fr;}}
@@ -91,21 +158,34 @@
   .digest-item .t{font-weight:700;font-size:14.5px;}
   .digest-item .m{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
   .footer-note{margin-top:22px;font-size:12px;color:var(--ink-soft);}
+
+  
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important;}
+  }
 </style>
 </head>
 <body><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
 
 <div class="sim-banner">Simulated product demo — every screen below is scripted, illustrative example data</div>
 
-<div class="wrap">
+<div class="wrap" id="demoRoot">
   <h1>Hackerlantern — product walkthrough</h1>
-  <p class="sub">Three scripted scenarios. Click a tab to switch. All names, numbers, and messages
+  <p class="sub">Four scripted scenarios, auto-playing once. All names, numbers, and messages
   below are illustrative example content, not real users or real data.</p>
 
-  <div class="stepper">
-    <button class="step-btn active" data-scene="s1" onclick="showScene(&#x27;s1&#x27;)">1. Resident chat query<small>"What's on this weekend?"</small></button>
-    <button class="step-btn" data-scene="s2" onclick="showScene(&#x27;s2&#x27;)">2. Sponsor dashboard<small>Source-coverage walkthrough</small></button>
-    <button class="step-btn" data-scene="s3" onclick="showScene(&#x27;s3&#x27;)">3. Weekly digest<small>Email preview</small></button>
+  <div class="stepper" role="tablist" aria-label="Demo scenario">
+    <button class="step-btn active" data-scene="s1" onclick="stopAutoplayForManual();show(0);">1. Resident chat query<small>"What's on this weekend?"</small></button>
+    <button class="step-btn" data-scene="s2" onclick="stopAutoplayForManual();show(1);">2. Live directory<small>Aggregate + search/filter</small></button>
+    <button class="step-btn" data-scene="s3" onclick="stopAutoplayForManual();show(2);">3. Sponsor dashboard<small>Source-coverage walkthrough</small></button>
+    <button class="step-btn" data-scene="s4" onclick="stopAutoplayForManual();show(3);">4. Weekly digest<small>Email preview</small></button>
+  </div>
+
+  <div class="autoplay-bar">
+    <button id="playPauseBtn" type="button" aria-pressed="true">⏸ Playing</button>
+    <span class="progress-pill" id="progress">1 / 4</span>
+    <span>Auto-advancing — hover, tap, or click a scenario to take over.</span>
+    <button id="replayBtn" class="replay-btn" type="button" hidden>↻ Replay</button>
   </div>
 
   <div id="s1" class="scene active">
@@ -144,6 +224,25 @@
 
   <div id="s2" class="scene">
     <div class="panel">
+      <span class="illustrative">Illustrative example — not real events, venues, or sources</span>
+      <div class="dir-toolbar">
+        <input id="dirSearch" class="dir-search" type="text" placeholder="Search events, venues, tags…" aria-label="Search directory">
+        <div class="dir-chips" role="group" aria-label="Filter by category">
+          <button class="chip active" type="button" data-filter="all">All</button>
+          <button class="chip" type="button" data-filter="ai">AI</button>
+          <button class="chip" type="button" data-filter="founder">Founders</button>
+          <button class="chip" type="button" data-filter="devtools">Dev tools</button>
+        </div>
+        <div class="dir-count"><strong id="dirCount">0</strong> events shown</div>
+      </div>
+      <ul id="dirList" class="dir-list" aria-live="polite"></ul>
+      <p class="footer-note">Aggregated live from 5 example sources for illustration — the same
+      live directory + calendar described above, searchable by topic, date, and neighborhood.</p>
+    </div>
+  </div>
+
+  <div id="s3" class="scene">
+    <div class="panel">
       <span class="illustrative">Illustrative example — not real sponsor or coverage data</span>
       <div class="dash-grid">
         <div class="stat"><div class="num">47</div><div class="lbl">Sources tracked</div></div>
@@ -163,7 +262,7 @@
     </div>
   </div>
 
-  <div id="s3" class="scene">
+  <div id="s4" class="scene">
     <div class="panel">
       <span class="illustrative">Illustrative example — not a real send</span>
       <div class="email-shell">
@@ -201,12 +300,260 @@
 </div>
 
 <script>
-function showScene(id){
-  document.querySelectorAll('.scene').forEach(function(el){el.classList.remove('active');});
-  document.querySelectorAll('.step-btn').forEach(function(el){el.classList.remove('active');});
-  document.getElementById(id).classList.add('active');
-  document.querySelector('.step-btn[data-scene="'+id+'"]').classList.add('active');
-}
+  // ---- static example data for the "live directory" scene (scenario 2) ----
+  var DIR_EVENTS = [
+    {name:'Example AI Meetup — "Agents in Production" demo night', meta:'Sat 6:00pm · Makers Quarter coworking', src:'Meetup', tags:['ai']},
+    {name:'specdev/LoopDev meetup — agent orchestration talks', meta:'Sat 11:00am · Example Co-working Hub', src:'sdtechscene.org', tags:['ai','devtools']},
+    {name:'DevX San Diego — founder office hours', meta:'Sun 10:00am · Downtown', src:'Claude meetup community', tags:['founder']},
+    {name:'Example open build session', meta:'Sun 2:00pm · Liberty Station', src:'Luma', tags:['devtools']},
+    {name:'Example founder pitch practice night', meta:'Mon 6:30pm · East Village', src:'sdtechscene.org', tags:['founder']},
+    {name:'Example RAG/LLM eval workshop', meta:'Tue 6:00pm · Makers Quarter coworking', src:'Meetup', tags:['ai','devtools']},
+    {name:'Example dev-tools happy hour', meta:'Wed 5:30pm · Little Italy', src:'Instagram', tags:['devtools']},
+    {name:'50 Ants — agentic-tech lightning talks', meta:'Thu 6:00pm · Example Co-working Hub', src:'Luma', tags:['ai','founder']},
+    {name:'Example hardware/AI meetup', meta:'Fri 6:00pm · Sorrento Valley', src:'sdtechscene.org', tags:['ai']}
+  ];
+
+  var dirListEl = document.getElementById('dirList');
+  var dirCountEl = document.getElementById('dirCount');
+  var dirSearchEl = document.getElementById('dirSearch');
+  var chipEls = Array.from(document.querySelectorAll('.chip'));
+  var dirFilter = 'all';
+  var dirQuery = '';
+  var dirBuilt = false;
+  var dirAggTimer = null;
+  var dirSeqTimers = [];
+
+  function dirClearSeqTimers(){ dirSeqTimers.forEach(clearTimeout); dirSeqTimers = []; }
+
+  function dirMatches(ev){
+    var okFilter = dirFilter === 'all' || ev.tags.indexOf(dirFilter) !== -1;
+    var q = dirQuery.trim().toLowerCase();
+    var okQuery = !q || ev.name.toLowerCase().indexOf(q) !== -1 || ev.meta.toLowerCase().indexOf(q) !== -1 || ev.src.toLowerCase().indexOf(q) !== -1;
+    return okFilter && okQuery;
+  }
+
+  function dirApplyFilter(){
+    var shown = 0;
+    Array.from(dirListEl.children).forEach(function(li){
+      var idx = parseInt(li.dataset.idx, 10);
+      var match = dirMatches(DIR_EVENTS[idx]);
+      li.classList.toggle('filtered-out', !match);
+      if (match) shown++;
+    });
+    dirAnimateCount(shown);
+    var empty = dirListEl.querySelector('.dir-empty');
+    if (shown === 0 && !empty){
+      var p = document.createElement('li');
+      p.className = 'dir-empty';
+      p.textContent = 'No matching events — try a different search or filter.';
+      dirListEl.appendChild(p);
+    } else if (shown > 0 && empty){
+      empty.remove();
+    }
+  }
+
+  function dirAnimateCount(target){
+    var reduce = reducedMotionMQ.matches;
+    var start = parseInt(dirCountEl.textContent, 10) || 0;
+    if (reduce || start === target || !('requestAnimationFrame' in window)){
+      dirCountEl.textContent = target;
+      return;
+    }
+    var t0 = performance.now();
+    var dur = 260;
+    function frame(now){
+      var t = Math.min(1, (now - t0) / dur);
+      var val = Math.round(start + (target - start) * t);
+      dirCountEl.textContent = val;
+      if (t < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  // Builds the directory list fresh each time the scene is (re)entered, staggering items in
+  // one at a time (fade+rise) to read as a live aggregation across sources, per the spec's
+  // "feed-style stagger-in aggregation" mechanic. Reduced motion renders everything instantly.
+  function dirBuildFeed(cb){
+    dirClearSeqTimers();
+    if (dirAggTimer){ clearTimeout(dirAggTimer); dirAggTimer = null; }
+    dirListEl.innerHTML = '';
+    dirFilter = 'all'; dirQuery = '';
+    dirSearchEl.value = '';
+    chipEls.forEach(function(c){ c.classList.toggle('active', c.dataset.filter === 'all'); });
+    dirCountEl.textContent = '0';
+    var reduce = reducedMotionMQ.matches;
+
+    DIR_EVENTS.forEach(function(ev, i){
+      var li = document.createElement('li');
+      li.className = 'dir-item';
+      li.dataset.idx = i;
+      li.innerHTML = '<div><div class="name"></div><div class="meta"></div></div><span class="src-tag"></span>';
+      li.querySelector('.name').textContent = ev.name;
+      li.querySelector('.meta').textContent = ev.meta;
+      li.querySelector('.src-tag').textContent = 'via ' + ev.src;
+      dirListEl.appendChild(li);
+      if (reduce){
+        li.classList.add('in');
+        dirCountEl.textContent = i + 1;
+      } else {
+        dirSeqTimers.push(setTimeout(function(){
+          li.classList.add('in');
+          dirAnimateCount(i + 1);
+        }, 70 * i));
+      }
+    });
+
+    if (cb){
+      var totalDelay = reduce ? 0 : (70 * DIR_EVENTS.length + 260);
+      dirSeqTimers.push(setTimeout(cb, totalDelay));
+    }
+  }
+
+  function dirSetChip(filterVal){
+    dirFilter = filterVal;
+    chipEls.forEach(function(c){ c.classList.toggle('active', c.dataset.filter === filterVal); });
+    dirApplyFilter();
+  }
+
+  chipEls.forEach(function(c){
+    c.addEventListener('click', function(){
+      dirSequenceStop(); // manual interaction takes over from the scripted filter demo
+      dirSetChip(c.dataset.filter);
+    });
+  });
+  dirSearchEl.addEventListener('input', function(){
+    dirSequenceStop();
+    dirQuery = dirSearchEl.value;
+    dirApplyFilter();
+  });
+
+  var dirSequenceActive = false;
+  function dirSequenceStop(){ dirSequenceActive = false; dirClearSeqTimers(); }
+
+  // Scripted demo sequence for scenario 2: aggregate the feed, auto-select the "AI" filter
+  // (result count animates down), pause, then reset to "All" (count animates back up).
+  function runDirectoryDemo(){
+    dirSequenceActive = true;
+    dirBuildFeed(function(){
+      if (!dirSequenceActive) return;
+      dirSeqTimers.push(setTimeout(function(){
+        if (!dirSequenceActive) return;
+        dirSetChip('ai');
+      }, 500));
+      dirSeqTimers.push(setTimeout(function(){
+        if (!dirSequenceActive) return;
+        dirSetChip('all');
+      }, 500 + 1300));
+    });
+  }
+
+  // ---- reusable autoplay pattern (shared conventions §1-2, DEMO-WAVE-PLAN.md) ----
+  var tabBtns = Array.from(document.querySelectorAll('.step-btn'));
+  var scenes = Array.from(document.querySelectorAll('.scene'));
+  var demoRoot = document.getElementById('demoRoot');
+  var progressEl = document.getElementById('progress');
+  var replayBtn = document.getElementById('replayBtn');
+  var playPauseBtn = document.getElementById('playPauseBtn');
+  var reducedMotionMQ = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  // per-scene autoplay dwell — scenario 2 (directory) runs its own longer aggregate+filter
+  // sequence, so it gets extra time before the driver advances (documented deviation from the
+  // 2.6-3.5s/step band for the one scene with a richer scripted sub-sequence, same pattern
+  // PITCH-004 used for its per-scenario skeleton+stagger timing).
+  var STEP_DELAYS = [3200, 4400, 3200, 3200];
+  var idx = 0;
+  var autoplayEnabled = false;
+  var hasPlayedOnce = false;
+  var timer = null;
+  var holdCount = 0;
+  var manualStop = false;
+
+  function clearTimer(){ if (timer){ clearTimeout(timer); timer = null; } }
+
+  function show(i){
+    idx = (i + scenes.length) % scenes.length;
+    scenes.forEach(function(s, n){ s.classList.toggle('active', n === idx); });
+    tabBtns.forEach(function(b, n){ b.classList.toggle('active', n === idx); });
+    progressEl.textContent = (idx + 1) + ' / ' + scenes.length;
+    dirSequenceStop();
+    if (idx === 1) runDirectoryDemo();
+  }
+
+  function tick(){
+    clearTimer();
+    if (!autoplayEnabled || holdCount > 0) return;
+    timer = setTimeout(function(){
+      if (idx >= scenes.length - 1){
+        autoplayEnabled = false;
+        hasPlayedOnce = true;
+        replayBtn.hidden = false;
+        playPauseBtn.hidden = true;
+        return;
+      }
+      show(idx + 1);
+      tick();
+    }, STEP_DELAYS[idx] || 3200);
+  }
+
+  function hold(){ holdCount++; clearTimer(); }
+  function release(){ holdCount = Math.max(0, holdCount - 1); if (holdCount === 0 && !manualStop) tick(); }
+
+  function stopAutoplayForManual(){
+    manualStop = true;
+    autoplayEnabled = false;
+    clearTimer();
+    playPauseBtn.textContent = '▶ Paused (manual)';
+    playPauseBtn.setAttribute('aria-pressed', 'false');
+  }
+
+  playPauseBtn.addEventListener('click', function(){
+    if (autoplayEnabled){
+      stopAutoplayForManual();
+    } else if (!hasPlayedOnce) {
+      manualStop = false;
+      autoplayEnabled = true;
+      playPauseBtn.textContent = '⏸ Playing';
+      playPauseBtn.setAttribute('aria-pressed', 'true');
+      tick();
+    }
+  });
+
+  replayBtn.addEventListener('click', function(){
+    replayBtn.hidden = true;
+    replayBtn.blur(); // avoid a stuck focusin hold blocking the resumed autoplay
+    holdCount = 0;
+    manualStop = false;
+    show(0);
+    playPauseBtn.hidden = false;
+    playPauseBtn.textContent = '⏸ Playing';
+    playPauseBtn.setAttribute('aria-pressed', 'true');
+    if (!reducedMotionMQ.matches){
+      autoplayEnabled = true;
+      hasPlayedOnce = false;
+      tick();
+    }
+  });
+
+  // pause on hover/focus/touch of the demo, resume when released (per shared etiquette)
+  demoRoot.addEventListener('mouseenter', hold);
+  demoRoot.addEventListener('mouseleave', release);
+  demoRoot.addEventListener('focusin', hold);
+  demoRoot.addEventListener('focusout', release);
+  demoRoot.addEventListener('touchstart', hold, { passive:true });
+  demoRoot.addEventListener('touchend', release, { passive:true });
+  demoRoot.addEventListener('touchcancel', release, { passive:true });
+  document.addEventListener('visibilitychange', function(){
+    if (document.hidden) hold(); else release();
+  });
+
+  // ---- init ----
+  show(0);
+  if (!reducedMotionMQ.matches){
+    autoplayEnabled = true;
+    tick();
+  } else {
+    playPauseBtn.hidden = true;
+  }
 </script>
 </body>
 </html>

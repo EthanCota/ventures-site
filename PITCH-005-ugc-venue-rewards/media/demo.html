@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fareloop — simulated patron + venue demo</title>
+<style>
+  :root{
+    --bg:#faf6f0; --ink:#241a12; --ink-soft:#5a4a3a; --card:#fff; --line:#e6d9c4;
+    --amber:#c2540f; --amber-ink:#7a3208; --teal:#0e5c56; --teal-ink:#0a3f3b; --gold:#c9932b;
+    --focus:#0e5c56;
+  }
+  :root[data-theme="dark"]{
+    --bg:#171310; --ink:#f3ead9; --ink-soft:#cbb99e; --card:#231d17; --line:#3a2f22;
+    --amber:#e07a34; --amber-ink:#ffcfa8; --teal:#3fb8ac; --teal-ink:#bdf0e8; --gold:#e0b354;
+    --focus:#e0b354;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#171310; --ink:#f3ead9; --ink-soft:#cbb99e; --card:#231d17; --line:#3a2f22;
+      --amber:#e07a34; --amber-ink:#ffcfa8; --teal:#3fb8ac; --teal-ink:#bdf0e8; --gold:#e0b354;
+      --focus:#e0b354;
+    }
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--ink); font-family:'Avenir Next',Helvetica,Arial,sans-serif;}
+  a{color:var(--teal-ink);}
+  button:focus-visible, a:focus-visible, [role="tab"]:focus-visible{
+    outline:3px solid var(--focus); outline-offset:2px;
+  }
+  .wrap{max-width:720px; margin:0 auto; padding:0 18px 60px;}
+  .concept-banner{
+    position:sticky; top:0; z-index:10;
+    background:repeating-linear-gradient(135deg,var(--amber),var(--amber) 12px,var(--amber-ink) 12px,var(--amber-ink) 24px);
+    color:#fff; text-align:center; font-weight:700; letter-spacing:.04em; font-size:.8rem; padding:8px;
+  }
+  .sim-banner{
+    background:var(--gold); color:#2a1d00; text-align:center; font-weight:800; letter-spacing:.05em;
+    padding:9px; font-size:.82rem;
+  }
+  h1{font-size:1.3rem; margin:22px 0 4px;}
+  .sub{color:var(--ink-soft); font-size:.9rem; margin-bottom:18px;}
+
+  
+  .tabs{display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;}
+  .tabbtn{
+    position:relative;
+    font-family:inherit; font-weight:700; font-size:.88rem; border-radius:999px;
+    padding:9px 16px; border:1px solid var(--line); background:var(--card); color:var(--ink-soft);
+    cursor:pointer; transition:background-color 150ms ease, color 150ms ease, border-color 150ms ease;
+  }
+  .tabbtn[aria-selected="true"]{ background:var(--teal); border-color:var(--teal); color:#fff; }
+  :root[data-theme="dark"] .tabbtn[aria-selected="true"]{ color:#0a1a17; }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .tabbtn[aria-selected="true"]{ color:#0a1a17; } }
+  .tabbtn .pingdot{
+    position:absolute; top:-3px; right:-3px; width:10px; height:10px; border-radius:50%;
+    background:var(--amber); opacity:0; transform:scale(.4);
+    transition:opacity 160ms ease, transform 160ms ease;
+  }
+  .tabbtn .pingdot.show{ opacity:1; transform:scale(1); }
+
+  .stepper{display:flex; gap:6px; margin-bottom:18px;}
+  .dot{flex:1; height:6px; border-radius:3px; background:var(--line);}
+  .dot.active{background:var(--teal);}
+  .screen{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; min-height:340px; box-shadow:0 2px 10px rgba(0,0,0,.08);}
+  .screen[hidden]{ display:none; }
+  .phone-head{font-size:.75rem; color:var(--ink-soft); text-align:center; margin-bottom:14px;}
+  .kicker{font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--gold); font-weight:700; margin-bottom:6px;}
+  .msg{border-radius:14px; padding:12px 14px; margin-bottom:10px; font-size:.92rem; max-width:85%;}
+  .msg.app{background:var(--bg); border:1px solid var(--line);}
+  .msg.system{background:var(--teal); color:#fff; margin-left:auto;}
+  .msg.success{background:#dff0d8; color:#2c5e1a; border:1px solid #b6d9a8;}
+  :root[data-theme="dark"] .msg.success{background:#1f3a17; color:#b7e6a3; border-color:#33501f;}
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .msg.success{background:#1f3a17; color:#b7e6a3; border-color:#33501f;} }
+  .post-thumb{
+    width:100%; aspect-ratio:4/3; border-radius:10px; margin:10px 0;
+    background:linear-gradient(135deg,var(--teal),var(--gold));
+    display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:.85rem;
+    text-align:center; padding:10px;
+  }
+
+  
+  .checklist{ margin:0; padding:0; list-style:none; }
+  .checklist li{
+    display:inline-block; background:var(--bg); border:1px solid var(--line); border-radius:20px;
+    padding:5px 11px; font-size:.85rem; margin:4px 6px 0 0; opacity:0; transform:scale(.85);
+  }
+  .checklist.reveal li{ animation: chkIn 260ms ease both; }
+  .checklist.reveal li:nth-child(1){ animation-delay: 0ms; }
+  .checklist.reveal li:nth-child(2){ animation-delay: 140ms; }
+  .checklist.reveal li:nth-child(3){ animation-delay: 280ms; }
+  @keyframes chkIn{ from{ opacity:0; transform:scale(.85); } to{ opacity:1; transform:scale(1); } }
+
+  
+  .token{display:inline-flex; align-items:center; gap:8px; background:var(--amber); color:#fff; padding:8px 14px; border-radius:24px; font-weight:700; font-size:.9rem;}
+  :root[data-theme="dark"] .token{ color:#0a1a17; }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .token{ color:#0a1a17; } }
+  @keyframes tokenPulse{
+    0%{ box-shadow:0 0 0 0 rgba(194,84,15,.55); }
+    70%{ box-shadow:0 0 0 12px rgba(194,84,15,0); }
+    100%{ box-shadow:0 0 0 0 rgba(194,84,15,0); }
+  }
+  :root[data-theme="dark"] .token.pulse{ animation-name: tokenPulseDark; }
+  @keyframes tokenPulseDark{
+    0%{ box-shadow:0 0 0 0 rgba(224,122,52,.55); }
+    70%{ box-shadow:0 0 0 12px rgba(224,122,52,0); }
+    100%{ box-shadow:0 0 0 0 rgba(224,122,52,0); }
+  }
+  .token.pulse{ animation: tokenPulse 900ms ease-out 1; }
+
+  
+  .caption-box{background:var(--bg); border:1px dashed var(--line); border-radius:10px; padding:10px 12px; font-size:.82rem; color:var(--ink-soft); margin-top:10px;}
+
+  .kpis{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin:14px 0;}
+  .kpi{background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:12px; text-align:center; min-width:0;}
+  .kpi .num{font-size:1.3rem; font-weight:800; color:var(--teal-ink); font-variant-numeric:tabular-nums;}
+  .kpi .lbl{font-size:.7rem; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.04em;}
+  .kpi.synced{ transition: box-shadow 220ms ease; }
+  .kpi.synced.tick{ box-shadow: 0 0 0 3px var(--amber); }
+  :root[data-theme="dark"] .kpi.synced.tick{ box-shadow: 0 0 0 3px var(--amber); }
+
+  table{width:100%; border-collapse:collapse; font-size:.85rem; margin-top:10px;}
+  .table-wrap{ overflow-x:auto; }
+  th,td{padding:8px 10px; text-align:left; border-bottom:1px solid var(--line); white-space:nowrap;}
+  th{color:var(--ink-soft); font-size:.72rem; text-transform:uppercase;}
+  .bar-row{display:flex; align-items:center; gap:10px; margin:8px 0;}
+  .bar-label{width:110px; font-size:.8rem; flex-shrink:0;}
+  .bar-track{flex:1; background:var(--bg); border-radius:6px; height:14px; overflow:hidden; border:1px solid var(--line); min-width:0;}
+  .bar-fill{height:100%; background:var(--teal); width:0%; transition:width 900ms ease;}
+  .bar-row.highlight .bar-label{ color:var(--amber-ink); font-weight:700; }
+
+  .nav{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:18px; flex-wrap:wrap;}
+  button{
+    font-family:inherit; font-weight:700; border:none; border-radius:8px; padding:10px 18px;
+    background:var(--teal); color:#fff; cursor:pointer; font-size:.88rem;
+    transition: background-color 150ms ease, opacity 150ms ease;
+  }
+  :root[data-theme="dark"] button:not(.secondary):not(.replay){ color:#0a1a17; }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) button:not(.secondary):not(.replay){ color:#0a1a17; } }
+  button:disabled{opacity:.35; cursor:default;}
+  button.secondary{background:transparent; color:var(--teal-ink); border:1px solid var(--teal);}
+  button.replay{ display:none; background:var(--gold); color:#2a1d00; }
+  button.replay.show{ display:inline-block; }
+  .progress{ font-size:.78rem; color:var(--ink-soft); font-variant-numeric:tabular-nums; }
+  .illustrative{font-size:.72rem; color:var(--ink-soft); text-align:center; margin-top:20px;}
+  .badge-illustrative{background:#fff4d6; border:1px solid var(--gold); border-radius:6px; padding:1px 6px; font-size:.68rem; font-weight:700; color:#5a3d00;}
+
+  @media (max-width:390px){
+    .kpis{ grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; }
+    .kpi{ padding:8px 6px; }
+    .kpi .num{ font-size:1.05rem; }
+    .kpi .lbl{ font-size:.6rem; }
+  }
+
+  
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; scroll-behavior:auto !important; }
+    
+    .checklist li { opacity:1 !important; transform:none !important; }
+  }
+</style>
+</head>
+<body><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
+  
+  <div class="sim-banner" id="simBanner">SIMULATED PRODUCT DEMO — scripted, not a working app</div>
+
+  <div class="wrap" id="demoRoot">
+    <h1>Patron and venue, same event, two seats</h1>
+    <p class="sub">One scripted walkthrough plays through a single patron's loop — <b>Salt &amp;
+      Sail</b> (illustrative venue) — and this page shows it from both sides at once: the patron
+      posting and earning a token, and the venue watching the same moment land on its dashboard.
+      Switch tabs any time; the two views stay in step. All names, amounts, and venues are
+      <b>illustrative example</b> data, not real people or transactions.</p>
+
+    <div class="tabs" role="tablist" aria-label="Demo view">
+      <button type="button" class="tabbtn" id="tabPatron" role="tab" aria-selected="true" aria-controls="panelPatron">Patron view<span class="pingdot" id="pingPatron" aria-hidden="true"></span></button>
+      <button type="button" class="tabbtn" id="tabVenue" role="tab" aria-selected="false" aria-controls="panelVenue">Venue view<span class="pingdot" id="pingVenue" aria-hidden="true"></span></button>
+    </div>
+
+    <div class="stepper" id="stepper"></div>
+
+    <div class="screen" id="panelPatron" role="tabpanel" aria-labelledby="tabPatron"></div>
+    <div class="screen" id="panelVenue" role="tabpanel" aria-labelledby="tabVenue" hidden></div>
+
+    <div class="nav">
+      <div>
+        <button type="button" class="secondary" id="prevBtn">Back</button>
+        <button type="button" id="nextBtn">Next</button>
+      </div>
+      <span class="progress" id="progress" aria-live="polite">Step 1 / 5</span>
+      <button type="button" class="replay" id="replayBtn">↻ Replay</button>
+    </div>
+    <p class="illustrative">All names, amounts, and venues on this page are
+      <span class="badge-illustrative">ILLUSTRATIVE EXAMPLE</span> — plausibility-bounded, not
+      real transactions, and not a benchmarked fraud/verification model.</p>
+  </div>
+
+<script>
+(function(){
+  // ---- shared timeline: 5 beats, one narrative, two views rendered per beat ----
+  // Beat 2 ("token awarded") is the sync point the spec calls out: the patron's
+  // token pulse and the venue KPI's counter tick fire together, off one step index.
+  var beats = [
+    {
+      sync:false,
+      patron:{
+        head:"Maya's phone — Saturday, 8:42pm",
+        html:'<div class="msg app">Maya just posted a story from <b>Salt &amp; Sail</b> (illustrative venue)'
+          + ' — a photo of the rooftop sunset with the caption "best view in Gaslamp 🌅". No brand deal,'
+          + ' no ask. She was going to post it anyway.</div>'
+          + '<div class="post-thumb">📷 Story: rooftop sunset<br>tagged @saltandsail (illustrative)</div>'
+      },
+      venue:{
+        kicker:"Overview — this week",
+        html:'<div class="kpis">'
+          + '<div class="kpi"><div class="num">14</div><div class="lbl">posts submitted</div></div>'
+          + '<div class="kpi"><div class="num">11</div><div class="lbl">verified &amp; rewarded</div></div>'
+          + '<div class="kpi"><div class="num">3</div><div class="lbl">held for manual review</div></div>'
+          + '</div>'
+          + '<p style="font-size:.85rem; color:var(--ink-soft);">Illustrative week for a single-location'
+          + ' Starter-tier venue — bounded to a plausible few-dozen-posts/month range (14/wk shown ≈ 60/mo),'
+          + ' not a real measured figure. Maya’s post above is one of this week’s submissions.</p>'
+      }
+    },
+    {
+      sync:false,
+      patron:{
+        head:"Fareloop — detection",
+        html:'<div class="msg app">Fareloop’s venue integration picks up the tag within a few minutes of'
+          + ' posting.</div>'
+          + '<ul class="checklist reveal" id="chkList"><li>location match ✓</li><li>recent visit window ✓</li><li>account not previously flagged ✓</li></ul>'
+          + '<div class="msg app" style="font-size:.82rem; color:var(--ink-soft); margin-top:12px;">Illustrative example —'
+          + ' the actual verification model (geofencing + account history) is a design target, not a'
+          + ' benchmarked or built system yet.</div>'
+      },
+      venue:{
+        kicker:"Review queue",
+        html:'<div class="table-wrap"><table>'
+          + '<tr><th>Patron (illustrative)</th><th>Post</th><th>Status</th></tr>'
+          + '<tr><td>@j.torres_sd</td><td>Rooftop story, 8:42pm Sat</td><td style="color:#2c5e1a;">✅ Verified</td></tr>'
+          + '<tr><td>@sd_foodie_mo</td><td>Signature cocktail reel</td><td style="color:#2c5e1a;">✅ Verified</td></tr>'
+          + '<tr><td>@newacct_2913</td><td>Rooftop photo, no location match</td><td style="color:var(--amber-ink);">⏸ Manual review</td></tr>'
+          + '<tr><td>@repeat_claim_x</td><td>3rd submission this week</td><td style="color:var(--amber-ink);">⏸ Weekly cap reached</td></tr>'
+          + '</table></div>'
+          + '<p style="font-size:.78rem; color:var(--ink-soft); margin-top:12px; border-top:1px dashed var(--line); padding-top:10px;">Manual review queue is the honest MVP mitigation for fraud — small'
+          + ' enough volume to review by hand while automated verification tooling is still unbuilt.</p>'
+      }
+    },
+    {
+      sync:true,
+      patron:{
+        head:"Fareloop — patron notification",
+        html:'<div class="msg system">🎉 Your post at Salt &amp; Sail qualified! You’ve earned a'
+          + ' <b>Fareloop token</b>.</div>'
+          + '<div class="token" id="tokenEl">🪙 1 token — food/merch, redeemable at Salt &amp; Sail + 2 partner venues</div>'
+          + '<div class="caption-box">Suggested disclosure, auto-appended to Maya’s caption:<br>'
+          + '<i>"received a free item from Salt &amp; Sail via Fareloop"</i> — required, not optional'
+          + ' (FTC endorsement guidance).</div>'
+      },
+      venue:{
+        kicker:"Overview — this week",
+        html:'<div class="kpis">'
+          + '<div class="kpi"><div class="num">14</div><div class="lbl">posts submitted</div></div>'
+          + '<div class="kpi synced" id="kpiVerified"><div class="num" id="kpiVerifiedNum">0</div><div class="lbl">verified &amp; rewarded</div></div>'
+          + '<div class="kpi"><div class="num">3</div><div class="lbl">held for manual review</div></div>'
+          + '</div>'
+          + '<p style="font-size:.85rem; color:var(--ink-soft);">Maya’s post just landed here as the'
+          + ' 11th verified &amp; rewarded post this week — the same token award you just saw on the'
+          + ' Patron view, one tick later on this dashboard.</p>'
+      }
+    },
+    {
+      sync:false,
+      patron:{
+        head:"Two weeks later — Rico’s Taqueria (partner venue, illustrative)",
+        html:'<div class="msg app">Maya redeems her token at <b>Rico’s Taqueria</b>, a Fareloop partner'
+          + ' venue she’s never visited before — discovered through the cross-venue network, not an ad.</div>'
+          + '<div class="msg success">✅ Token redeemed: 1 free appetizer (illustrative example — not a'
+          + ' real menu item or price)</div>'
+          + '<div class="msg app" style="font-size:.82rem; color:var(--ink-soft);">This is the'
+          + ' cross-venue loop the product is built around: content at Venue A drives a real visit to'
+          + ' Venue B.</div>'
+      },
+      venue:{
+        kicker:"Cross-venue traffic (network partners)",
+        html:'<div class="bar-row highlight"><div class="bar-label">Rico’s Taqueria</div><div class="bar-track"><div class="bar-fill" data-target-width="70"></div></div><span style="font-size:.8rem;">7 redemptions</span></div>'
+          + '<div class="bar-row"><div class="bar-label">North Park Yards</div><div class="bar-track"><div class="bar-fill" data-target-width="40"></div></div><span style="font-size:.8rem;">4 redemptions</span></div>'
+          + '<div class="bar-row"><div class="bar-label">Salt &amp; Sail (you)</div><div class="bar-track"><div class="bar-fill" data-target-width="90"></div></div><span style="font-size:.8rem;">9 redemptions</span></div>'
+          + '<p style="font-size:.85rem; color:var(--ink-soft); margin-top:10px;">Rico’s Taqueria is'
+          + ' highlighted — the partner venue Maya just redeemed at on the Patron view. This view only'
+          + ' becomes meaningful once your venue is networked with partner venues (Growth tier); a single'
+          + ' unnetworked venue sees only its own column.</p>'
+      }
+    },
+    {
+      sync:false,
+      patron:{
+        head:"Two weeks later — Rico’s Taqueria (partner venue, illustrative)",
+        html:'<div class="msg app">Maya redeems her token at <b>Rico’s Taqueria</b>, a Fareloop partner'
+          + ' venue she’s never visited before — discovered through the cross-venue network, not an ad.</div>'
+          + '<div class="msg success">✅ Token redeemed: 1 free appetizer (illustrative example — not a'
+          + ' real menu item or price)</div>'
+          + '<div class="msg app" style="font-size:.82rem; color:var(--ink-soft);">Meanwhile, on the Venue'
+          + ' view: the same loop shows up as a line on the venue’s own monthly cost math →</div>'
+      },
+      venue:{
+        kicker:"Monthly cost vs. reward spend",
+        html:'<div class="kpis">'
+          + '<div class="kpi"><div class="num">$79</div><div class="lbl">platform fee</div></div>'
+          + '<div class="kpi"><div class="num">~$96</div><div class="lbl">comped-item cost (est.)</div></div>'
+          + '<div class="kpi"><div class="num">$25-110</div><div class="lbl">per-video market floor</div></div>'
+          + '</div>'
+          + '<p style="font-size:.85rem; color:var(--ink-soft);">Comped-item cost is an illustrative'
+          + ' estimate at ~47 redemptions/mo (the ~11/wk verified rate shown earlier) × a $4 assumed'
+          + ' marginal cost — <b>the actual per-venue COGS number has not been sourced</b> (RESEARCH.md'
+          + ' §4); a real venue owner should substitute their own cost before trusting this line.</p>'
+      }
+    }
+  ];
+
+  var reducedMotionMQ = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var demoRoot = document.getElementById('demoRoot');
+  var panelPatron = document.getElementById('panelPatron');
+  var panelVenue = document.getElementById('panelVenue');
+  var tabPatron = document.getElementById('tabPatron');
+  var tabVenue = document.getElementById('tabVenue');
+  var pingPatron = document.getElementById('pingPatron');
+  var pingVenue = document.getElementById('pingVenue');
+  var stepper = document.getElementById('stepper');
+  var progressEl = document.getElementById('progress');
+  var prevBtn = document.getElementById('prevBtn');
+  var nextBtn = document.getElementById('nextBtn');
+  var replayBtn = document.getElementById('replayBtn');
+  var simBanner = document.getElementById('simBanner');
+
+  var idx = 0;
+  var activeTab = 'patron';
+  var STEP_DELAY = 3200; // ms — within the shared 2.6-3.5s/step autoplay band
+  var autoplayEnabled = false;
+  var timer = null;
+  var holdCount = 0;
+
+  stepper.innerHTML = beats.map(function(_, i){ return '<div class="dot"></div>'; }).join('');
+  var dots = Array.prototype.slice.call(stepper.querySelectorAll('.dot'));
+
+  function setTab(name){
+    activeTab = name;
+    var isPatron = name === 'patron';
+    tabPatron.setAttribute('aria-selected', isPatron ? 'true' : 'false');
+    tabVenue.setAttribute('aria-selected', (!isPatron) ? 'true' : 'false');
+    panelPatron.hidden = !isPatron;
+    panelVenue.hidden = isPatron;
+    if (isPatron) pingPatron.classList.remove('show'); else pingVenue.classList.remove('show');
+  }
+
+  function pingOtherTab(){
+    // subtle cross-tab notice: something just synced on the side you're not looking at
+    var ping = activeTab === 'patron' ? pingVenue : pingPatron;
+    ping.classList.add('show');
+    setTimeout(function(){ ping.classList.remove('show'); }, 1600);
+  }
+
+  function runSyncedEffects(beat){
+    if (!beat.sync) return;
+    var tokenEl = panelPatron.querySelector('#tokenEl');
+    if (tokenEl) tokenEl.classList.add('pulse');
+    var kpiBox = panelVenue.querySelector('#kpiVerified');
+    var kpiNum = panelVenue.querySelector('#kpiVerifiedNum');
+    if (kpiBox) {
+      kpiBox.classList.add('tick');
+      setTimeout(function(){ kpiBox.classList.remove('tick'); }, 900);
+    }
+    if (kpiNum) {
+      var target = 11;
+      if (reducedMotionMQ.matches){
+        kpiNum.textContent = target;
+      } else {
+        var start = performance.now();
+        var duration = 700;
+        (function frame(now){
+          var t = Math.min(1, (now - start) / duration);
+          var eased = 1 - Math.pow(1 - t, 3);
+          kpiNum.textContent = Math.round(target * eased);
+          if (t < 1) requestAnimationFrame(frame);
+        })(start);
+      }
+    }
+    if (activeTab === 'patron') pingOtherTab();
+  }
+
+  function runBarFills(){
+    panelVenue.querySelectorAll('.bar-fill').forEach(function(el){
+      var target = el.getAttribute('data-target-width');
+      if (!target) return;
+      // Belt-and-suspenders per Convention 3: JS-driven animation must also be
+      // gated on matchMedia directly, not rely solely on the CSS kill-switch.
+      // Under reduced-motion, skip the 0%→rAF pattern and go straight to target.
+      if (reducedMotionMQ.matches){
+        el.style.width = target + '%';
+        return;
+      }
+      el.style.width = '0%';
+      void el.offsetWidth; // force reflow so the width transition retriggers on each reveal
+      requestAnimationFrame(function(){ el.style.width = target + '%'; });
+    });
+  }
+
+  function render(){
+    var beat = beats[idx];
+    panelPatron.innerHTML = '<div class="phone-head">' + beat.patron.head + '</div>' + beat.patron.html;
+    panelVenue.innerHTML = '<div class="kicker">' + beat.venue.kicker + '</div>' + beat.venue.html;
+    dots.forEach(function(d, n){ d.classList.toggle('active', n <= idx); });
+    progressEl.textContent = 'Step ' + (idx + 1) + ' / ' + beats.length;
+    prevBtn.disabled = idx === 0;
+    nextBtn.textContent = idx === beats.length - 1 ? 'Restart' : 'Next';
+    runBarFills();
+    runSyncedEffects(beat);
+  }
+
+  function clearTimer(){ if (timer){ clearTimeout(timer); timer = null; } }
+
+  function tick(){
+    clearTimer();
+    if (!autoplayEnabled || holdCount > 0) return;
+    timer = setTimeout(function(){
+      if (idx >= beats.length - 1){
+        autoplayEnabled = false;
+        replayBtn.classList.add('show');
+        return;
+      }
+      idx++;
+      render();
+      tick();
+    }, STEP_DELAY);
+  }
+
+  function hold(){ holdCount++; clearTimer(); }
+  function release(){ holdCount = Math.max(0, holdCount - 1); if (holdCount === 0) tick(); }
+
+  function stopAutoplayForManual(){
+    autoplayEnabled = false;
+    clearTimer();
+  }
+
+  tabPatron.addEventListener('click', function(){ setTab('patron'); });
+  tabVenue.addEventListener('click', function(){ setTab('venue'); });
+
+  prevBtn.addEventListener('click', function(){
+    stopAutoplayForManual();
+    if (idx > 0){ idx--; render(); }
+  });
+  nextBtn.addEventListener('click', function(){
+    stopAutoplayForManual();
+    if (idx === beats.length - 1){ idx = 0; } else { idx++; }
+    render();
+  });
+  replayBtn.addEventListener('click', function(){
+    replayBtn.blur(); // a Replay click always means "play" — don't let retained focus block resume
+    holdCount = 0;
+    replayBtn.classList.remove('show');
+    idx = 0;
+    setTab('patron');
+    render();
+    if (!reducedMotionMQ.matches){
+      autoplayEnabled = true;
+      tick();
+    }
+  });
+
+  demoRoot.addEventListener('mouseenter', hold);
+  demoRoot.addEventListener('mouseleave', release);
+  demoRoot.addEventListener('focusin', hold);
+  demoRoot.addEventListener('focusout', release);
+  demoRoot.addEventListener('touchstart', hold, { passive:true });
+  demoRoot.addEventListener('touchend', release, { passive:true });
+  demoRoot.addEventListener('touchcancel', release, { passive:true });
+  document.addEventListener('visibilitychange', function(){
+    if (document.hidden) hold(); else release();
+  });
+
+  setTab('patron');
+  render();
+  if (!reducedMotionMQ.matches){
+    autoplayEnabled = true;
+    tick();
+  }
+})();
+</script>
+</body>
+</html>

@@ -141,11 +141,15 @@ section:last-of-type { border-bottom: none; }
 @media (max-width: 760px) { .topnav { display: none; } }
 
 
-.btn { display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: var(--accent-ink); text-decoration: none; font-family: var(--font-ui); font-weight: 700; font-size: 0.92rem; padding: 12px 20px; border-radius: 4px; border: 1px solid transparent; }
-.btn:hover { background: var(--accent-strong); }
+.btn { display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: var(--accent-ink); text-decoration: none; font-family: var(--font-ui); font-weight: 700; font-size: 0.92rem; padding: 12px 20px; border-radius: 4px; border: 1px solid transparent; transition: background-color 0.14s ease, border-color 0.14s ease, color 0.14s ease, transform 0.14s ease; }
+.btn:hover { background: var(--accent-strong); transform: translateY(-1px); }
 .btn.secondary { background: transparent; color: var(--ink); border-color: var(--line-strong); }
 .btn.secondary:hover { border-color: var(--accent-strong); color: var(--accent-strong); }
 .btn.small { padding: 9px 15px; font-size: 0.8rem; }
+
+
+.reveal-pending { opacity: 0; transform: translateY(10px); transition: opacity 0.4s ease, transform 0.4s ease; }
+.reveal-pending.revealed { opacity: 1; transform: translateY(0); }
 
 
 .hero { padding: 46px 0 58px; border-bottom: 1px solid var(--line); }
@@ -499,5 +503,28 @@ footer.site-footer { padding: 30px 0 60px; text-align: center; color: var(--ink-
   <div class="wrap">Beachhead Intel — a alpha product, not a live product. © 2026.</div>
 </footer>
 
+<script>
+/* one-shot scroll reveal — section headers + card grids, hero untouched
+   (DEMO-WAVE-PLAN.md §3). No IntersectionObserver support or reduced-motion
+   → the .reveal-pending class is never assigned, so content is never hidden. */
+(function () {
+  if (!('IntersectionObserver' in window)) return;
+  var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reducedMotion) return;
+  var targets = document.querySelectorAll(
+    'main > section > .wrap > h2, .card, .feature.card, .demo-card, .cta-box'
+  );
+  targets.forEach(function (el) { el.classList.add('reveal-pending'); });
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  targets.forEach(function (el) { io.observe(el); });
+})();
+</script>
 </body>
 </html>

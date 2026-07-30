@@ -264,6 +264,12 @@
   }
   html{scroll-behavior:smooth;}
   @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} }
+
+  
+  .reveal-pending{opacity:0; transform:translateY(10px);}
+  .reveal-target{transition:opacity 420ms ease, transform 420ms ease;}
+  .reveal-target.revealed{opacity:1; transform:translateY(0);}
+  a, button, .subscribe-btn, .chip, input{transition:color 140ms ease, background 140ms ease, border-color 140ms ease, transform 140ms ease;}
 </style>
 </head>
 <body><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
@@ -437,5 +443,32 @@
 
 
 
+<script>
+  // One-shot scroll reveal (fade+rise) on each client-facing section's direct content blocks.
+  // header.masthead (the hero) is not a <section> and is never a target — it always renders
+  // fully visible on first paint. Internal appendix is excluded (back-of-house, out of scope
+  // for the client-facing animation pass). Gated on IntersectionObserver support AND
+  // prefers-reduced-motion=false — reduced-motion/no-JS visitors never have anything hidden,
+  // since .reveal-pending is only ever assigned here, never in markup or default CSS.
+  (function(){
+    var reducedMotionMQ = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (reducedMotionMQ.matches || !('IntersectionObserver' in window)) return;
+    var targets = document.querySelectorAll('section:not(.internal-section) > .wrap > *');
+    targets.forEach(function(el, i){
+      el.classList.add('reveal-target', 'reveal-pending');
+      el.style.transitionDelay = Math.min(i % 4, 3) * 40 + 'ms';
+    });
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting){
+          entry.target.classList.remove('reveal-pending');
+          entry.target.classList.add('revealed');
+          io.unobserve(entry.target);
+        }
+      });
+    }, {threshold: 0.12});
+    targets.forEach(function(el){ io.observe(el); });
+  })();
+</script>
 </body>
 </html>

@@ -98,7 +98,7 @@
   .brand{font-size:1.5rem; font-weight:800; color:var(--gold); letter-spacing:-.01em;}
   .brand .dot{color:var(--amber);}
   .navlinks{display:flex; gap:18px; flex-wrap:wrap; font-size:.9rem; font-weight:700;}
-  .navlinks a{color:var(--ink-2); text-decoration:none;}
+  .navlinks a{color:var(--ink-2); text-decoration:none; transition:color 140ms ease;}
   .navlinks a:hover{color:var(--amber-text);}
   .tagline{color:var(--ink-2); font-size:.95rem; margin:2px 0 20px;}
   h1{
@@ -111,12 +111,16 @@
   .btn{
     display:inline-block; padding:13px 24px; border-radius:6px; font-weight:700;
     text-decoration:none; font-size:1rem; border:2px solid transparent; letter-spacing:.02em;
-    min-height:44px;
+    min-height:44px; transition:background-color 140ms ease, color 140ms ease;
   }
   .btn-primary{background:var(--amber); color:var(--amber-ink); box-shadow:var(--glow);}
   .btn-primary:hover{background:var(--amber-strong);}
   .btn-ghost{border-color:var(--teal); color:var(--teal-text);}
   .btn-ghost:hover{background:var(--teal); color:var(--amber-ink);}
+
+  
+  .reveal-pending{ opacity:0; transform:translateY(10px); }
+  .revealed{ opacity:1; transform:translateY(0); transition:opacity 420ms ease, transform 420ms ease; }
 
   section{padding:54px 0; border-bottom:1px solid var(--line);}
   .band-alt{background:var(--bg2);}
@@ -270,7 +274,7 @@
         <div class="tagline">A tab worth posting about, everywhere it takes you.</div>
       </div>
       <nav class="navlinks">
-        <a href="#demo">See the demo</a>
+        <a href="#demo">Simulated demo</a>
         <a href="#pricing">Pricing</a>
         <a href="#ask">The ask</a>
       </nav>
@@ -425,13 +429,12 @@
     <div class="eyebrow">Demo</div>
     <h2>What using Fareloop actually looks like</h2>
     <div class="demo-stub">
-      <p style="font-weight:700;">Two simulated walkthroughs — labeled SIMULATED,
+      <p style="font-weight:700;">One simulated walkthrough, two tabs — labeled SIMULATED,
         illustrative data only.</p>
-      <p style="opacity:.9; font-family:system-ui,sans-serif;">No live product exists yet. These are scripted demos of the
-        intended flow.</p>
+      <p style="opacity:.9; font-family:system-ui,sans-serif;">No live product exists yet. Patron view and venue view
+        are the same scripted event, seen from both sides — switch tabs any time, they stay in step.</p>
       <div class="demo-links">
-        <a class="btn btn-primary" href="./media/patron-flow.html">Patron flow: post → verify → redeem</a>
-        <a class="btn btn-primary" href="./media/venue-dashboard.html">Venue dashboard walkthrough</a>
+        <a class="btn btn-primary" href="./media/demo.html">Open the demo: patron + venue →</a>
       </div>
     </div>
   </div>
@@ -499,3 +502,37 @@
 
 
 
+
+<script>
+(function(){
+  // One-shot scroll reveal (fade + rise) on section headers/content blocks, per
+  // DEMO-WAVE-PLAN.md shared convention §3. Only ever assigns .reveal-pending when
+  // IntersectionObserver exists AND reduced-motion is false, so a reduced-motion or
+  // no-JS visitor's content is never hidden to begin with — never worse than before.
+  // The hero (<header class="hero">) sits outside <main>-equivalent scope entirely
+  // and is never a target: it always renders fully visible on first paint.
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduceMotion && 'IntersectionObserver' in window){
+    var targets = document.querySelectorAll(
+      '#what .eyebrow, #what h2, #what .ticket-row, ' +
+      '#who .eyebrow, #who h2, #who .guest-box, ' +
+      '#features .eyebrow, #features h2, #features .op-grid, #features .op-risk, ' +
+      '#pricing .eyebrow, #pricing h2, #pricing .menu-board, #pricing .breakeven, ' +
+      '#demo .eyebrow, #demo h2, #demo .demo-stub, ' +
+      '#faq .eyebrow, #faq h2, #faq .faq, ' +
+      '#ask .eyebrow, #ask h2, #ask .invite'
+    );
+    targets.forEach(function(el){ el.classList.add('reveal-pending'); });
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting){
+          entry.target.classList.remove('reveal-pending');
+          entry.target.classList.add('revealed');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    targets.forEach(function(el){ io.observe(el); });
+  }
+})();
+</script>

@@ -6,14 +6,18 @@
     --bg:#fcfcfb; --surface:#ffffff; --surface-2:#f3f1ee; --border:#ddd8d0;
     --ink:#20201d; --ink-2:#524d44; --ink-muted:#7a746a;
     --accent:#D9622B; --accent2:#1B7FA8; --accent-ink:#fff;
+    --accent-text:#8B3A18; --accent2-text:#1271A0; 
     --banner-bg:#1a1a19; --banner-ink:#F5D48A;
     --sim-bg:#3a2a10; --sim-ink:#F7D9A0; --sim-border:#8a5a1f;
+    
+    --accent-solid:#a84a1c; --pill-booked-bg:#166534; --pill-escalated-bg:#146786;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
       --bg:#15140f; --surface:#1d1c17; --surface-2:#262420; --border:#3a3730;
       --ink:#f1ede4; --ink-2:#cbc4b6; --ink-muted:#948c7c;
       --accent:#C85F26; --accent2:#3FA0C9; --accent-ink:#1a1208;
+      --accent-text:#E08040; --accent2-text:#3FA0C9; 
       --banner-bg:#0e0d0a; --banner-ink:#F5D48A;
       --sim-bg:#241c10; --sim-ink:#F0C77E; --sim-border:#7a5220;
     }
@@ -22,6 +26,7 @@
     --bg:#15140f; --surface:#1d1c17; --surface-2:#262420; --border:#3a3730;
     --ink:#f1ede4; --ink-2:#cbc4b6; --ink-muted:#948c7c;
     --accent:#C85F26; --accent2:#3FA0C9; --accent-ink:#1a1208;
+    --accent-text:#E08040; --accent2-text:#3FA0C9; 
     --banner-bg:#0e0d0a; --banner-ink:#F5D48A;
     --sim-bg:#241c10; --sim-ink:#F0C77E; --sim-border:#7a5220;
   }
@@ -31,7 +36,11 @@
   .b1{background:var(--banner-bg); color:var(--banner-ink); border-bottom:2px solid var(--accent)}
   .b2{background:var(--sim-bg); color:var(--sim-ink); border-bottom:2px solid var(--sim-border)}
   .wrap{max-width:720px; margin:0 auto; padding:32px 20px 60px}
-  a.back{font-size:13.5px; color:var(--accent2); text-decoration:none; font-weight:600}
+  a.back{font-size:13.5px; color:var(--accent2-text); text-decoration:none; font-weight:600}
+  .scenario-tabs{display:flex; flex-wrap:wrap; gap:8px; margin:18px 0 6px}
+  .tab-link{font-size:12.5px; font-weight:700; padding:7px 12px; border-radius:999px; border:1px solid var(--border); color:var(--ink-2); text-decoration:none; background:var(--surface); transition:background-color .15s, color .15s, border-color .15s}
+  .tab-link:hover{border-color:var(--accent2)}
+  .tab-link.active{background:var(--accent-solid); border-color:var(--accent-solid); color:#fff}
   h1{font-size:24px; margin:18px 0 4px}
   .meta{color:var(--ink-muted); font-size:13.5px; margin-bottom:24px}
   .queue{background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:16px; margin-bottom:20px}
@@ -49,7 +58,7 @@
   .line.agent{align-self:flex-end; border-top-right-radius:2px; background:var(--surface-2)}
   .who{font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; margin-bottom:4px}
   .caller .who{color:var(--accent2)}
-  .agent .who{color:var(--accent)}
+  .agent .who{color:var(--accent-text)}
   .stage{font-size:11px; font-weight:800; text-transform:uppercase; color:var(--ink-muted); margin:20px 0 8px; letter-spacing:.05em}
   .controls{display:flex; gap:10px; margin-top:24px}
   button{padding:10px 18px; border-radius:8px; border:2px solid var(--border); background:var(--surface); color:var(--ink); font-weight:700; cursor:pointer; font-size:14px}
@@ -59,7 +68,17 @@
   .outcome.shown{display:block}
   .outcome h3{margin:0 0 8px; font-size:15px}
   .outcome ul{margin:0; padding-left:18px; font-size:13.5px; color:var(--ink-2)}
+  .result-pill{display:inline-flex; align-items:center; gap:6px; padding:7px 15px; border-radius:999px; font-weight:800; font-size:13px; letter-spacing:.02em; margin-bottom:12px; opacity:0; transform:scale(.92); transition:opacity .3s ease-out, transform .3s ease-out}
+  .result-pill.in{opacity:1; transform:scale(1)}
+  .result-pill.booked{background:var(--pill-booked-bg); color:#fff}
+  .result-pill.escalated{background:var(--pill-escalated-bg); color:#fff}
   .illus{font-size:11px; color:var(--ink-muted); margin-top:22px}
+  @media (prefers-reduced-motion: reduce){
+    *, *::before, *::after{
+      animation-duration:.001ms !important; animation-iteration-count:1 !important;
+      transition-duration:.001ms !important; scroll-behavior:auto !important;
+    }
+  }
 </style><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
 
 
@@ -67,6 +86,11 @@
 
 <div class="wrap">
   <a class="back" href="../site/index.html">← Back to IronLine</a>
+  <nav class="scenario-tabs" aria-label="Choose a scenario">
+    <a class="tab-link" href="scenario-burst-pipe.html">Burst pipe</a>
+    <a class="tab-link active" href="scenario-no-ac-heatwave.html" aria-current="page">No-AC heatwave</a>
+    <a class="tab-link" href="scenario-electrical-hazard.html">Electrical hazard</a>
+  </nav>
   <h1>Scenario 2: No-AC during a heatwave</h1>
   <div class="meta">Illustrative example. HVAC's emergency-ticket premium is unsourced this pass (RESEARCH.md §4) — no dollar figure is quoted or invented in this scenario for that reason; the demo instead shows call-volume triage and prioritization, which is grounded behavior regardless of the unresolved pricing question.</div>
 
@@ -78,15 +102,18 @@
     <div class="qrow"><span>4. Routine maintenance check requested</span></div>
   </div>
 
-  <div class="stage">Call transcript — caller #1</div>
-  <div class="transcript" id="t"></div>
+  <div id="demoRoot">
+    <div class="stage">Call transcript — caller #1</div>
+    <div class="transcript" id="t"></div>
 
-  <div class="controls">
-    <button class="primary" id="next">Play next line ▸</button>
-    <button id="reset">Restart</button>
+    <div class="controls">
+      <button class="primary" id="next">Play next line ▸</button>
+      <button id="reset">Restart</button>
+    </div>
   </div>
 
   <div class="outcome" id="outcome">
+    <span class="result-pill booked" id="resultPill">Booked ✓</span>
     <h3>Outcome</h3>
     <ul>
       <li>Caller flagged high-priority: elderly, home alone, no AC during a heat advisory (illustrative example)</li>
@@ -109,21 +136,98 @@
     {who:'agent', text:"You're on the schedule for the first available slot today. In the meantime, please stay in the coolest room in your home and drink water. A technician will call you directly before arriving."}
   ];
   const t = document.getElementById('t');
+  const nextBtn = document.getElementById('next');
+  const resetBtn = document.getElementById('reset');
+  const outcome = document.getElementById('outcome');
+  const resultPill = document.getElementById('resultPill');
+  const demoRoot = document.getElementById('demoRoot');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   let i = 0;
+  let autoplayActive = false;
+  let holdCount = 0;
+  let autoplayTimer = null;
+
   function render(){
     t.innerHTML = lines.map((l,idx)=>`<div class="line ${l.who} ${idx<i?'shown':''}"><div class="who">${l.who==='caller'?'Caller':'IronLine'}</div>${l.text}</div>`).join('');
   }
+
+  // reusable autoplay pattern (shared conventions, DEMO-WAVE-PLAN.md) — per-line dwell
+  // scaled by that line's own text length, not a fixed step cadence (002's precedent).
+  function stepDelay(text){
+    return Math.min(2200, Math.max(900, 550 + text.length * 22));
+  }
+
+  function showResult(){
+    nextBtn.disabled = true;
+    outcome.classList.add('shown');
+    requestAnimationFrame(()=>{ resultPill.classList.add('in'); });
+  }
+  function hideResult(){
+    outcome.classList.remove('shown');
+    resultPill.classList.remove('in');
+  }
+
+  function clearTimer(){
+    if(autoplayTimer){ clearTimeout(autoplayTimer); autoplayTimer = null; }
+  }
+
+  function tick(){
+    clearTimer();
+    if(!autoplayActive || holdCount > 0) return;
+    if(i >= lines.length) return;
+    const delay = stepDelay(lines[i].text);
+    autoplayTimer = setTimeout(()=>{
+      i++; render();
+      if(i >= lines.length){ showResult(); autoplayActive = false; return; }
+      tick();
+    }, delay);
+  }
+
+  function startAutoplay(){
+    if(reducedMotion) return;
+    autoplayActive = true;
+    tick();
+  }
+  function stopAutoplayForManual(){
+    autoplayActive = false;
+    clearTimer();
+  }
+
   render();
-  document.getElementById('next').addEventListener('click', ()=>{
+  startAutoplay();
+
+  nextBtn.addEventListener('click', ()=>{
+    stopAutoplayForManual();
     if(i < lines.length){ i++; render(); }
-    if(i >= lines.length){
-      document.getElementById('next').disabled = true;
-      document.getElementById('outcome').classList.add('shown');
-    }
+    if(i >= lines.length){ showResult(); }
   });
-  document.getElementById('reset').addEventListener('click', ()=>{
+
+  resetBtn.addEventListener('click', function(){
+    stopAutoplayForManual();
     i = 0; render();
-    document.getElementById('next').disabled = false;
-    document.getElementById('outcome').classList.remove('shown');
+    nextBtn.disabled = false;
+    hideResult();
+    // real bug found in an earlier build in this wave (PITCH-004): a Replay/Restart
+    // button living inside the same hover/focus pause wrapper retains DOM focus after
+    // being clicked, firing focusin with no matching focusout — silently blocking
+    // autoplay from ever resuming. Blur + reset the hold counter before restarting.
+    this.blur();
+    holdCount = 0;
+    startAutoplay();
+  });
+
+  // pause on hover/focus/touch of the demo area; resume where it left off (not from the top)
+  ['mouseenter','focusin','touchstart'].forEach(ev=>demoRoot.addEventListener(ev, ()=>{
+    holdCount++;
+    clearTimer();
+  }));
+  ['mouseleave','focusout','touchend'].forEach(ev=>demoRoot.addEventListener(ev, ()=>{
+    holdCount = Math.max(0, holdCount - 1);
+    if(holdCount === 0 && autoplayActive) tick();
+  }));
+  document.addEventListener('visibilitychange', ()=>{
+    if(document.hidden){ clearTimer(); }
+    else if(autoplayActive && holdCount === 0){ tick(); }
   });
 </script>

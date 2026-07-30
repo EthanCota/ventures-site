@@ -64,7 +64,7 @@
   .wordmark{font-family:var(--display); font-weight:800; font-size:1.05rem; letter-spacing:-.01em; display:flex; align-items:baseline; gap:.5rem;}
   .wordmark .tag{font-family:var(--mono); font-size:.68rem; font-weight:600; color:var(--ink-mute); border:1px solid var(--line); padding:.05rem .4rem; border-radius:4px;}
   nav.docsnav{display:flex; gap:1.1rem; flex-wrap:wrap; font-family:var(--mono);}
-  nav.docsnav a{color:var(--ink-soft); text-decoration:none; font-size:.78rem; letter-spacing:.01em;}
+  nav.docsnav a{color:var(--ink-soft); text-decoration:none; font-size:.78rem; letter-spacing:.01em; transition:color 140ms ease;}
   nav.docsnav a::before{content:"/"; color:var(--ink-mute); margin-right:.15rem;}
   nav.docsnav a:hover{color:var(--accent);}
 
@@ -84,10 +84,11 @@
   .diagram-wrap{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:1.1rem; overflow-x:auto;}
   .diagram-wrap .cap{font-family:var(--mono); font-size:.68rem; color:var(--ink-mute); margin-top:.7rem; border-top:1px solid var(--line); padding-top:.6rem;}
   .cta-row{display:flex; gap:.75rem; margin-top:1.3rem; flex-wrap:wrap;}
-  .btn{display:inline-block; padding:.65rem 1.1rem; border-radius:6px; font-weight:700; font-size:.85rem; font-family:var(--mono); text-decoration:none; border:1px solid var(--line);}
+  .btn{display:inline-block; padding:.65rem 1.1rem; border-radius:6px; font-weight:700; font-size:.85rem; font-family:var(--mono); text-decoration:none; border:1px solid var(--line); transition:filter 140ms ease, border-color 140ms ease;}
   .btn.primary{background:var(--accent); color:#04101f; border-color:var(--accent); box-shadow:0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent), 0 0 22px -6px var(--accent);}
   .btn.ghost{color:var(--ink); background:var(--card);}
   .btn.ghost:hover, .btn.primary:hover{filter:brightness(1.08);}
+  .btn.ghost:hover{border-color:var(--accent);}
 
   .spec-table{width:100%; border-collapse:collapse; font-size:.85rem;}
   .spec-table th, .spec-table td{border:1px solid var(--line); padding:.65rem .75rem; text-align:left; vertical-align:top;}
@@ -146,6 +147,9 @@
     .kv{grid-template-columns:1fr;}
     header.topbar{top:0;}
   }
+  .reveal-pending{opacity:0; transform:translateY(10px); transition:opacity 420ms ease, transform 420ms ease;}
+  .reveal-pending.revealed{opacity:1; transform:translateY(0);}
+
   @media (prefers-reduced-motion: reduce){
     html{scroll-behavior:auto;}
     *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important;}
@@ -389,5 +393,24 @@ scene 3: admin's isolation / audit view
   Governframe is a alpha product, not a live product or registered business. All figures on this page are claim-tagged in the source research; the provenance record carries the full citation trail. No real customer, testimonial, or client data appears anywhere on this page.
 </footer>
 
+<script>
+(function(){
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduceMotion || !('IntersectionObserver' in window)) return;
+  // The #what section is the hero/mechanism section (first in <main>) and always renders
+  // fully visible on first paint per the fleet convention — never a reveal target.
+  var targets = document.querySelectorAll('main > section:not(#what)');
+  targets.forEach(function(el){ el.classList.add('reveal-pending'); });
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if (entry.isIntersecting){
+        entry.target.classList.add('revealed');
+        io.unobserve(entry.target);
+      }
+    });
+  }, {threshold: 0.12, rootMargin: '0px 0px -8% 0px'});
+  targets.forEach(function(el){ io.observe(el); });
+})();
+</script>
 </body>
 </html>

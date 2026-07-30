@@ -9,16 +9,20 @@
     --bg:#faf7f2; --surface:#ffffff; --ink:#16231f; --ink-2:#4b5a54; --muted:#8a938e;
     --teal:#0d6e5c; --teal-dark:#0a5749; --coral:#e2673f; --line:#e5e0d5;
     --banner-bg:#1a1a19; --banner-ink:#fff2d6; --internal-bg:#fff2d6; --internal-ink:#5c3d00;
+    
+    --coral-text:#b1552f;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
       --bg:#0e1512; --surface:#16211d; --ink:#f5f2ea; --ink-2:#c3cdc8; --muted:#7d8a84;
       --teal:#35a98d; --teal-dark:#2a8a73; --coral:#f0855e; --line:#2a332e;
+      --coral-text:var(--coral);
     }
   }
   :root[data-theme="dark"]{
     --bg:#0e1512; --surface:#16211d; --ink:#f5f2ea; --ink-2:#c3cdc8; --muted:#7d8a84;
     --teal:#35a98d; --teal-dark:#2a8a73; --coral:#f0855e; --line:#2a332e;
+    --coral-text:var(--coral);
   }
   *{box-sizing:border-box;}
   body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);}
@@ -50,7 +54,8 @@
   .line{margin:0 0 10px;font-size:.92rem;line-height:1.5;}
   .line b{color:var(--teal-dark);}
   .chartnote{border:1px dashed var(--teal);border-radius:10px;padding:14px 16px;background:var(--bg);
-    font-size:.88rem;line-height:1.55;}
+    font-size:.88rem;line-height:1.55;margin:0;}
+  .chartnote .field{margin:0;}
   .chartnote dt{font-weight:700;color:var(--teal-dark);margin-top:8px;}
   .chartnote dd{margin:2px 0 0;}
   .sms-thread{display:flex;flex-direction:column;gap:8px;min-height:170px;}
@@ -69,6 +74,49 @@
   footer{text-align:center;color:var(--muted);font-size:.78rem;margin-top:2em;}
   .caveat{margin-top:14px;font-size:.8rem;color:var(--ink-2);border-top:1px solid var(--line);
     padding-top:10px;}
+
+  
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important;transition:none !important;}
+  }
+
+  
+  .tab{transition:background-color 140ms ease,color 140ms ease,border-color 140ms ease;}
+  .stepper button{transition:background-color 140ms ease,border-color 140ms ease,color 140ms ease,opacity 140ms ease;}
+  .stepper button:not(:disabled):hover{border-color:var(--teal);color:var(--teal-dark);}
+  @media (prefers-color-scheme: dark){ .stepper button:not(:disabled):hover{color:var(--teal);} }
+  :root[data-theme="dark"] .stepper button:not(:disabled):hover{color:var(--teal);}
+  :root[data-theme="light"] .stepper button:not(:disabled):hover{color:var(--teal-dark);}
+
+  
+  .autoplay-row{display:flex;align-items:center;justify-content:space-between;gap:10px;
+    margin:-4px 0 12px;flex-wrap:wrap;}
+  .progress-label{font-size:.78rem;color:var(--muted);font-variant-numeric:tabular-nums;}
+  .replay-btn{font-size:.8rem;font-weight:700;padding:6px 13px;border-radius:999px;
+    border:1.5px solid var(--coral);background:var(--surface);color:var(--coral-text);
+    cursor:pointer;transition:background-color 140ms ease,color 140ms ease;}
+  
+  .replay-btn:hover{background:var(--coral);color:#241005;}
+  .replay-btn[hidden]{display:none;}
+
+  
+  .live-flag{display:inline-block;background:var(--coral);color:#241005;font-weight:800;
+    font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;padding:4px 10px;
+    border-radius:6px;margin-bottom:10px;}
+
+  
+  .line.line-pending{opacity:0;transform:translateY(4px);}
+  .line.line-shown{opacity:1;transform:translateY(0);transition:opacity 220ms ease,transform 220ms ease;}
+
+  
+  .compiling{display:none;border:1px dashed var(--teal);border-radius:10px;padding:14px 16px;
+    background:var(--bg);font-size:.85rem;color:var(--ink-2);font-weight:600;min-height:170px;
+    display:none;align-items:center;justify-content:center;text-align:center;}
+  .compiling.active{display:flex;}
+
+  
+  .chartnote .field.field-pending{opacity:0;transform:translateY(6px);}
+  .chartnote .field.field-shown{opacity:1;transform:translateY(0);transition:opacity 240ms ease,transform 240ms ease;}
 </style>
 </head>
 <body><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
@@ -80,10 +128,11 @@
   use. Nothing here calls a real model, a real PMS, or a real phone line — it's a fixed script for
   the roadmap conversation, stepped through manually.</p>
 
-  <div class="tabs">
-    <button class="tab active" data-t="t1">1 · Ambient charting</button>
-    <button class="tab" data-t="t2">2 · Recall SMS</button>
-    <button class="tab" data-t="t3">3 · PMS-assist dashboard</button>
+  <div id="demoRoot">
+  <div class="tabs" role="tablist" aria-label="Demo scenarios">
+    <button class="tab active" role="tab" aria-selected="true" data-t="t1">1 · Ambient charting</button>
+    <button class="tab" role="tab" aria-selected="false" data-t="t2">2 · Recall SMS</button>
+    <button class="tab" role="tab" aria-selected="false" data-t="t3">3 · PMS-assist dashboard</button>
   </div>
 
   <section class="scenario active" id="t1">
@@ -92,6 +141,12 @@
     <p class="sub" style="margin-bottom:0;">Synthetic patient "J. Alvarez," synthetic visit. Dental-shaped
     output (tooth/surface notation, periodontal readings) — the wedge RESEARCH.md §2.1 found
     generic scribes (Freed, Heidi) don't natively produce.</p>
+
+    <div class="autoplay-row">
+      <span id="t1-progress" class="progress-label" aria-live="polite">Transcript · scripted playback</span>
+      <button id="t1-replay" class="replay-btn" type="button" hidden>↻ Replay</button>
+    </div>
+
     <div class="stepper">
       <button id="t1-prev">◀ prev</button>
       <span class="stepnum" id="t1-count">step 1 / 2</span>
@@ -99,6 +154,7 @@
     </div>
     <div id="t1-step0">
       <div class="transcript">
+        <div class="live-flag">⏸ Simulated — scripted playback, not a live recording or audio capture</div>
         <p class="line"><b>Dr. Cota:</b> Alright Mr. Alvarez, let's take a look. Open wide for me.</p>
         <p class="line"><b>Patient:</b> Sure, doc.</p>
         <p class="line"><b>Dr. Cota:</b> Okay — number 30, I'm seeing a moderate occlusal caries, distal
@@ -110,17 +166,26 @@
       </div>
     </div>
     <div id="t1-step1" style="display:none;">
-      <dl class="chartnote">
-        <dt>Tooth #30</dt>
-        <dd>Moderate occlusal caries, distal surface involvement (D-O). Plan: composite restoration.</dd>
-        <dt>Tooth #3</dt>
-        <dd>Gingival recession, buccal probing depth ≈4mm. Patient-reported sensitivity. No active
-        treatment — monitor next recall.</dd>
-        <dt>General</dt>
-        <dd>No additional new carious lesions noted this visit.</dd>
-        <dt>Draft status</dt>
-        <dd>Ready for clinician review and sign-off — not auto-filed into the PMS. See PMS-assist
-        scenario for why that distinction matters.</dd>
+      <div id="t1-compiling" class="compiling">Compiling chart note… simulated — not a live transcription service</div>
+      <dl class="chartnote" id="t1-chartnote">
+        <div class="field">
+          <dt>Tooth #30</dt>
+          <dd>Moderate occlusal caries, distal surface involvement (D-O). Plan: composite restoration.</dd>
+        </div>
+        <div class="field">
+          <dt>Tooth #3</dt>
+          <dd>Gingival recession, buccal probing depth ≈4mm. Patient-reported sensitivity. No active
+          treatment — monitor next recall.</dd>
+        </div>
+        <div class="field">
+          <dt>General</dt>
+          <dd>No additional new carious lesions noted this visit.</dd>
+        </div>
+        <div class="field">
+          <dt>Draft status</dt>
+          <dd>Ready for clinician review and sign-off — not auto-filed into the PMS. See PMS-assist
+          scenario for why that distinction matters.</dd>
+        </div>
       </dl>
     </div>
   </section>
@@ -174,17 +239,21 @@
     PITCH.md objection #2).</div>
   </section>
 
+  </div>
+
   <footer>Cuspid simulated walkthrough · synthetic data only · no real patients, calls, or messages ·
   built for a Vornix roadmap conversation, 2026-07-29</footer>
 </main>
 <script>
-  function wireTabs(){
+  function wireTabs(onSwitch){
     const tabs=document.querySelectorAll('.tab');
     tabs.forEach(t=>t.addEventListener('click',()=>{
-      tabs.forEach(x=>x.classList.remove('active'));
+      tabs.forEach(x=>{x.classList.remove('active');x.setAttribute('aria-selected','false');});
       document.querySelectorAll('.scenario').forEach(s=>s.classList.remove('active'));
       t.classList.add('active');
+      t.setAttribute('aria-selected','true');
       document.getElementById(t.dataset.t).classList.add('active');
+      if (onSwitch) onSwitch(t.dataset.t);
     }));
   }
   function wireStepper(prefix,max){
@@ -205,9 +274,248 @@
     next.addEventListener('click',()=>{ if(i<max){i++;render();} });
     render();
   }
-  wireTabs();
-  wireStepper('t1',1);
-  wireStepper('t2',1);
+
+  // ---- Scenario 1 (Ambient charting): transcript typing-reveal -> chart-note
+  // field-by-field reveal, autoplaying once per page view. Shared conventions
+  // (DEMO-WAVE-PLAN.md / site-standards): autoplay etiquette (pause on hover/focus/
+  // touch/visibilitychange, manual controls always take over immediately, plays once
+  // then Replay), gated entirely behind matchMedia('prefers-reduced-motion: reduce').
+  // Scenarios 2 and 3 are untouched by this build (out of this spec row's scope) --
+  // they keep their original manual-only stepper/static behavior, just inheriting the
+  // reduced-motion kill-switch and tab micro-interactions added above.
+  (function(){
+    const reducedMQ = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const demoRoot = document.getElementById('demoRoot');
+    const lines = Array.from(document.querySelectorAll('#t1 .transcript .line'));
+    const fields = Array.from(document.querySelectorAll('#t1 .chartnote .field'));
+    const step0 = document.getElementById('t1-step0');
+    const step1 = document.getElementById('t1-step1');
+    const compiling = document.getElementById('t1-compiling');
+    const chartnote = document.getElementById('t1-chartnote');
+    const prevBtn = document.getElementById('t1-prev');
+    const nextBtn = document.getElementById('t1-next');
+    const countEl = document.getElementById('t1-count');
+    const progressEl = document.getElementById('t1-progress');
+    const replayBtn = document.getElementById('t1-replay');
+
+    const LINE_DELAY = 620;        // ms between transcript lines (typing-reveal)
+    const PRE_NOTE_PAUSE = 900;    // ms pause after last line before "compiling" appears
+    const COMPILING_DELAY = 750;   // ms the honest text placeholder is shown
+    const FIELD_DELAY = 520;       // ms between chart-note field reveals
+    const HOLD_AFTER = 3200;       // ms the completed note is held before Replay appears
+
+    let step = 0;
+    let linesRevealed = false;
+    let autoplayEnabled = false;
+    let hasPlayedOnce = false;
+    let holdCount = 0;
+    let phase = 'idle'; // idle | lines | pause1 | compiling | fields | pause2 | done
+    let pauseTimer = null;
+    let pendingPauseCb = null;
+    let pendingPauseMs = 0;
+    let lineTimer = null;
+    let compileTimer = null;
+    let fieldTimer = null;
+
+    function clearLineTimer(){ if (lineTimer){ clearTimeout(lineTimer); lineTimer = null; } }
+    function clearCompileTimer(){ if (compileTimer){ clearTimeout(compileTimer); compileTimer = null; } }
+    function clearFieldTimer(){ if (fieldTimer){ clearTimeout(fieldTimer); fieldTimer = null; } }
+    function clearPauseTimer(){ if (pauseTimer){ clearTimeout(pauseTimer); pauseTimer = null; } }
+
+    function updateProgress(text){ if (progressEl) progressEl.textContent = text; }
+
+    function showLinesInstant(){
+      lines.forEach(l => { l.classList.remove('line-pending'); l.classList.add('line-shown'); });
+      linesRevealed = true;
+    }
+    function resetLines(){
+      lines.forEach(l => { l.classList.add('line-pending'); l.classList.remove('line-shown'); });
+      linesRevealed = false;
+    }
+    function showFieldsInstant(){
+      fields.forEach(f => { f.classList.remove('field-pending'); f.classList.add('field-shown'); });
+    }
+    function resetFields(){
+      fields.forEach(f => { f.classList.add('field-pending'); f.classList.remove('field-shown'); });
+    }
+
+    function renderStep(n){
+      step = n;
+      step0.style.display = n === 0 ? '' : 'none';
+      step1.style.display = n === 1 ? '' : 'none';
+      countEl.textContent = 'step ' + (n + 1) + ' / 2';
+      prevBtn.disabled = n === 0;
+      nextBtn.disabled = n === 1;
+      updateProgress(n === 0 ? 'Transcript · scripted playback' : 'Chart note · field-by-field');
+    }
+
+    // Reveals the 5 transcript lines one at a time (clip/opacity reveal, not
+    // per-character DOM churn). Bounded, short (~3.1s) -- once started it is allowed
+    // to finish, matching the fleet's precedent for brief in-flight sub-animations
+    // (PITCH-004's ~650ms skeleton) rather than trying to pause mid-line.
+    function revealLinesSequential(cb){
+      if (reducedMQ.matches){ showLinesInstant(); if (cb) cb(); return; }
+      resetLines();
+      let i = 0;
+      (function step_(){
+        if (i >= lines.length){ if (cb) cb(); return; }
+        lines[i].classList.remove('line-pending');
+        lines[i].classList.add('line-shown');
+        i++;
+        lineTimer = setTimeout(step_, LINE_DELAY);
+      })();
+    }
+
+    function revealFieldsSequential(cb){
+      if (reducedMQ.matches){ showFieldsInstant(); if (cb) cb(); return; }
+      resetFields();
+      let i = 0;
+      (function step_(){
+        if (i >= fields.length){ if (cb) cb(); return; }
+        fields[i].classList.remove('field-pending');
+        fields[i].classList.add('field-shown');
+        i++;
+        fieldTimer = setTimeout(step_, FIELD_DELAY);
+      })();
+    }
+
+    // Honest transitional state: a short static text placeholder ("Compiling chart
+    // note... simulated"), never a spinner pretending to call a real service, and the
+    // copy explicitly says "not a live transcription service" -- reduced motion skips
+    // straight to the fully-populated note.
+    function transitionToNote(cb){
+      renderStep(1);
+      if (reducedMQ.matches){
+        compiling.classList.remove('active');
+        chartnote.style.visibility = '';
+        showFieldsInstant();
+        if (cb) cb();
+        return;
+      }
+      resetFields();
+      chartnote.style.visibility = 'hidden';
+      compiling.classList.add('active');
+      compileTimer = setTimeout(function(){
+        compileTimer = null;
+        compiling.classList.remove('active');
+        chartnote.style.visibility = '';
+        revealFieldsSequential(cb);
+      }, COMPILING_DELAY);
+    }
+
+    function stopAutoplay(){
+      autoplayEnabled = false;
+      phase = 'idle';
+      clearLineTimer(); clearCompileTimer(); clearFieldTimer(); clearPauseTimer();
+    }
+
+    // Pausable waits: only the two "nothing is moving" waits (post-transcript pause,
+    // and the final hold before Replay) are actually pause/resume-able. A hold() during
+    // 'lines'/'compiling'/'fields' lets that short bounded sub-animation finish
+    // naturally, matching the fleet's documented precedent (PITCH-004's genTimer).
+    function schedulePause(ms, cb){
+      clearPauseTimer();
+      pendingPauseCb = cb;
+      pendingPauseMs = ms;
+      if (holdCount > 0) return;
+      pauseTimer = setTimeout(function(){ pauseTimer = null; cb(); }, ms);
+    }
+
+    function startAutoplay(){
+      autoplayEnabled = true;
+      hasPlayedOnce = false;
+      phase = 'lines';
+      revealLinesSequential(function(){
+        if (!autoplayEnabled) return;
+        phase = 'pause1';
+        schedulePause(PRE_NOTE_PAUSE, function(){
+          if (!autoplayEnabled) return;
+          phase = 'compiling';
+          transitionToNote(function(){
+            if (!autoplayEnabled) return;
+            phase = 'pause2';
+            schedulePause(HOLD_AFTER, function(){
+              autoplayEnabled = false;
+              phase = 'done';
+              hasPlayedOnce = true;
+              replayBtn.hidden = false;
+            });
+          });
+        });
+      });
+    }
+
+    // ---- manual controls (stay live, take over from autoplay immediately) ----
+    prevBtn.addEventListener('click', function(){
+      stopAutoplay();
+      showLinesInstant();
+      renderStep(0);
+    });
+    nextBtn.addEventListener('click', function(){
+      stopAutoplay();
+      if (!linesRevealed) showLinesInstant();
+      transitionToNote();
+    });
+    replayBtn.addEventListener('click', function(){
+      replayBtn.hidden = true;
+      // A Replay click inside the same hover/focus-pause wrapper (#demoRoot) as the
+      // rest of the demo retains DOM focus, which fires focusin -> hold() with no
+      // matching release() -- silently blocking the resumed autoplay forever
+      // (documented gotcha from PITCH-004). Explicit fix: blur + reset the hold count,
+      // a Replay click always means "play."
+      replayBtn.blur();
+      holdCount = 0;
+      resetFields();
+      renderStep(0);
+      if (reducedMQ.matches){
+        showLinesInstant();
+        return;
+      }
+      startAutoplay();
+    });
+
+    function hold(){
+      holdCount++;
+      if (phase === 'pause1' || phase === 'pause2'){ clearPauseTimer(); }
+    }
+    function release(){
+      holdCount = Math.max(0, holdCount - 1);
+      if (holdCount === 0 && autoplayEnabled && !pauseTimer &&
+          (phase === 'pause1' || phase === 'pause2') && pendingPauseCb){
+        pauseTimer = setTimeout(function(){ pauseTimer = null; pendingPauseCb(); }, pendingPauseMs);
+      }
+    }
+
+    demoRoot.addEventListener('mouseenter', hold);
+    demoRoot.addEventListener('mouseleave', release);
+    demoRoot.addEventListener('focusin', hold);
+    demoRoot.addEventListener('focusout', release);
+    demoRoot.addEventListener('touchstart', hold, { passive: true });
+    demoRoot.addEventListener('touchend', release, { passive: true });
+    demoRoot.addEventListener('touchcancel', release, { passive: true });
+    document.addEventListener('visibilitychange', function(){
+      if (document.hidden) hold(); else release();
+    });
+
+    // Switching to a different scenario tab is a manual action -- stop t1's autoplay
+    // entirely (no auto-resume on returning to tab 1; matches PITCH-004's tabs always
+    // calling stopAutoplayForManual()).
+    wireTabs(function(activeId){
+      stopAutoplay();
+      if (activeId !== 't1'){
+        // leave whatever was already rendered as-is; nothing to animate on t2/t3
+      }
+    });
+    wireStepper('t2', 1);
+
+    // ---- init ----
+    renderStep(0);
+    if (reducedMQ.matches){
+      showLinesInstant();
+    } else {
+      startAutoplay();
+    }
+  })();
 </script>
 </body>
 </html>

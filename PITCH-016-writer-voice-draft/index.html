@@ -64,10 +64,14 @@
   }
   html{scroll-behavior:smooth;}
   @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} }
-  a{color:var(--rust);}
+  a{color:var(--rust); transition:color .15s ease-out;}
   a:focus-visible, button:focus-visible, .btn:focus-visible{
     outline:2px solid var(--rust); outline-offset:3px;
   }
+
+  
+  .reveal-pending{ opacity:0; transform:translateY(10px); transition:opacity .42s ease-out, transform .42s ease-out; }
+  .reveal-pending.revealed{ opacity:1; transform:translateY(0); }
 
   
   .galley{
@@ -142,7 +146,8 @@
 
   
   .entries{max-width:65ch;}
-  .entry{padding:1.1rem 0; border-top:1px solid var(--rule);}
+  .entry{padding:1.1rem 0; border-top:1px solid var(--rule); transition:background-color .15s ease-out;}
+  .entry:hover{background-color:var(--card);}
   .entry:first-child{border-top:none;}
   .entry h3{display:inline; margin-right:.5rem;}
   .entry p{display:inline; margin:0;}
@@ -185,7 +190,7 @@
   .walkthrough-links{margin-top:1rem; font-size:.98rem;}
 
   .letters .letter{margin-bottom:1.7rem; max-width:65ch;}
-  .letters .letter h3{color:var(--rust); font-style:normal;}
+  .letters .letter h3{color:var(--rust); font-style:normal; transition:color .15s ease-out;}
   .letters .letter h3::before{content:"— "; color:var(--ink-soft);}
 
   .subscribe{
@@ -196,9 +201,10 @@
   .btn{
     font-family:inherit; display:inline-block; padding:.75rem 1.6rem; border-radius:2px;
     text-decoration:none; font-size:1rem; border:1px solid var(--rust); font-style:italic;
-    margin-top:1rem;
+    margin-top:1rem; transition:opacity .15s ease-out, background-color .15s ease-out;
   }
   .btn-primary{background:var(--rust); color:var(--paper);}
+  .btn-primary:hover{opacity:.87;}
   .placeholder-contact{
     display:inline-block; margin-top:1.2rem; padding:.6rem 1.1rem; border-radius:2px;
     border:1px dashed var(--rust); color:var(--ink-soft); font-size:.92rem; font-style:italic;
@@ -239,7 +245,7 @@
 
 
 <div class="masthead">
-  <div class="folio">Vol. I · A drafting instrument for independent writers</div>
+  <div class="folio">Vol. I · A drafting instrument for independent writers · <a href="#demo">Simulated demo</a></div>
   <h1 class="nameplate">Quillecho</h1>
   <p class="dek">Your archive already sounds like you.<br>Now your drafts can too.</p>
 </div>
@@ -396,3 +402,30 @@
 
 
 <div class="footer-fine">Quillecho is a pitch concept, not a live product.</div>
+
+<script>
+(function(){
+  var reduceMQ = window.matchMedia('(prefers-reduced-motion: reduce)');
+  // The masthead/hero sits outside <main> targets and is never touched — it renders
+  // fully visible on first paint regardless of motion preference.
+  if (reduceMQ.matches || !('IntersectionObserver' in window)) return;
+  var targets = document.querySelectorAll(
+    '#what h2, #what .aside, ' +
+    '#demo h2, #demo .spread, #demo .spread-caption, ' +
+    '#tools h2, #tools .entry, ' +
+    '#pricing h2, #pricing .price-note, ' +
+    '#objections h2, #objections .letter, ' +
+    '#internal h2, #internal .internal-card'
+  );
+  targets.forEach(function(el){ el.classList.add('reveal-pending'); });
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if (entry.isIntersecting){
+        entry.target.classList.add('revealed');
+        io.unobserve(entry.target);
+      }
+    });
+  }, {threshold:0.12, rootMargin:'0px 0px -40px 0px'});
+  targets.forEach(function(el){ io.observe(el); });
+})();
+</script>

@@ -228,7 +228,8 @@ h2{font-family:var(--display-font); font-size:clamp(25px,3.2vw,32px); margin:0 0
 
 .icp-grid{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
 @media (max-width:760px){ .icp-grid{grid-template-columns:1fr;} }
-.icp-box{border:1px solid var(--border); border-radius:10px; padding:24px; background:var(--card); border-top:4px solid var(--border);}
+.icp-box{border:1px solid var(--border); border-radius:10px; padding:24px; background:var(--card); border-top:4px solid var(--border); transition:box-shadow .15s ease, border-color .15s ease;}
+.icp-box:hover{box-shadow:0 2px 10px rgba(0,0,0,.06);}
 .icp-yes{border-top-color:var(--accent);}
 .icp-no{border-top-color:var(--danger);}
 .icp-box h3{
@@ -285,6 +286,25 @@ table.pricing tr:last-child td{border-bottom:none;}
 .credential-item strong{color:var(--ink);}
 
 
+.demo-frame-wrap{
+  border:1px solid var(--border); border-radius:12px; overflow:hidden; background:var(--card);
+}
+.demo-frame-wrap iframe{display:block; width:100%; height:640px; border:0; background:var(--paper);}
+@media (max-width:620px){ .demo-frame-wrap iframe{height:760px;} }
+.demo-caption{
+  display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+  padding:12px 16px; border-top:1px solid var(--border); background:var(--paper-2);
+  font-size:12.5px; color:var(--ink-2);
+}
+.demo-caption a{color:var(--accent-dark); font-weight:700; text-decoration:none; white-space:nowrap;}
+.demo-caption a:hover{text-decoration:underline;}
+.demo-sim-label{font-weight:800; color:var(--warn); text-transform:uppercase; letter-spacing:.03em; font-size:11.5px;}
+
+
+.reveal-pending{opacity:0; transform:translateY(10px); transition:opacity .5s ease, transform .5s ease;}
+.reveal-pending.revealed{opacity:1; transform:translateY(0);}
+
+
 .proof-grid{display:grid; grid-template-columns:1.05fr .95fr; gap:28px; align-items:start;}
 @media (max-width:860px){ .proof-grid{grid-template-columns:1fr;} }
 .chart-wrap{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:24px;}
@@ -308,7 +328,8 @@ figcaption{font-size:12.5px; color:var(--muted); margin-top:14px; line-height:1.
 
 
 .faq-list{border-top:1px solid var(--border);}
-.faq-item{padding:22px 0; border-bottom:1px solid var(--border);}
+.faq-item{padding:22px 0; border-bottom:1px solid var(--border); transition:background-color .15s ease;}
+.faq-item:hover{background:var(--paper-2);}
 .faq-item h3{margin:0 0 8px; font:800 16px/1.3 var(--body-font);}
 .faq-item p{margin:0; color:var(--ink-2); font-size:15px; line-height:1.6;}
 
@@ -366,6 +387,7 @@ footer{text-align:center; padding:30px 24px 40px; color:var(--muted); font-size:
       Harborcite<span class="wordmark-dot">.</span>
     </a>
     <nav class="site-nav" aria-label="Primary">
+      <a href="#demo">Simulated demo</a>
       <a href="#pricing">Pricing</a>
       <a href="#proof">Sample audit</a>
     </nav>
@@ -528,6 +550,18 @@ footer{text-align:center; padding:30px 24px 40px; color:var(--muted); font-size:
   </div>
 </section>
 
+<section id="demo" aria-labelledby="demo-heading">
+  <h2 id="demo-heading">See it: invisible → cited</h2>
+  <p class="section-sub">An illustrative reconstruction of the audit deliverable — the sample audit report and the AI-answer before/after, merged into one walkthrough. Plays once on scroll into view; replay any time. This is not a live query against ChatGPT, Google, or Perplexity.</p>
+  <div class="demo-frame-wrap">
+    <iframe src="./media/demo.html" title="Harborcite simulated audit and citation demo" loading="lazy"></iframe>
+    <div class="demo-caption">
+      <span class="demo-sim-label">Simulated — illustrative</span>
+      <a href="./media/demo.html" target="_blank" rel="noopener">Open full-screen ↗</a>
+    </div>
+  </div>
+</section>
+
 <section id="proof" aria-labelledby="proof-heading">
   <h2 id="proof-heading">See it, don't just take our word for it</h2>
   <p class="section-sub">Two things: how the market actually prices this today, and what a sample audit looks like.</p>
@@ -606,7 +640,7 @@ footer{text-align:center; padding:30px 24px 40px; color:var(--muted); font-size:
   <div class="cta-bar-inner">
     <h2 id="cta-heading">Let's see if there's a fit</h2>
     <p>Harborcite is early-access — this is a pitch, not a live signup. The ask is small: 15 minutes to look at your own Google Business Profile and AI-answer visibility together, no commitment.</p>
-    <a class="btn btn-primary" href="#">Request a 15-minute look</a>
+    <a class="btn btn-primary" href="#contact">Request a 15-minute look</a>
     <p class="contact-line">PLACEHOLDER CONTACT — no live inbox yet. Real contact channel to be set up before this goes anywhere near a real prospect.</p>
   </div>
 </section>
@@ -618,5 +652,39 @@ footer{text-align:center; padding:30px 24px 40px; color:var(--muted); font-size:
 <div class="mobile-cta-bar">
   <a class="btn btn-primary" href="#pricing">See pricing</a>
 </div>
+
+<script>
+(function(){
+  // One-shot scroll reveal: fade + rise, JS-gated so a reduced-motion or
+  // no-IntersectionObserver visitor's content is never hidden to begin with.
+  // The hero (.hero) is intentionally never a target -- it renders fully
+  // visible on first paint.
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduceMotion || !('IntersectionObserver' in window)) return;
+
+  var selectors = [
+    '#who h2', '#who .section-sub', '#who .icp-grid',
+    '#features h2', '#features .section-sub', '#features .get-list',
+    '#demo h2', '#demo .section-sub', '#demo .demo-frame-wrap',
+    '#pricing h2', '#pricing .section-sub', '#pricing .price-card',
+    '#credentials h2', '#credentials .section-sub', '#credentials .credential-list',
+    '#proof h2', '#proof .section-sub', '#proof .proof-grid',
+    '#faq h2', '#faq .section-sub', '#faq .faq-list'
+  ];
+  var targets = document.querySelectorAll(selectors.join(','));
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if (entry.isIntersecting){
+        entry.target.classList.add('revealed');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  targets.forEach(function(el){
+    el.classList.add('reveal-pending');
+    io.observe(el);
+  });
+})();
+</script>
 </body>
 </html>
