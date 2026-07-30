@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Governframe — the hosted layer under your team's Claude</title>
+<meta name="description" content="Governframe is a hosted MCP/tooling layer for small teams already paying for Claude — shared memory, a curated tool roster, and an admin isolation view. BYO-subscription, never shared credentials.">
+<style>
+  :root{
+    color-scheme: dark;
+    --ink:#e8ecf3; --ink-soft:#aab4c4; --ink-mute:#7c8698;
+    --paper:#0a0e15; --card:#10161f; --card-alt:#151c27;
+    --line:#232c39; --accent:#4f9cff; --accent-soft:#152538; --gov:#e0a558; --gov-soft:#3a2c15;
+    --good:#35c98c;
+    --display:'Avenir Next',Avenir,'Helvetica Neue','Arial Nova',Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono','Cascadia Code','Source Code Pro',Menlo,Consolas,'DejaVu Sans Mono',monospace;
+    --body-font:system-ui,sans-serif;
+  }
+  @media (prefers-color-scheme: light){
+    :root:where(:not([data-theme="dark"])){
+      color-scheme: light;
+      --ink:#10151c; --ink-soft:#3b4756; --ink-mute:#5a6370;
+      --paper:#f4f6f9; --card:#ffffff; --card-alt:#eef1f5;
+      --line:#d7dee6; --accent:#1f5fb8; --accent-soft:#e2edfb; --gov:#92500f; --gov-soft:#f3e3cd;
+      --good:#0d7551;
+    }
+  }
+  :root[data-theme="light"]{
+    color-scheme: light;
+    --ink:#10151c; --ink-soft:#3b4756; --ink-mute:#5a6370;
+    --paper:#f4f6f9; --card:#ffffff; --card-alt:#eef1f5;
+    --line:#d7dee6; --accent:#1f5fb8; --accent-soft:#e2edfb; --gov:#92500f; --gov-soft:#f3e3cd;
+    --good:#0d7551;
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --ink:#e8ecf3; --ink-soft:#aab4c4; --ink-mute:#7c8698;
+    --paper:#0a0e15; --card:#10161f; --card-alt:#151c27;
+    --line:#232c39; --accent:#4f9cff; --accent-soft:#152538; --gov:#e0a558; --gov-soft:#3a2c15;
+    --good:#35c98c;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; background:
+    linear-gradient(180deg, var(--paper) 0%, var(--paper) 100%),
+    repeating-linear-gradient(0deg, transparent, transparent 39px, var(--line) 39px, var(--line) 40px);
+    background-blend-mode:normal; background-color:var(--paper); opacity:1;
+    color:var(--ink); font-family:var(--body-font); line-height:1.6;}
+  
+  body{background-image: linear-gradient(var(--paper), var(--paper)), repeating-linear-gradient(0deg, transparent 0 39px, color-mix(in srgb, var(--line) 35%, transparent) 39px 40px), repeating-linear-gradient(90deg, transparent 0 39px, color-mix(in srgb, var(--line) 35%, transparent) 39px 40px);}
+  img,svg{max-width:100%;}
+  a{color:var(--accent);}
+  .skip{position:absolute; left:-999px; top:0;}
+  .skip:focus{left:1rem; top:.5rem; z-index:1000; background:var(--card); padding:.5rem 1rem; border-radius:6px;}
+  :focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:3px;}
+
+  .banner{position:sticky; top:0; z-index:100; display:flex; align-items:center; gap:.6rem; justify-content:center; flex-wrap:wrap; font-family:var(--mono); font-weight:600; font-size:.78rem; letter-spacing:.01em; padding:.55rem 1rem; background:var(--card-alt); color:var(--ink); border-bottom:1px solid var(--line);}
+  .banner .dot{width:8px; height:8px; border-radius:50%; background:var(--gov); flex:none; box-shadow:0 0 6px var(--gov);}
+  .banner .lbl{font-weight:800; letter-spacing:.08em; color:var(--gov);}
+
+  header.topbar{position:sticky; top:33px; z-index:99; background:color-mix(in srgb, var(--paper) 88%, transparent); backdrop-filter:blur(6px); border-bottom:1px solid var(--line);}
+  .topbar-inner{max-width:1160px; margin:0 auto; padding:.85rem 1.25rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap;}
+  .wordmark{font-family:var(--display); font-weight:800; font-size:1.05rem; letter-spacing:-.01em; display:flex; align-items:baseline; gap:.5rem;}
+  .wordmark .tag{font-family:var(--mono); font-size:.68rem; font-weight:600; color:var(--ink-mute); border:1px solid var(--line); padding:.05rem .4rem; border-radius:4px;}
+  nav.docsnav{display:flex; gap:1.1rem; flex-wrap:wrap; font-family:var(--mono);}
+  nav.docsnav a{color:var(--ink-soft); text-decoration:none; font-size:.78rem; letter-spacing:.01em;}
+  nav.docsnav a::before{content:"/"; color:var(--ink-mute); margin-right:.15rem;}
+  nav.docsnav a:hover{color:var(--accent);}
+
+  main{max-width:1160px; margin:0 auto; padding:0 1.25rem;}
+  section{padding:3.4rem 0; border-bottom:1px solid var(--line);}
+  section:last-of-type{border-bottom:none;}
+  h1{font-family:var(--display); font-size:2.15rem; line-height:1.15; letter-spacing:-.01em; margin:.3rem 0 .9rem; text-wrap:balance;}
+  h2{font-family:var(--display); font-size:1.4rem; letter-spacing:-.005em; margin:0 0 .7rem;}
+  h3{font-family:var(--display); font-size:1rem; margin:0 0 .4rem;}
+  .lede{font-size:1.05rem; color:var(--ink-soft); max-width:640px;}
+  .kicker{font-family:var(--mono); text-transform:uppercase; letter-spacing:.08em; font-size:.7rem; font-weight:700; color:var(--accent); display:flex; align-items:center; gap:.5rem;}
+  .kicker::before{content:"§"; color:var(--ink-mute);}
+
+  
+  .mech{padding-top:2.6rem;}
+  .mech-grid{display:grid; grid-template-columns:1.05fr .95fr; gap:2.2rem; align-items:start; margin-top:1.4rem;}
+  .diagram-wrap{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:1.1rem; overflow-x:auto;}
+  .diagram-wrap .cap{font-family:var(--mono); font-size:.68rem; color:var(--ink-mute); margin-top:.7rem; border-top:1px solid var(--line); padding-top:.6rem;}
+  .cta-row{display:flex; gap:.75rem; margin-top:1.3rem; flex-wrap:wrap;}
+  .btn{display:inline-block; padding:.65rem 1.1rem; border-radius:6px; font-weight:700; font-size:.85rem; font-family:var(--mono); text-decoration:none; border:1px solid var(--line);}
+  .btn.primary{background:var(--accent); color:#04101f; border-color:var(--accent); box-shadow:0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent), 0 0 22px -6px var(--accent);}
+  .btn.ghost{color:var(--ink); background:var(--card);}
+  .btn.ghost:hover, .btn.primary:hover{filter:brightness(1.08);}
+
+  .spec-table{width:100%; border-collapse:collapse; font-size:.85rem;}
+  .spec-table th, .spec-table td{border:1px solid var(--line); padding:.65rem .75rem; text-align:left; vertical-align:top;}
+  .spec-table th{background:var(--card-alt); font-family:var(--mono); font-size:.7rem; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-mute); font-weight:700;}
+  .spec-table td.k{font-family:var(--mono); font-weight:700; color:var(--ink); white-space:nowrap;}
+  .table-wrap{overflow-x:auto; border-radius:10px;}
+  .fit{color:var(--good);}
+  .nofit{color:var(--ink-mute);}
+
+  table.pricing{width:100%; border-collapse:collapse; margin-top:1.25rem; font-size:.88rem;}
+  table.pricing th, table.pricing td{border:1px solid var(--line); padding:.75rem .8rem; text-align:left; vertical-align:top;}
+  table.pricing th{background:var(--card-alt); font-family:var(--mono); font-size:.7rem; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-mute);}
+  .tier-name{font-weight:800; font-family:var(--display);}
+  .tier-price{font-size:1.15rem; font-weight:800; color:var(--accent); font-family:var(--mono); font-variant-numeric:tabular-nums;}
+  .stat-row{display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-top:1.6rem;}
+  .stat{background:var(--card); border:1px solid var(--line); border-radius:8px; padding:1rem 1.1rem;}
+  .stat .num{font-family:var(--mono); font-size:1.5rem; font-weight:800; color:var(--ink); font-variant-numeric:tabular-nums;}
+  .stat .label{font-size:.76rem; color:var(--ink-mute); margin-top:.35rem; line-height:1.5;}
+  .meter{height:8px; border-radius:4px; background:var(--card-alt); border:1px solid var(--line); position:relative; margin-top:.9rem; overflow:hidden;}
+  .meter .fill{position:absolute; inset:0; left:10%; right:75%; background:var(--accent); border-radius:4px 0 0 4px;}
+  .meter-labels{display:flex; justify-content:space-between; font-size:.72rem; color:var(--ink-mute); margin-top:.35rem; font-family:var(--mono);}
+  .footnote{font-size:.78rem; color:var(--ink-mute);}
+
+  .term{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:1.4rem; }
+  .term .term-head{display:flex; gap:.4rem; margin-bottom:.9rem;}
+  .term .term-head span{width:10px; height:10px; border-radius:50%; background:var(--line);}
+  .term pre{margin:0; font-family:var(--mono); font-size:.8rem; color:var(--ink-soft); white-space:pre-wrap; line-height:1.7;}
+  .term .sim{color:var(--gov); font-weight:700;}
+  .term a.btn{margin-top:1rem;}
+
+  details{background:var(--card); border:1px solid var(--line); border-radius:8px; padding:.85rem 1rem; margin-bottom:.6rem;}
+  summary{font-weight:700; cursor:pointer; font-size:.92rem; font-family:var(--display);}
+  details p{margin:.6rem 0 0; color:var(--ink-soft); font-size:.88rem;}
+
+  .cite{font-size:.72rem; color:var(--ink-mute); font-family:var(--mono);}
+  .tag-sourced{color:var(--good); font-weight:700; font-family:var(--mono); font-size:.85em;}
+  .tag-derived{color:var(--accent); font-weight:700; font-family:var(--mono); font-size:.85em;}
+  .tag-unverified{color:var(--gov); font-weight:700; font-family:var(--mono); font-size:.85em;}
+
+  footer.site{max-width:1160px; margin:0 auto; padding:2.2rem 1.25rem 3rem; font-size:.8rem; color:var(--ink-mute); font-family:var(--mono);}
+
+  
+  #internal{background:var(--card-alt);}
+  .internal-banner{font-family:var(--mono); background:var(--gov-soft); color:var(--gov); font-weight:800; padding:.7rem 1rem; border:1px dashed var(--gov); border-radius:6px; margin-bottom:1.6rem; font-size:.8rem; letter-spacing:.01em;}
+  .rfc-block{background:var(--card); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:6px; padding:1.15rem 1.3rem; margin-bottom:1.1rem;}
+  .rfc-block h3{color:var(--ink); font-family:var(--mono); font-size:.95rem;}
+  .rfc-block h3::before{content:"### "; color:var(--ink-mute);}
+  .kv{display:grid; grid-template-columns:150px 1fr; gap:.5rem .9rem; font-size:.87rem;}
+  .kv dt{font-weight:700; color:var(--ink-mute); font-family:var(--mono);}
+  .kv dd{margin:0;}
+
+  @media (max-width:820px){
+    .mech-grid{grid-template-columns:1fr;}
+    .stat-row{grid-template-columns:1fr;}
+    h1{font-size:1.65rem;}
+    .kv{grid-template-columns:1fr;}
+    header.topbar{top:0;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important;}
+  }
+</style>
+</head>
+<body><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
+<a class="skip" href="#what">Skip to content</a>
+
+
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="wordmark">governframe </div>
+    <nav class="docsnav" aria-label="Section">
+      <a href="#what">mechanism</a>
+      <a href="#who">fit</a>
+      <a href="#features">spec</a>
+      <a href="#pricing">pricing</a>
+      <a href="#demo">walkthrough</a>
+      <a href="#faq">faq</a>
+      
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <section class="mech" id="what">
+    <p class="kicker">mechanism</p>
+    <h1>The layer under your team's Claude — not another seat, not a new subscription.</h1>
+    <p class="lede">Your team already pays for Claude. Governframe is a hosted MCP/tooling layer their own sessions connect to: shared memory, a curated tool roster per role, and one admin screen that shows who's doing what — without Governframe ever touching anyone's account or credentials.</p>
+    <div class="cta-row">
+      <a class="btn primary" href="#demo">See the simulated walkthrough</a>
+      <a class="btn ghost" href="#pricing">View pricing</a>
+    </div>
+    <div class="mech-grid">
+      <div class="diagram-wrap">
+        <svg role="img" viewbox="0 0 560 300" xmlns="http://www.w3.org/2000/svg" aria-labelledby="diagtitle diagdesc">
+          <title id="diagtitle">Governframe architecture: BYO-subscription plus hosted MCP layer</title>
+          <desc id="diagdesc">A team member's own Claude session connects outward to a hosted Governframe MCP layer, which exposes three components: hosted memory/KB, curated tool roster per role, and an admin isolation and audit view. Credentials never cross into Governframe; they stay inside the user's own session.</desc>
+          <defs>
+            <marker id="arrow" markerwidth="8" markerheight="8" refx="6" refy="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="var(--ink-mute)"></path>
+            </marker>
+          </defs>
+          <rect x="16" y="18" width="200" height="60" rx="6" fill="none" stroke="var(--ink-mute)"></rect>
+          <text x="116" y="43" text-anchor="middle" font-family="ui-monospace,monospace" font-size="12" fill="var(--ink)">Your Claude session</text>
+          <text x="116" y="60" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="var(--ink-mute)">own account · own credentials</text>
+
+          <line x1="116" y1="78" x2="116" y2="112" stroke="var(--ink-mute)" marker-end="url(#arrow)"></line>
+          <text x="128" y="98" font-family="ui-monospace,monospace" font-size="9" fill="var(--ink-mute)">MCP connect</text>
+
+          <rect x="16" y="114" width="528" height="170" rx="8" fill="none" stroke="var(--accent)"></rect>
+          <text x="30" y="134" font-family="ui-monospace,monospace" font-size="11" fill="var(--accent)" font-weight="700">Governframe — hosted layer</text>
+
+          <rect x="30" y="150" width="150" height="110" rx="6" fill="none" stroke="var(--ink-mute)"></rect>
+          <text x="105" y="172" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="var(--ink)">hosted memory</text>
+          <text x="105" y="186" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="var(--ink)">/KB layer</text>
+          <text x="105" y="206" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9" fill="var(--ink-mute)">team docs</text>
+          <text x="105" y="220" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9" fill="var(--ink-mute)">SOPs, context</text>
+          <text x="105" y="234" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9" fill="var(--ink-mute)">searchable, cited</text>
+
+          <rect x="197" y="150" width="150" height="110" rx="6" fill="none" stroke="var(--ink-mute)"></rect>
+          <text x="272" y="172" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="var(--ink)">curated tool</text>
+          <text x="272" y="186" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="var(--ink)">roster / role</text>
+          <text x="272" y="206" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9" fill="var(--ink-mute)">admin sets</text>
+          <text x="272" y="220" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9" fill="var(--ink-mute)">per-role access</text>
+          <text x="272" y="234" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9" fill="var(--ink-mute)">design ≠ prod DB</text>
+
+          <rect x="364" y="150" width="164" height="110" rx="6" fill="none" stroke="var(--ink-mute)"></rect>
+          <text x="446" y="172" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="var(--ink)">admin isolation</text>
+          <text x="446" y="186" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="var(--ink)">&amp; audit view</text>
+          <text x="446" y="206" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9" fill="var(--ink-mute)">seats, tool access,</text>
+          <text x="446" y="220" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9" fill="var(--ink-mute)">activity — one screen</text>
+        </svg>
+        <p class="cap">Architecture: BYO-subscription + hosted MCP layer. Credentials: never shared, never held by us. Fits between: Claude Team and Claude Enterprise. Built for: teams of 3–15 already on Pro/Max/Team seats.</p>
+      </div>
+      <div class="term" aria-hidden="false">
+        <div class="term-head"><span></span><span></span><span></span></div>
+        <pre>$ governframe status
+account_link ..... none held (BYO-subscription)
+credentials ...... 0 stored, 0 requested
+tenants .......... logical separation, tier: standard
+band ............. 3–15 connected seats
+position ......... between Claude Team and Claude Enterprise</pre>
+      </div>
+    </div>
+  </section>
+
+  <section id="who">
+    <p class="kicker">who it's for</p>
+    <h2>Small teams past the point of "everyone figures it out themselves."</h2>
+    <p class="lede">Agencies, consultancies, and dev/ops shops of 3–15 people already running multiple people through paid Claude subscriptions for real client work — past the point where one person's ad hoc setup is enough, before the size where Anthropic's Enterprise sales motion makes sense. The buyer is the team lead who's already said, in effect: <em>"I don't want everyone using it willy-nilly."</em></p>
+    <div class="table-wrap">
+      <table class="spec-table">
+        <thead><tr><th>Profile</th><th>Fit</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="k">Small agencies &amp; consultancies</td>
+            <td class="fit">Fit</td>
+            <td>Multiple people on paid Claude seats, delivering client work, no one owns "how we use AI as a team" yet.</td>
+          </tr>
+          <tr>
+            <td class="k">Dev/ops shops, 3–15 people</td>
+            <td class="fit">Fit</td>
+            <td>Already past Team seats, not ready for (or not sized for) Enterprise's sales-led, compliance-heavy motion.</td>
+          </tr>
+          <tr>
+            <td class="k">Solo operators, 30+ seat orgs</td>
+            <td class="nofit">Not (yet) a fit</td>
+            <td>Below this band there's nothing to govern yet; well above it, Anthropic Enterprise is the better-built answer.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="features">
+    <p class="kicker">spec</p>
+    <h2>Three pieces, each independently real — bundled the way nobody else has yet.</h2>
+    <div class="table-wrap">
+      <table class="spec-table">
+        <thead><tr><th>Component</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="k">Hosted memory / KB layer</td>
+            <td>Your team's own docs, SOPs, and project context — searchable and cited, not re-explained to a fresh session every time.</td>
+          </tr>
+          <tr>
+            <td class="k">Curated tool roster, per role</td>
+            <td>The admin decides what each role can call — design doesn't get production-DB access, ops doesn't get billing export.</td>
+          </tr>
+          <tr>
+            <td class="k">Admin isolation &amp; audit view</td>
+            <td>One screen showing seats, tool access, and activity — and an honest statement of what "isolated" does and doesn't mean at this price.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="pricing">
+    <p class="kicker">pricing</p>
+    <h2>Priced per team, not per seat — the layer is shared infrastructure.</h2>
+    <div class="table-wrap">
+      <table class="pricing">
+        <thead><tr><th>Tier</th><th>Price</th><th>Includes</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="tier-name">Starter</td>
+            <td class="tier-price">$149/mo</td>
+            <td>Up to 5 connected seats · hosted memory/KB MCP · curated tool roster (read-only admin view)</td>
+          </tr>
+          <tr>
+            <td class="tier-name">Team</td>
+            <td class="tier-price">$299/mo</td>
+            <td>Up to 15 connected seats · full orchestration/skills layer · admin isolation view · usage/audit log</td>
+          </tr>
+          <tr>
+            <td class="tier-name">Custom</td>
+            <td class="tier-price">Talk to us</td>
+            <td>15+ seats or white-label resale</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="stat-row">
+      <div class="stat">
+        <div class="num">12–299%</div>
+        <div class="label">wide range for the add-on to a team's already-committed Claude seat spend, not a new budget line — wide because status-quo Team spend itself spans ~12x across the target band </div>
+      </div>
+      <div class="stat">
+        <div class="num">~4 hrs</div>
+        <div class="label">total team time/month the Team tier ($299) needs to save to pay for itself, at a $75/hr blended rate  (unverified)</div>
+      </div>
+      <div class="stat">
+        <div class="num">~25 min</div>
+        <div class="label">per person, per month — the actual breakeven bar on a 10-person team </div>
+      </div>
+    </div>
+    <div class="meter" aria-hidden="true"><div class="fill"></div></div>
+    <div class="meter-labels"><span>Status-quo Claude spend</span><span>+ Governframe (12–299% add-on)</span></div>
+    <p class="footnote">Worked from a $100–1,250/mo status-quo Team-seat range and $75/hr blended labor rate. Full math is retained in the provenance record.  figures cite claude.com/pricing; the $75/hr rate and the 12–299% framing are / (unverified) as marked</p>
+  </section>
+
+  <section id="demo">
+    <p class="kicker">walkthrough</p>
+    <h2>What using it actually looks like — simulated, not live.</h2>
+    <div class="term">
+      <div class="term-head"><span></span><span></span><span></span></div>
+      <pre>$ governframe demo --scenes 3
+scene 1: team member connects their own Claude session
+scene 2: knowledge-base query answered from the team's own docs
+scene 3: admin's isolation / audit view
+
+<span class="sim">status: SIMULATED — nothing calls a live system</span></pre>
+      <a class="btn primary" href="./media/product-demo.html">Open the simulated walkthrough →</a>
+    </div>
+  </section>
+
+  <section id="faq">
+    <p class="kicker">limits &amp; faq</p>
+    <h2>The five hardest questions, answered straight.</h2>
+    <details open>
+      <summary>Isn't this just reselling Claude access?</summary>
+      <p>No. BYO-subscription means your own Claude session/account connects to our hosted layer — we never touch, hold, or operate your credentials. Anthropic's own developer docs name exactly this pattern (third-party companies running remote MCP servers a user's own session connects to) as a documented, observed-in-the-wild shape — not a confirmed blessing in so many words, but a real precedent, not a guess.</p>
+    </details>
+    <details>
+      <summary>Why pay for this when I can clone a free GitHub "agent roster" repo myself?</summary>
+      <p>You can — and that proves the demand is real. But that's a config artifact you maintain yourself, forever, alone, with no shared memory layer, no governance/audit view, and no isolation design across a team. We sell the running, maintained, governed service — the free repo is the honest ceiling on what one technically confident person can DIY.</p>
+    </details>
+    <details>
+      <summary>Is our data actually isolated from your other clients?</summary>
+      <p>Honestly: logical per-tenant separation at this price tier, not dedicated infrastructure or a formal compliance certification. Composio and Glama — the closest named competitors — both reserve real (SOC2/VPC-level) isolation for their enterprise tiers too. If you need that level, we'll tell you this isn't the right fit yet rather than imply otherwise.</p>
+    </details>
+    <details>
+      <summary>Why not just buy Claude Team or Enterprise instead?</summary>
+      <p>Team ($20–125/seat/mo) buys governance controls — SSO, admin, billing — but no shared data/memory/orchestration layer. Enterprise adds compliance depth but is a sales-led, seat-minimum motion most 5–15 person teams won't clear and don't need yet. We sit in that gap: the layer on top of Team, without jumping tiers or building it yourself.</p>
+    </details>
+    <details>
+      <summary>What's actually yours to sell here versus just repackaged Claude?</summary>
+      <p>The hosted memory/KB layer (a real, independently priced category — see mem0's pricing), the curated/governed tool roster (Composio and Zapier MCP prove tool-calling access is independently sellable), and the admin isolation/audit view across a team (nobody bundles this with the other two at small-team pricing today). What's NOT ours to sell: the model itself — that's Claude's, through your own subscription.</p>
+    </details>
+  </section>
+
+  <section id="cta">
+    <p class="kicker">get in touch</p>
+    <h2>Interested? Book a walkthrough.</h2>
+    <p class="lede">Contact routing isn't live yet — this is a concept page. Placeholder only.</p>
+    <div class="cta-row">
+      <a class="btn primary" href="mailto:hello@placeholder.governframe.example">hello@placeholder.governframe.example (placeholder — not monitored)</a>
+    </div>
+  </section>
+
+  
+
+</main>
+
+<footer class="site">
+  Governframe is a alpha product, not a live product or registered business. All figures on this page are claim-tagged in the source research; the provenance record carries the full citation trail. No real customer, testimonial, or client data appears anywhere on this page.
+</footer>
+
+</body>
+</html>

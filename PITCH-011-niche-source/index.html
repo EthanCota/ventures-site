@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hackerlantern — the San Diego tech &amp; AI source</title>
+
+<style>
+  :root{
+    --paper:#f2ede3;
+    --paper-alt:#e8ded1;
+    --card:#fbf8f1;
+    --ink:#1a1420;
+    --ink-2:#4a4358;
+    --line:rgba(26,20,32,0.16);
+    --rule:rgba(26,20,32,0.32);
+    --accent:#8a520c;
+    --accent-soft:#a5620f;
+    --accent-2:#0a5a56;
+    --accent-ink:#f7f1e4;
+    --good:#146b40;
+    --warn:#8a520c;
+    --danger:#9c2f24;
+    --banner-bg:#161020;
+    --banner-ink:#f4e7cd;
+    --internal-bg:#2b1414;
+    --internal-ink:#ffd9d9;
+    --internal-line:#7a2a2a;
+    --internal-banner-ink:#ffd9d9;
+  }
+  :root[data-theme="dark"]{
+    --paper:#14111c;
+    --paper-alt:#1c1830;
+    --card:#1f1a2e;
+    --ink:#ede4d0;
+    --ink-2:#c7bfd8;
+    --line:rgba(237,228,208,0.14);
+    --rule:rgba(237,228,208,0.28);
+    --accent:#e8a84a;
+    --accent-soft:#f0b968;
+    --accent-2:#4fd6ce;
+    --accent-ink:#1a1000;
+    --good:#5fd39a;
+    --warn:#e8a84a;
+    --danger:#ff9d8a;
+    --banner-bg:#0d0a16;
+    --banner-ink:#f4e7cd;
+    --internal-banner-ink:#2b0a0a;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#14111c;
+      --paper-alt:#1c1830;
+      --card:#1f1a2e;
+      --ink:#ede4d0;
+      --ink-2:#c7bfd8;
+      --line:rgba(237,228,208,0.14);
+      --rule:rgba(237,228,208,0.28);
+      --accent:#e8a84a;
+      --accent-soft:#f0b968;
+      --accent-2:#4fd6ce;
+      --accent-ink:#1a1000;
+      --good:#5fd39a;
+      --warn:#e8a84a;
+      --danger:#ff9d8a;
+      --banner-bg:#0d0a16;
+      --banner-ink:#f4e7cd;
+      --internal-banner-ink:#2b0a0a;
+    }
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Iowan Old Style','Palatino Linotype','Book Antiqua',Palatino,Georgia,serif;
+    line-height:1.62;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--accent);color:var(--accent-ink);}
+  a{color:var(--accent-2);text-underline-offset:3px;}
+  a:hover{color:var(--accent);}
+  a:focus-visible, button:focus-visible, iframe:focus-visible{
+    outline:3px solid var(--accent-2); outline-offset:2px;
+  }
+  .mono{
+    font-family:ui-monospace,'SF Mono','Cascadia Code','Source Code Pro',Menlo,Consolas,'DejaVu Sans Mono',monospace;
+  }
+  .wrap{max-width:900px;margin:0 auto;padding:0 22px;}
+  .col{max-width:65ch;}
+
+  
+  .galley-slug{
+    position:sticky; top:0; z-index:1000;
+    background:var(--banner-bg); color:var(--banner-ink);
+    text-align:center; padding:9px 14px;
+    font-size:13px; letter-spacing:.05em;
+    border-bottom:2px solid var(--accent-soft);
+  }
+  .galley-slug strong{color:var(--accent-soft);}
+
+  
+  header.masthead{
+    padding:38px 0 26px;
+    border-bottom:4px double var(--rule);
+    background:
+      repeating-linear-gradient(180deg, var(--line) 0 1px, transparent 1px 44px);
+  }
+  .kicker-row{
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-size:11.5px; letter-spacing:.09em; text-transform:uppercase;
+    color:var(--ink-2); margin-bottom:14px; padding-bottom:10px;
+    border-bottom:1px solid var(--rule);
+  }
+  .nameplate{
+    font-size:clamp(38px,8vw,72px);
+    font-weight:700; letter-spacing:.01em; margin:0 0 8px; line-height:1;
+    text-wrap:balance;
+  }
+  .nameplate .lantern{color:var(--accent);}
+  .dek{
+    font-size:19px; font-style:italic; color:var(--ink-2); max-width:640px; margin:0 0 20px;
+  }
+  .folio{
+    font-size:13px; letter-spacing:.02em; padding-top:16px; border-top:1px solid var(--rule);
+  }
+  .folio .label{
+    text-transform:uppercase; letter-spacing:.09em; font-size:11px; color:var(--accent);
+    margin-right:10px;
+  }
+  .folio a{margin-right:16px; white-space:nowrap;}
+
+  section{padding:46px 0; border-top:1px solid var(--line);}
+  .kicker{
+    font-size:11.5px; text-transform:uppercase; letter-spacing:.1em; font-weight:700;
+    color:var(--accent-2); margin:0 0 10px;
+  }
+  h2{
+    font-family:ui-monospace,'SF Mono','Cascadia Code','Source Code Pro',Menlo,Consolas,'DejaVu Sans Mono',monospace;
+    font-size:clamp(20px,3vw,27px); font-weight:700; margin:0 0 18px; letter-spacing:-0.01em;
+    text-wrap:balance;
+  }
+  h3{font-size:17px; margin:0 0 6px; font-weight:700;}
+  p{margin:0 0 14px;}
+  .lede{color:var(--ink-2); max-width:66ch; margin:0 0 26px; font-size:16.5px;}
+
+  
+  .essay p.lead-graf::first-letter{
+    float:left; font-family:Georgia,serif; font-weight:700; font-size:64px; line-height:.82;
+    padding:6px 8px 0 0; color:var(--accent);
+  }
+
+  .bulletin-grid{display:grid; grid-template-columns:1fr 1fr; gap:0; border:1px solid var(--rule);}
+  .bulletin-grid .cell{padding:22px; border-bottom:1px solid var(--rule);}
+  .bulletin-grid .cell:first-child{border-right:1px solid var(--rule);}
+  @media (max-width:760px){
+    .bulletin-grid{grid-template-columns:1fr;}
+    .bulletin-grid .cell:first-child{border-right:none;}
+  }
+  .tag-pill{
+    display:inline-block; font-size:10.5px; font-weight:700; text-transform:uppercase;
+    letter-spacing:.07em; padding:3px 9px; border:1px solid var(--accent-2); color:var(--accent-2);
+    margin-bottom:10px; font-family:ui-monospace,'SF Mono','Cascadia Code','Source Code Pro',Menlo,Consolas,'DejaVu Sans Mono',monospace;
+  }
+  .bulletin-grid p{color:var(--ink-2); font-size:15px; margin:0;}
+
+  
+  .listings{list-style:none; margin:0; padding:0; border-top:1px solid var(--rule);}
+  .listings li{
+    display:grid; grid-template-columns:64px 1fr; gap:16px;
+    padding:18px 0; border-bottom:1px dashed var(--rule);
+  }
+  .listings .idx{
+    font-family:ui-monospace,'SF Mono','Cascadia Code','Source Code Pro',Menlo,Consolas,'DejaVu Sans Mono',monospace;
+    font-size:12px; color:var(--accent); letter-spacing:.04em; padding-top:2px;
+  }
+  .listings h4{margin:0 0 5px; font-size:16px; font-weight:700;}
+  .listings p{margin:0; color:var(--ink-2); font-size:15px;}
+  @media (max-width:520px){
+    .listings li{grid-template-columns:1fr;}
+  }
+
+  
+  .rate-scroll{overflow-x:auto; -webkit-overflow-scrolling:touch; border:1px solid var(--rule); border-radius:2px;}
+  table.rates{border-collapse:collapse; width:100%; min-width:520px; font-size:14.5px;}
+  table.rates th, table.rates td{
+    text-align:left; padding:12px 16px; border-bottom:1px solid var(--rule);
+    font-variant-numeric:tabular-nums;
+  }
+  table.rates thead th{
+    font-family:ui-monospace,'SF Mono','Cascadia Code','Source Code Pro',Menlo,Consolas,'DejaVu Sans Mono',monospace;
+    font-size:11px; text-transform:uppercase; letter-spacing:.07em; color:var(--ink-2);
+    background:var(--paper-alt);
+  }
+  table.rates td.amt{font-weight:700; font-variant-numeric:tabular-nums;}
+  table.rates tr:last-child td{border-bottom:none;}
+  .rate-note{font-size:12.5px; color:var(--ink-2); font-style:italic; margin-top:12px;}
+  .stamp{
+    font-family:ui-monospace,'SF Mono','Cascadia Code','Source Code Pro',Menlo,Consolas,'DejaVu Sans Mono',monospace;
+    font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--accent);
+    border:1px solid var(--accent-soft); padding:2px 7px; margin-left:8px;
+  }
+
+  
+  .specimen{
+    border:1px solid var(--rule); background:var(--card); padding:24px; min-width:0;
+  }
+  .sim-badge{
+    display:inline-block; font-family:ui-monospace,'SF Mono','Cascadia Code','Source Code Pro',Menlo,Consolas,'DejaVu Sans Mono',monospace;
+    font-size:11px; letter-spacing:.06em; text-transform:uppercase; font-weight:700;
+    color:var(--accent-ink); background:var(--accent); padding:4px 10px; margin-bottom:14px;
+  }
+  .demo-frame-wrap{border:1px solid var(--rule); margin-top:14px; overflow:hidden; min-width:0;}
+  .demo-frame-wrap iframe{width:100%; height:520px; border:0; display:block; background:var(--paper-alt);}
+
+  
+  .subscribe{border-top:4px double var(--rule); border-bottom:1px solid var(--line); padding:40px 0;}
+  .subscribe h2{margin-bottom:10px;}
+  .subscribe p{color:var(--ink-2); max-width:60ch;}
+  .subscribe-btn{
+    display:inline-block; font-family:ui-monospace,'SF Mono','Cascadia Code','Source Code Pro',Menlo,Consolas,'DejaVu Sans Mono',monospace;
+    font-size:14px; font-weight:700; letter-spacing:.03em; text-decoration:none;
+    background:var(--ink); color:var(--accent-ink); padding:13px 22px; margin-top:6px;
+    min-height:44px; display:inline-flex; align-items:center;
+  }
+  .subscribe-btn:hover{background:var(--accent-2); color:var(--accent-ink);}
+  .contact-line{margin-top:14px; font-size:13.5px; color:var(--ink-2);}
+  .placeholder{
+    font-family:ui-monospace,'SF Mono','Cascadia Code','Source Code Pro',Menlo,Consolas,'DejaVu Sans Mono',monospace;
+    background:var(--paper-alt); padding:2px 8px; border-radius:3px;
+  }
+
+  footer{padding:26px 0 60px; color:var(--ink-2); font-size:12.5px; text-align:center;
+    font-family:ui-monospace,'SF Mono','Cascadia Code','Source Code Pro',Menlo,Consolas,'DejaVu Sans Mono',monospace;
+  }
+
+  
+  .internal-section{background:var(--internal-bg); color:var(--internal-ink); border-top:4px solid var(--danger);}
+  .internal-banner{
+    position:sticky; top:37px; z-index:900;
+    background:var(--danger); color:var(--internal-banner-ink); text-align:center; font-weight:800;
+    font-size:13px; letter-spacing:.04em; padding:8px 14px;
+  }
+  .internal-section h2{color:#ffd9d9; font-family:ui-monospace,'SF Mono','Cascadia Code','Source Code Pro',Menlo,Consolas,'DejaVu Sans Mono',monospace;}
+  .internal-section .kicker{color:#ffb3b3;}
+  .internal-card{
+    background:rgba(255,255,255,0.04); border:1px solid var(--internal-line);
+    border-radius:2px; padding:20px; margin-bottom:16px;
+  }
+  .internal-card h3{margin:0 0 8px; font-size:16px; color:#ffe3e3;}
+  .internal-card p, .internal-section li{color:#f0d5d5; font-size:14.5px;}
+  .internal-card table{width:100%; border-collapse:collapse; font-size:13.5px; margin-top:8px;}
+  .internal-card th, .internal-card td{
+    text-align:left; padding:7px 8px; border-bottom:1px solid var(--internal-line);
+  }
+  .claim-sourced{color:#7ee7e1; font-weight:600;}
+  .claim-derived{color:#f5c477; font-weight:600;}
+  .claim-unverified{color:#ff9d9d; font-weight:600;}
+  .internal-scroll{overflow-x:auto;}
+  .internal-card .internal-scroll table{min-width:480px;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important;}
+  }
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} }
+</style>
+</head>
+<body><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
+
+
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="kicker-row mono">
+      <span>SD TECH &amp; AI · WEEKLY DIGEST + DIRECTORY</span>
+      <span>DISPATCH 001 · 2026-07-29</span>
+    </div>
+    <h1 class="nameplate"><span class="lantern">Hacker</span>lantern</h1>
+    <p class="dek">The one place that lights up everything happening in SD tech &amp; AI.</p>
+    <p class="dek" style="font-size:16px;margin-bottom:0;">Every meetup, hackathon, launch party, AI demo night, and founder mixer in San Diego —
+    tracked, tagged, and delivered in one weekly signal. Stop following 40 accounts to find out what's
+    happening this week.</p>
+    <div class="folio">
+      <span class="label mono">In this issue</span>
+      <a href="#what">What it is</a>
+      <a href="#who">Who it's for</a>
+      <a href="#features">Listings</a>
+      <a href="#pricing">Rates</a>
+      <a href="#demo">Simulated demo</a>
+    </div>
+  </div>
+</header>
+
+<section id="what" class="essay">
+  <div class="wrap col">
+    <p class="kicker">What it is</p>
+    <h2>A curated discovery layer, not another hosting tool.</h2>
+    <p class="lead-graf">San Diego's tech &amp; AI scene runs through 150+ meetups, user groups, and community
+    orgs (sdtechscene.org's own count) plus a scatter of Luma pages, Meetup groups, and Instagram
+    accounts. Hackerlantern ingests all of it into one weekly digest and a live site — the front door
+    the scene doesn't currently have.</p>
+    <p><strong>Not a hosting tool.</strong> Luma and Meetup help an organizer publish <em>their own</em> event. Hackerlantern shows a
+    resident everything happening across every organizer, gym-for-devs, and account at once.</p>
+    <p><strong>Not a general city guide.</strong> Do512-class citywide guides cover concerts, food, and drink specials. Hackerlantern is
+    vertical-specific: tech and AI only, at launch — the depth a general guide can't match.</p>
+  </div>
+</section>
+
+<section id="who">
+  <div class="wrap">
+    <p class="kicker">Who it's for</p>
+    <h2>Two sides, one weekly signal.</h2>
+    <div class="bulletin-grid">
+      <div class="cell">
+        
+        <h3>Meetup organizers, coworking venues, DevRel</h3>
+        <p>A group organizer running 1-3 meetups, a coworking space hosting a monthly tech night, a
+        bootcamp recruiting locally, or a dev-tool startup doing developer-relations reach — anyone
+        who wants more attendees and has no single channel that reaches beyond their own list.</p>
+      </div>
+      <div class="cell">
+        
+        <h3>SD tech &amp; AI residents</h3>
+        <p>People who currently check Meetup, Luma, sdtechscene.org, and scattered social accounts
+        by hand to find out what's on this week. The digest and site are free for this side —
+        it's the audience the buyer side pays to reach.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <p class="kicker">Listings</p>
+    <h2>What actually ships.</h2>
+    <ul class="listings">
+      <li>
+        <span class="idx mono">01/W</span>
+        <div><h4>Weekly digest</h4><p>Every event, launch, and meetup in the next 7 days, one email/site
+        update — CAN-SPAM compliant (physical address, one-click opt-out) from day one.</p></div>
+      </li>
+      <li>
+        <span class="idx mono">02/D</span>
+        <div><h4>Live directory + calendar</h4><p>A standing, always-current view of every group, venue,
+        and recurring event in the vertical — searchable by topic, date, and neighborhood.</p></div>
+      </li>
+      <li>
+        <span class="idx mono">03/F</span>
+        <div><h4>Featured/sponsor slots</h4><p>An organizer's next 1-2 events pinned at the top of the
+        digest and site, plus a standing directory listing.</p></div>
+      </li>
+      <li>
+        <span class="idx mono">04/S</span>
+        <div><h4>Source-coverage dashboard (sponsor-facing)</h4><p>Shows a sponsor exactly which
+        sources are being tracked and how fresh the data is — trust infrastructure for a discovery
+        product, not just a pretty page. See the simulated walkthrough below.</p></div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap col">
+    <p class="kicker">Rates</p>
+    <h2>Test prices, stated as test prices.</h2>
+    <p class="lede">Priced below the closest real anchor found in research — Luma Plus at $59/mo
+    (billed annually) — rather than an invented "cost per lead" figure. No published sponsor-slot
+    rate card exists anywhere in this category yet; these numbers are what we're testing, not an
+    established market rate.</p>
+    <div class="rate-scroll">
+      <table class="rates">
+        <thead><tr><th>Line</th><th>Rate</th><th>Terms</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Resident</td>
+            <td class="amt">$0</td>
+            <td>Weekly email digest, live directory + calendar, no account required. Always free —
+            this side is the audience, not the customer.</td>
+          </tr>
+          <tr>
+            <td>Founding sponsor <span class="stamp">first 10</span></td>
+            <td class="amt">$49<span class="mono" style="font-weight:400;font-size:12px;">/mo</span></td>
+            <td>Locked for 6 months. Featured slot (next 1-2 events), standing directory listing,
+            10% recurring discount per organizer you refer, stacking.</td>
+          </tr>
+          <tr>
+            <td>Standard sponsor</td>
+            <td class="amt">$99<span class="mono" style="font-weight:400;font-size:12px;">/mo</span></td>
+            <td>Open rate after the founding cohort fills. Featured slot (next 1-2 events), standing
+            directory listing, source-coverage dashboard access.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="rate-note">Breakeven: at $49/mo, the founding rate pays for itself at roughly one
+    incremental signup or attendee the sponsor would not otherwise have gotten. [derived from
+    Luma Plus $59-69/mo anchor — see internal plan below.] Delivery cost: near-zero marginal cost
+    per additional sponsor slot once the shared data engine exists — see internal plan below.</p>
+  </div>
+</section>
+
+<section id="demo">
+  <div class="wrap">
+    <p class="kicker">Simulated demo</p>
+    <h2>What using Hackerlantern actually looks like.</h2>
+    <div class="specimen">
+      <span class="sim-badge">SIMULATED PRODUCT DEMO</span>
+      <p class="lede" style="margin-bottom:6px;">Three scripted scenarios — a resident chat query,
+      a sponsor's source-coverage dashboard, and a weekly digest preview. Every screen below is
+      illustrative example data, not a live system.</p>
+      <div class="demo-frame-wrap">
+        <iframe src="./media/demo.html?v=1" title="Hackerlantern simulated product demo" loading="lazy"></iframe>
+      </div>
+      <p class="rate-note">Full-screen version: <a href="./media/demo.html">media/demo.html</a></p>
+    </div>
+  </div>
+</section>
+
+<section id="cta" class="subscribe">
+  <div class="wrap col">
+    <p class="kicker">Subscribe / sponsor</p>
+    <h2>Want the founding-cohort rate?</h2>
+    <p>10 slots at $49/mo, locked 6 months. This is a concept — no sponsor slot exists yet to buy.</p>
+    <a class="subscribe-btn" href="mailto:placeholder@hackerlantern.example">Placeholder contact</a>
+    <p class="contact-line">Placeholder address: <span class="placeholder">placeholder@hackerlantern.example</span>
+    — not a working inbox. Real contact channel is, pending his decision.</p>
+  </div>
+</section>
+
+<footer class="wrap">
+  Hackerlantern is a alpha product produced by the PITCH-011 loop, 2026-07-29. Not a live product.
+  No purchase, signup, or account creation is possible from this page.
+</footer>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loadout — your Claude, actually configured</title>
+<style>
+  :root {
+    --paper: oklch(97.8% 0.008 78);
+    --paper-raised: oklch(99.3% 0.004 78);
+    --grid-line: oklch(88% 0.02 78 / 55%);
+    --ink: oklch(23% 0.015 78);
+    --ink-2: oklch(42% 0.02 78);
+    --line: oklch(83% 0.02 78);
+    --accent: oklch(53% 0.15 63);
+    --accent-deep: oklch(38% 0.14 58);
+    --accent-ink: oklch(98% 0.008 78);
+    --good: oklch(42% 0.09 148);
+    --good-bg: oklch(94% 0.03 148);
+    --good-line: oklch(65% 0.1 148);
+    --danger: oklch(46% 0.17 33);
+    --danger-bg: oklch(95% 0.03 33);
+    --danger-line: oklch(60% 0.16 33);
+    --danger-ink: oklch(38% 0.15 33);
+    --shell: 1160px;
+    --radius: 7px;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", "Source Code Pro", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+    --sans: system-ui, sans-serif;
+  }
+  :root[data-theme="dark"] {
+    --paper: oklch(20% 0.014 68);
+    --paper-raised: oklch(24.5% 0.016 68);
+    --grid-line: oklch(36% 0.02 68 / 55%);
+    --ink: oklch(93% 0.012 78);
+    --ink-2: oklch(74% 0.018 78);
+    --line: oklch(34% 0.02 68);
+    --accent: oklch(76% 0.15 65);
+    --accent-deep: oklch(84% 0.13 68);
+    --accent-ink: oklch(16% 0.02 65);
+    --good: oklch(78% 0.12 148);
+    --good-bg: oklch(28% 0.045 148);
+    --good-line: oklch(55% 0.1 148);
+    --danger: oklch(75% 0.15 35);
+    --danger-bg: oklch(29% 0.05 33);
+    --danger-line: oklch(62% 0.16 33);
+    --danger-ink: oklch(85% 0.1 35);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: oklch(20% 0.014 68);
+      --paper-raised: oklch(24.5% 0.016 68);
+      --grid-line: oklch(36% 0.02 68 / 55%);
+      --ink: oklch(93% 0.012 78);
+      --ink-2: oklch(74% 0.018 78);
+      --line: oklch(34% 0.02 68);
+      --accent: oklch(76% 0.15 65);
+      --accent-deep: oklch(84% 0.13 68);
+      --accent-ink: oklch(16% 0.02 65);
+      --good: oklch(78% 0.12 148);
+      --good-bg: oklch(28% 0.045 148);
+      --good-line: oklch(55% 0.1 148);
+      --danger: oklch(75% 0.15 35);
+      --danger-bg: oklch(29% 0.05 33);
+      --danger-line: oklch(62% 0.16 33);
+      --danger-ink: oklch(85% 0.1 35);
+    }
+  }
+  :root[data-theme="light"] {
+    --paper: oklch(97.8% 0.008 78);
+    --paper-raised: oklch(99.3% 0.004 78);
+    --grid-line: oklch(88% 0.02 78 / 55%);
+    --ink: oklch(23% 0.015 78);
+    --ink-2: oklch(42% 0.02 78);
+    --line: oklch(83% 0.02 78);
+    --accent: oklch(53% 0.15 63);
+    --accent-deep: oklch(38% 0.14 58);
+    --accent-ink: oklch(98% 0.008 78);
+    --good: oklch(42% 0.09 148);
+    --good-bg: oklch(94% 0.03 148);
+    --good-line: oklch(65% 0.1 148);
+    --danger: oklch(46% 0.17 33);
+    --danger-bg: oklch(95% 0.03 33);
+    --danger-line: oklch(60% 0.16 33);
+    --danger-ink: oklch(38% 0.15 33);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background-color: var(--paper);
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 28px 28px;
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  h1, h2, h3 { font-family: var(--mono); font-weight: 700; letter-spacing: -0.01em; text-wrap: balance; }
+  a { color: var(--accent-deep); }
+  code, .mono { font-family: var(--mono); }
+  .tabnum { font-variant-numeric: tabular-nums; }
+  a:focus-visible, button:focus-visible, summary:focus-visible, .btn:focus-visible {
+    outline: 2px solid var(--accent-deep);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+  }
+
+  
+  .status-ribbon {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--danger-bg);
+    border-bottom: 1px solid var(--danger-line);
+    color: var(--danger-ink);
+    padding: 9px 20px;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    text-align: center;
+  }
+  .status-ribbon .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--danger-line); flex: none;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger-line) 25%, transparent);
+  }
+  .status-ribbon .sub { font-weight: 500; opacity: 0.9; }
+
+  
+  .topbar {
+    max-width: var(--shell);
+    margin: 0 auto;
+    padding: 16px 24px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+  .topbar-mark { font-weight: 700; letter-spacing: 0.02em; color: var(--ink); }
+  .topbar-mark .slot { color: var(--accent-deep); margin-right: 2px; }
+  .topbar-links { list-style: none; display: flex; gap: 18px; margin: 0; padding: 0; flex-wrap: wrap; }
+  .topbar-links a { color: var(--ink-2); text-decoration: none; }
+  .topbar-links a:hover { color: var(--accent-deep); text-decoration: underline; }
+  .topbar-links .topbar-cta { color: var(--accent-deep); font-weight: 700; }
+
+  header.hero {
+    max-width: var(--shell);
+    margin: 0 auto;
+    padding: 40px 24px 24px;
+  }
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    color: var(--ink-2);
+    margin-bottom: 22px;
+  }
+  .wordmark .slot { color: var(--accent-deep); }
+  h1 {
+    font-family: var(--mono);
+    font-size: clamp(1.9rem, 4.2vw, 3rem);
+    line-height: 1.12;
+    margin: 0 0 18px;
+    letter-spacing: -0.015em;
+    max-width: 18ch;
+  }
+  h1 em { font-style: normal; color: var(--accent-deep); }
+  .lede {
+    font-family: var(--sans);
+    font-size: 19px;
+    color: var(--ink-2);
+    max-width: 58ch;
+    margin: 0 0 28px;
+  }
+  .cta-row { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-bottom: 44px; }
+  .btn {
+    display: inline-block;
+    padding: 13px 22px;
+    min-height: 44px;
+    border-radius: var(--radius);
+    font-weight: 700;
+    font-size: 15px;
+    text-decoration: none;
+    border: 1px solid transparent;
+    font-family: var(--sans);
+  }
+  .btn-primary { background: var(--accent-deep); color: var(--accent-ink); }
+  .btn-primary:hover { background: var(--accent); color: var(--accent-ink); }
+  .btn-ghost { border-color: var(--line); color: var(--ink); }
+  .btn-ghost:hover { border-color: var(--accent-deep); color: var(--accent-deep); }
+
+  
+  .manifest-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+  @media (max-width: 720px) { .manifest-wrap { grid-template-columns: 1fr; } }
+  .manifest-pane {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    min-width: 260px;
+  }
+  .manifest-pane.loadout { border-color: var(--accent-deep); }
+  .pane-title {
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: var(--mono); font-size: 12px; color: var(--ink-2);
+    padding: 9px 14px; border-bottom: 1px solid var(--line);
+    background: color-mix(in srgb, var(--ink) 3%, var(--paper-raised));
+  }
+  .pane-tag {
+    font-family: var(--mono); font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em;
+    padding: 2px 7px; border-radius: 4px; border: 1px solid var(--line); color: var(--ink-2);
+  }
+  .manifest-pane.loadout .pane-tag { color: var(--accent-deep); border-color: var(--accent-deep); }
+  .manifest-body {
+    margin: 0; padding: 14px 16px 16px;
+    font-family: var(--mono); font-size: 13px; line-height: 1.65;
+    color: var(--ink-2); white-space: pre; overflow-x: auto;
+  }
+  .manifest-pane.loadout .manifest-body { color: var(--ink); }
+  .manifest-body .k { color: var(--ink-2); }
+  .cursor { display: inline-block; color: var(--accent-deep); animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .manifest-caption { font-family: var(--mono); font-size: 12px; color: var(--ink-2); opacity: 0.8; margin: 10px 2px 0; }
+
+  section.doc-section { max-width: var(--shell); margin: 0 auto; padding: 46px 24px; border-top: 1px solid var(--line); }
+  .section-label {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent-deep);
+    margin: 0 0 12px;
+  }
+  h2 { font-size: 1.6rem; margin: 0 0 14px; }
+  p.section-intro { font-family: var(--sans); color: var(--ink-2); max-width: 64ch; margin: 0 0 28px; font-size: 16px; }
+
+  
+  .spec-table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  .spec-table th, .spec-table td { padding: 16px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .spec-table thead th { font-family: var(--mono); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-2); border-bottom: 1px solid var(--line); }
+  .spec-table tbody tr:last-child td { border-bottom: none; }
+  .spec-table td.component { font-family: var(--mono); font-size: 14px; font-weight: 700; white-space: nowrap; }
+  .spec-table td.component .slot { color: var(--accent-deep); margin-right: 6px; }
+  .spec-table td.default-col { color: var(--ink-2); font-family: var(--mono); font-size: 13px; }
+  .spec-table td.loadout-col strong { display: block; margin-bottom: 4px; }
+  .spec-table td.loadout-col { color: var(--ink); font-family: var(--sans); }
+  .table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--line); background: var(--paper-raised); }
+
+  
+  .who-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 720px) { .who-grid { grid-template-columns: 1fr; } }
+  .who-card { border-radius: var(--radius); padding: 20px 22px; border: 1px solid var(--line); border-left: 3px solid var(--line); background: var(--paper-raised); }
+  .who-yes { border-left-color: var(--good-line); }
+  .who-no { border-left-color: var(--ink-2); opacity: 0.92; }
+  .who-card h3 { margin: 0 0 10px; font-size: 13.5px; letter-spacing: 0.03em; }
+  .who-yes h3 { color: var(--good); }
+  .who-no h3 { color: var(--ink-2); }
+  .who-card ul { margin: 0; padding-left: 18px; color: var(--ink-2); font-size: 14.5px; font-family: var(--sans); }
+  .who-card li { margin-bottom: 8px; }
+  .who-card li::marker { color: var(--ink-2); }
+
+  table.pricing { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  table.pricing th, table.pricing td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.pricing thead th { background: color-mix(in srgb, var(--ink) 3%, var(--paper-raised)); font-family: var(--mono); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-2); }
+  table.pricing tbody tr:last-child td { border-bottom: none; }
+  table.pricing tbody tr:hover td { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+  td.tier-name { font-weight: 700; font-family: var(--mono); font-size: 13.5px; }
+  .price-line { font-family: var(--mono); font-size: 15px; color: var(--accent-deep); font-variant-numeric: tabular-nums; }
+
+  .note-block {
+    margin-top: 20px;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--good-line);
+    background: var(--paper-raised);
+    padding: 16px 20px;
+    font-size: 15px;
+    font-family: var(--sans);
+  }
+  .note-block .tag-note { font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; color: var(--good); display: block; margin-bottom: 6px; }
+  .note-block strong { color: var(--good); }
+
+  .cite { font-family: var(--mono); font-size: 11.5px; color: var(--ink-2); opacity: 0.85; }
+  .flag { color: var(--danger-ink); font-weight: 700; }
+
+  
+  .term-box { border-radius: var(--radius); border: 1px solid var(--line); background: var(--paper-raised); overflow: hidden; }
+  .term-titlebar { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--ink) 3%, var(--paper-raised)); }
+  .term-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--line); }
+  .term-filename { font-family: var(--mono); font-size: 12px; color: var(--ink-2); margin-left: 6px; }
+  .demo-box { padding: 22px 24px 26px; display: flex; flex-direction: column; gap: 16px; }
+  .demo-box .demo-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+  .sim-tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 4px 9px;
+    border-radius: 5px;
+    background: var(--danger-bg);
+    color: var(--danger-ink);
+    border: 1px solid var(--danger-line);
+  }
+  .demo-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent-deep);
+    color: var(--accent-ink);
+    padding: 12px 20px;
+    min-height: 44px;
+    border-radius: var(--radius);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 15px;
+    width: fit-content;
+    font-family: var(--sans);
+  }
+  .demo-link:hover { background: var(--accent); }
+
+  
+  .faq-list { display: flex; flex-direction: column; gap: 10px; }
+  .faq-item { border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper-raised); overflow: hidden; }
+  .faq-item summary {
+    cursor: pointer; padding: 16px 18px; min-height: 44px; display: flex; align-items: center; gap: 12px;
+    font-weight: 700; font-size: 15px; list-style: none; font-family: var(--sans);
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary .qnum { font-family: var(--mono); color: var(--accent-deep); font-size: 13px; flex: none; }
+  .faq-item summary::after { content: "+"; margin-left: auto; font-family: var(--mono); color: var(--ink-2); font-size: 18px; }
+  .faq-item[open] summary::after { content: "\2212"; }
+  .faq-item h3 { font-size: 15px; margin: 0; font-family: var(--sans); font-weight: 700; }
+  .faq-body { padding: 0 18px 20px 46px; color: var(--ink-2); font-size: 15px; max-width: 68ch; font-family: var(--sans); }
+  .faq-body .cite { display: block; margin-top: 8px; }
+  blockquote.tos-quote {
+    margin: 12px 0; padding: 12px 16px; border-left: 3px solid var(--danger-line);
+    background: var(--danger-bg); color: var(--danger-ink); font-size: 14px; font-family: var(--sans); font-style: normal;
+  }
+  blockquote.tos-quote cite { display: block; margin-top: 6px; font-family: var(--mono); font-size: 11px; opacity: 0.85; font-style: normal; }
+
+  footer.cta {
+    max-width: var(--shell);
+    margin: 0 auto;
+    padding: 44px 24px 64px;
+    border-top: 1px solid var(--line);
+  }
+  .cta-prompt { font-family: var(--mono); font-size: 12.5px; color: var(--accent-deep); margin: 0 0 12px; }
+  footer.cta h2 { font-size: 1.5rem; max-width: 30ch; }
+  footer.cta &gt; p { font-family: var(--sans); color: var(--ink-2); max-width: 54ch; margin: 12px 0 0; }
+  .placeholder-contact {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--ink-2);
+    background: var(--paper-raised);
+    border: 1px dashed var(--line);
+    border-radius: var(--radius);
+    padding: 10px 16px;
+    display: inline-block;
+    margin-top: 16px;
+  }
+  .quiet-note { font-family: var(--sans); font-size: 12.5px; color: var(--ink-2); margin-top: 22px; }
+
+  
+  .internal-wrap {
+    background: color-mix(in srgb, var(--danger-bg) 55%, var(--paper));
+    border-top: 3px solid var(--danger-line);
+    padding: 8px 0 70px;
+  }
+  .internal-eyebrow {
+    max-width: var(--shell); margin: 0 auto; padding: 20px 24px 0;
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2);
+  }
+  .internal-banner {
+    max-width: var(--shell);
+    margin: 0 auto;
+    padding: 10px 24px 4px;
+  }
+  .internal-banner .tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--danger-ink);
+    background: var(--paper-raised);
+    border: 2px solid var(--danger-line);
+    padding: 7px 14px;
+    border-radius: 6px;
+  }
+  .internal-banner p { color: var(--danger-ink); font-size: 13.5px; margin: 10px 0 0; font-family: var(--sans); }
+  .internal-body {
+    max-width: var(--shell);
+    margin: 0 auto;
+    padding: 20px 24px 0;
+  }
+  .internal-body h3 {
+    font-size: 17px;
+    margin: 30px 0 10px;
+    color: var(--danger-ink);
+    border-bottom: 1px solid var(--danger-line);
+    padding-bottom: 6px;
+    font-family: var(--mono);
+  }
+  .internal-body h3::before { content: "\00A7 "; opacity: 0.6; }
+  .internal-body h3:first-child { margin-top: 0; }
+  .internal-body p, .internal-body li { color: var(--ink); font-size: 14.5px; font-family: var(--sans); }
+  .internal-body ul { padding-left: 22px; }
+  .internal-card {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    margin-bottom: 14px;
+  }
+</style>
+</head>
+<body><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
+
+  
+
+  <nav class="topbar" aria-label="Section navigation">
+    <div class="topbar-mark"><span class="slot">[x]</span> LOADOUT</div>
+    <ul class="topbar-links">
+      <li><a href="#what-it-is">./problem</a></li>
+      <li><a href="#capabilities">./capabilities</a></li>
+      <li><a href="#pricing">./pricing</a></li>
+      <li><a href="#demo">./demo</a></li>
+      <li><a href="#faq">./faq</a></li>
+      <li><a class="topbar-cta" href="#cta">./start →</a></li>
+    </ul>
+  </nav>
+
+  <header class="hero">
+    <div class="wordmark"><span class="slot">[x]</span> LOADOUT</div>
+    <h1>You're paying for Max. You're running it on <em>default</em>.</h1>
+    <p class="lede">
+      Loadout configures the Claude Code / Claude Cowork setup you already pay for — CLAUDE.md,
+      skills, subagents, and a real memory layer — so the subscription you're carrying actually
+      does the work it's capable of. Your account, your session, your data. We hand you a
+      configured environment; you run it.
+    </p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="#cta">Get a config audit</a>
+      <a class="btn btn-ghost" href="#demo">See the before/after</a>
+    </div>
+
+    <div class="manifest-wrap" role="group" aria-label="Illustrative comparison of a default Claude project file versus a Loadout-configured one">
+      <div class="manifest-pane default">
+        <div class="pane-title">~/.claude/CLAUDE.md <span class="pane-tag">DEFAULT</span></div>
+        <pre class="manifest-body"><code>(empty)
+<span class="k"># no project brief</span>
+<span class="k"># no skills configured</span>
+<span class="k"># no memory layer</span>
+<span class="k"># every session starts from zero</span></code></pre>
+      </div>
+      <div class="manifest-pane loadout">
+        <div class="pane-title">~/.claude/CLAUDE.md <span class="pane-tag">LOADOUT</span></div>
+        <pre class="manifest-body"><code><span class="k">identity:</span>   solo operator, real client work
+<span class="k">skills:</span>     [ curated, 3-5 core ]
+<span class="k">subagents:</span>  [ fit to your workflow ]
+<span class="k">memory:</span>     persistent<span class="cursor" aria-hidden="true">▌</span></code></pre>
+      </div>
+    </div>
+    <p class="manifest-caption">illustrative — structure only, not a real client's file</p>
+  </header>
+
+  <section class="doc-section" id="what-it-is">
+    <p class="section-label">§1 · What it is</p>
+    <h2>The setup layer nobody sells you when you buy the subscription</h2>
+    <p class="section-intro">
+      Anthropic sells you the model and the compute. Nobody sells you the configuration — the
+      part where Claude actually knows your workflow, remembers your projects, and has the right
+      skills wired up instead of re-explaining your business every session.
+    </p>
+  </section>
+
+  <section class="doc-section" id="capabilities">
+    <p class="section-label">§2 · Capabilities</p>
+    <h2>What gets equipped, spec by spec</h2>
+    <p class="section-intro">Not a feature-card pitch — the actual components, what ships empty by default, and what Loadout installs.</p>
+    <div class="table-wrap">
+      <table class="spec-table">
+        <thead>
+          <tr><th>Component</th><th>Default</th><th>Loadout-configured</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="component"><span class="slot" aria-hidden="true">[x]</span>CLAUDE.md</td>
+            <td class="default-col">blank — every session starts from zero</td>
+            <td class="loadout-col"><strong>A real project brain.</strong>One file that tells Claude who you are, how you work, and what "done" looks like — instead of a blank default every session starts from zero on.</td>
+          </tr>
+          <tr>
+            <td class="component"><span class="slot" aria-hidden="true">[x]</span>Skills &amp; subagents</td>
+            <td class="default-col">none installed</td>
+            <td class="loadout-col"><strong>Built for your actual work.</strong>Curated from the parts of the free ecosystem that fit you, not the whole 100+ item pile — installed, tested, and pruned to what you'll actually use.</td>
+          </tr>
+          <tr>
+            <td class="component"><span class="slot" aria-hidden="true">[x]</span>Memory / data layer</td>
+            <td class="default-col">context evaporates each session</td>
+            <td class="loadout-col"><strong>It remembers last week.</strong>A working memory/data scaffold so context, decisions, and past output persist between sessions instead of evaporating.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="doc-section" id="fit">
+    <p class="section-label">§3 · Who it's for</p>
+    <h2>Built for the underutilizer, not the beginner</h2>
+    <div class="who-grid">
+      <div class="who-card who-yes">
+        <h3>✓ THIS IS FOR YOU IF</h3>
+        <ul>
+          <li>You're already paying for Claude Pro ($20/mo) or Max (from $100/mo) — for at least
+          a couple months.</li>
+          <li>You use Claude Code or Cowork sometimes, but there's no CLAUDE.md, no skills, no
+          memory — just the default.</li>
+          <li>You're a solo consultant, agency owner, or small-team operator (1-10 people) — technical
+          enough to run a CLI, not looking to architect an agent config yourself.</li>
+          <li>You've felt the "I keep re-explaining the same context" tax.</li>
+        </ul>
+      </div>
+      <div class="who-card who-no">
+        <h3>✕ NOT A FIT IF</h3>
+        <ul>
+          <li>You're an enterprise team with your own platform/DevOps staff — you'll build this
+          in-house or want a hosted managed layer instead (different offer, see below).</li>
+          <li>You've never touched Claude Code — this isn't onboarding, it's tuning what you
+          already run.</li>
+          <li>You want us running infrastructure on your behalf 24/7 — that's a hosted service,
+          not this one.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="doc-section" id="fence">
+    <p class="section-label">§4 · Fence</p>
+    <h2>What this is <em style="font-style:normal;color:var(--accent-deep)">not</em></h2>
+    <p class="section-intro">
+      Loadout sells packaged <strong>configuration</strong> and a setup/upkeep service — files,
+      skill definitions, memory scaffolding, and setup labor delivered to you and installed into
+      <em>your own</em> Claude account, running on <em>your own</em> subscription. Nothing is
+      hosted on our infrastructure. Nobody but you ever logs into your account — that's the bright
+      line in Anthropic's own Consumer Terms, and Loadout is built to sit clearly on the compliant
+      side of it. If what you actually want is someone else's servers running your agents around
+      the clock, that's a different, adjacent product — not this one.
+    </p>
+  </section>
+
+  <section class="doc-section" id="pricing">
+    <p class="section-label">§5 · Pricing</p>
+    <h2>Priced against what you're already spending</h2>
+    <p class="section-intro">
+      Setup fee plus a light monthly retainer that keeps the config current as your work changes.
+      <span class="cite">[Pro $20/mo, Max from $100/mo, Team Premium seat $100–125/mo — sourced, Anthropic pricing page]</span>
+    </p>
+    <div class="table-wrap">
+      <table class="pricing">
+        <thead>
+          <tr><th>Tier</th><th>Setup (one-time)</th><th>Retainer</th><th>Fits</th><th>Includes</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="tier-name">Starter</td>
+            <td class="price-line tabnum">$250</td>
+            <td class="price-line tabnum">$25/mo</td>
+            <td>Pro subscribers <span class="cite">[$20/mo, sourced]</span></td>
+            <td>CLAUDE.md + 3-5 core skills, basic memory scaffold, 1 setup call, docs</td>
+          </tr>
+          <tr>
+            <td class="tier-name">Growth</td>
+            <td class="price-line tabnum">$600</td>
+            <td class="price-line tabnum">$60/mo</td>
+            <td>Max entry <span class="cite">[from $100/mo, sourced]</span></td>
+            <td>Above + custom subagents for your real workflow, quarterly config review</td>
+          </tr>
+          <tr>
+            <td class="tier-name">Pro / Team</td>
+            <td class="price-line tabnum">$1,500</td>
+            <td class="price-line tabnum">$150/mo</td>
+            <td>Team Premium seat <span class="cite">[$100-125/mo/seat, sourced]</span></td>
+            <td>Above + multi-user config consistency, new-hire onboarding doc, monthly check-in</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note-block">
+      
+      <strong>Breaks even fast:</strong> Growth tier is $60/mo on top of what you already pay.
+      If a well-configured environment saves you just <strong>2 hours a month</strong> — roughly
+      30 minutes a week — of re-explaining context or redoing work Claude got wrong the first
+      time, and your time is worth even a conservative $30/hr, the retainer pays for itself.
+      <span class="cite">[derived assumption — not sourced from a productivity study; stated as an estimate, not a guarantee]</span>
+    </div>
+  </section>
+
+  <section class="doc-section" id="demo">
+    <p class="section-label">§6 · Demo</p>
+    <h2>The same task, before and after</h2>
+    <p class="section-intro">
+      A scripted side-by-side: one Claude session running on the default setup, one running on a
+      Loadout-configured environment, doing the same real-shaped task. Both scenarios use
+      synthetic client data.
+    </p>
+    <div class="term-box">
+      <div class="term-titlebar">
+        <span class="term-dot" aria-hidden="true"></span><span class="term-dot" aria-hidden="true"></span><span class="term-dot" aria-hidden="true"></span>
+        <span class="term-filename">demo-before-after.session</span>
+      </div>
+      <div class="demo-box">
+        <div class="demo-head">
+          <div><strong>Before / After: Default Claude vs. a Configured Environment</strong></div>
+          <span class="sim-tag">SIMULATED</span>
+        </div>
+        <p style="color:var(--ink-2);font-size:14.5px;margin:0;font-family:var(--sans);">
+          Two side-by-side session transcripts plus a memory-layer walkthrough, stepped scenario by
+          scenario. Every scenario is clearly labeled SIMULATED and uses illustrative synthetic
+          data only — not a real client, not a real transcript.
+        </p>
+        <a class="demo-link" href="./media/demo-before-after.html">Open the simulated demo →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="doc-section" id="faq">
+    <p class="section-label">§7 · Limits &amp; FAQ</p>
+    <h2>What this doesn't do, and the hard questions</h2>
+    <p class="section-intro">Docs-style, not sales-style — including the one where the honest answer used to be "I just downgraded instead."</p>
+    <div class="faq-list">
+      <details class="faq-item">
+        <summary><span class="qnum">Q1</span><h3>Why would I pay you when GitHub has free templates with 140K stars?</h3></summary>
+        <div class="faq-body">
+          <p>The free templates are the raw materials, not the finished job —
+          <code>davila7/claude-code-templates</code> and similar repos give you components; they
+          don't know YOUR workflow, YOUR data, or which of the dozens of skills in
+          <code>awesome-claude-code</code> (51,220★) actually apply to what you do. The
+          install/curation/maintenance labor is the product, not the config files themselves.</p>
+          <span class="cite">[sourced — public GitHub star counts]</span>
+        </div>
+      </details>
+      <details class="faq-item">
+        <summary><span class="qnum">Q2</span><h3>I already tried something like this and just downgraded my subscription instead — why wouldn't I do that again?</h3></summary>
+        <div class="faq-body">
+          <p>Fair, and that's the right move if the problem really is "I don't need this much
+          capability." But if the honest answer is "I have capability I'm not using well,"
+          downgrading trades the symptom for a permanent ceiling — you'll hit the same wall on a
+          cheaper plan sooner. This offer is priced to be cheaper than the gap between what you're
+          already paying for Max ($100+/mo) and what you'd get from a cheaper tier — worth testing
+          which one is actually true before downgrading.</p>
+          <span class="cite">[named pattern from a real public forum post, not a hypothetical]</span>
+        </div>
+      </details>
+      <details class="faq-item">
+        <summary><span class="qnum">Q3</span><h3>Is this even allowed under Anthropic's terms?</h3></summary>
+        <div class="faq-body">
+          <p>Yes with an important boundary, stated plainly: nobody but you ever logs into your
+          account. Anthropic's Consumer Terms bar account/credential sharing and reselling access
+          to their Services — this offer does neither; it delivers configuration artifacts and
+          setup labor, installed by you, into your own account.</p>
+          <blockquote class="tos-quote">
+            "You may not share your Account login information, Anthropic API key, or Account
+            credentials with anyone else. You also may not make your Account available to anyone
+            else."
+            <cite>— Anthropic Consumer Terms §2, quoted directly</cite>
+          </blockquote>
+          <span class="cite">[our working legal read, not a legal guarantee — see risk notes in the internal appendix]</span>
+        </div>
+      </details>
+      <details class="faq-item">
+        <summary><span class="qnum">Q4</span><h3>How do I know the setup fee isn't just marked-up dev time?</h3></summary>
+        <div class="faq-body">
+          <p>It's priced against agent-orchestration labor, not a $100-200/hr traditional dev-shop
+          rate — that's the actual reason the fee can sit below typical agency benchmarks and
+          still carry margin.</p>
+          <span class="cite">[derived — not a vendor quote]</span>
+        </div>
+      </details>
+      <details class="faq-item">
+        <summary><span class="qnum">Q5</span><h3>What if my needs change and this stops fitting in 3 months?</h3></summary>
+        <div class="faq-body">
+          <p>The retainer includes a periodic review specifically because agent config drifts as
+          your work changes — Growth and Pro tiers both include a recurring check-in, not a
+          one-and-done handoff. If your needs grow into wanting managed, always-on hosted
+          infrastructure rather than a config you run yourself, that's a different, adjacent offer
+          (PITCH-014/C16) — this stays a config+service product by design, not a bait-and-switch
+          into hosting.</p>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <footer class="cta" id="cta">
+    <p class="cta-prompt">$ schedule --minutes 20 --bring claude.md</p>
+    <h2>Worth 20 minutes to see what a configured setup looks like on your own work?</h2>
+    <p>
+      One concrete ask: a 20-minute discovery call, no pitch deck — bring your current CLAUDE.md
+      (or lack of one) and we'll show you what a Starter-tier config would actually change.
+    </p>
+    <div class="placeholder-contact">contact: [placeholder — hello@loadout.example — real contact pending]</div>
+    <p class="quiet-note">Loadout is a concept under evaluation. No environments have been sold or delivered.</p>
+  </footer>
+
+  
+
+</body>
+</html>

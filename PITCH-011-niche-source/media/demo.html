@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hackerlantern — simulated product demo</title>
+<style>
+  :root{
+    --bg:#faf7f0; --card:#ffffff; --ink:#191830; --ink-soft:#4a4763;
+    --line:rgba(25,24,48,0.14); --amber:#c97a1a; --amber-strong:#a5620f;
+    --teal:#0f7d78; --teal-strong:#0a5a56; --shadow:0 8px 22px rgba(25,24,48,0.08);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0f0e1c; --card:#181632; --ink:#f1ecdf; --ink-soft:#c3bfd9;
+      --line:rgba(241,236,223,0.14); --amber:#e8a84a; --amber-strong:#f5c477;
+      --teal:#3fd6ce; --teal-strong:#7ee7e1; --shadow:0 8px 22px rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0f0e1c; --card:#181632; --ink:#f1ecdf; --ink-soft:#c3bfd9;
+    --line:rgba(241,236,223,0.14); --amber:#e8a84a; --amber-strong:#f5c477;
+    --teal:#3fd6ce; --teal-strong:#7ee7e1; --shadow:0 8px 22px rgba(0,0,0,0.5);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;
+    overflow-x:hidden;}
+  .concept-banner{
+    position:sticky;top:0;z-index:1000;background:#1a1730;color:#f6e7c9;
+    text-align:center;padding:9px 12px;font-size:12.5px;font-weight:700;
+    letter-spacing:.03em;border-bottom:2px solid var(--amber);
+  }
+  .sim-banner{
+    position:sticky;top:34px;z-index:900;background:var(--teal);color:#04211f;
+    text-align:center;padding:7px 12px;font-size:12.5px;font-weight:800;
+    letter-spacing:.05em;text-transform:uppercase;
+  }
+  .wrap{max-width:720px;margin:0 auto;padding:24px 18px 60px;}
+  h1{font-size:22px;margin:6px 0 4px;}
+  .sub{color:var(--ink-soft);font-size:14px;margin:0 0 22px;}
+  .stepper{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px;}
+  .step-btn{
+    flex:1;min-width:150px;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);
+    background:var(--card);color:var(--ink);font-size:13px;font-weight:700;cursor:pointer;
+    text-align:left;
+  }
+  .step-btn small{display:block;font-weight:500;color:var(--ink-soft);font-size:11.5px;margin-top:2px;}
+  .step-btn.active{border-color:var(--amber);box-shadow:0 0 0 2px rgba(201,122,26,0.25);}
+  .scene{display:none;}
+  .scene.active{display:block;}
+  .panel{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:20px;box-shadow:var(--shadow);
+  }
+  .illustrative{
+    display:inline-block;font-size:11px;font-weight:800;text-transform:uppercase;
+    letter-spacing:.05em;background:rgba(201,122,26,0.14);color:var(--amber-strong);
+    padding:3px 9px;border-radius:999px;margin-bottom:14px;
+  }
+  
+  .chat-thread{display:flex;flex-direction:column;gap:12px;}
+  .bubble{max-width:82%;padding:12px 14px;border-radius:14px;font-size:14.5px;line-height:1.45;}
+  .bubble.user{align-self:flex-end;background:var(--teal);color:#04211f;border-bottom-right-radius:4px;}
+  .bubble.bot{align-self:flex-start;background:var(--bg);border:1px solid var(--line);border-bottom-left-radius:4px;}
+  .event-card{margin-top:8px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);}
+  .event-card .name{font-weight:700;font-size:14px;}
+  .event-card .meta{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
+  
+  .dash-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+  @media (max-width:520px){.dash-grid{grid-template-columns:1fr 1fr;}}
+  .stat{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;text-align:center;}
+  .stat .num{font-size:22px;font-weight:800;color:var(--teal-strong);}
+  .stat .lbl{font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;}
+  .src-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:13.5px;}
+  .src-row:first-of-type{border-top:none;}
+  .dot{width:9px;height:9px;border-radius:50%;flex:none;}
+  .dot.fresh{background:var(--teal);} .dot.stale{background:var(--amber);}
+  .src-name{flex:1;font-weight:600;}
+  .src-meta{color:var(--ink-soft);font-size:12px;}
+  
+  .email-shell{border:1px solid var(--line);border-radius:10px;overflow:hidden;}
+  .email-head{background:var(--bg);padding:12px 16px;border-bottom:1px solid var(--line);font-size:13px;color:var(--ink-soft);}
+  .email-body{padding:18px 16px;}
+  .email-body h2{font-size:17px;margin:0 0 4px;}
+  .email-body .week{font-size:12.5px;color:var(--ink-soft);margin-bottom:16px;}
+  .digest-item{padding:12px 0;border-top:1px solid var(--line);}
+  .digest-item:first-of-type{border-top:none;}
+  .digest-item .pin{display:inline-block;font-size:10.5px;font-weight:800;background:var(--amber);
+    color:#1a1000;padding:2px 7px;border-radius:999px;margin-right:6px;letter-spacing:.03em;}
+  .digest-item .t{font-weight:700;font-size:14.5px;}
+  .digest-item .m{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
+  .footer-note{margin-top:22px;font-size:12px;color:var(--ink-soft);}
+</style>
+</head>
+<body><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
+
+<div class="sim-banner">Simulated product demo — every screen below is scripted, illustrative example data</div>
+
+<div class="wrap">
+  <h1>Hackerlantern — product walkthrough</h1>
+  <p class="sub">Three scripted scenarios. Click a tab to switch. All names, numbers, and messages
+  below are illustrative example content, not real users or real data.</p>
+
+  <div class="stepper">
+    <button class="step-btn active" data-scene="s1" onclick="showScene(&#x27;s1&#x27;)">1. Resident chat query<small>"What's on this weekend?"</small></button>
+    <button class="step-btn" data-scene="s2" onclick="showScene(&#x27;s2&#x27;)">2. Sponsor dashboard<small>Source-coverage walkthrough</small></button>
+    <button class="step-btn" data-scene="s3" onclick="showScene(&#x27;s3&#x27;)">3. Weekly digest<small>Email preview</small></button>
+  </div>
+
+  <div id="s1" class="scene active">
+    <div class="panel">
+      <span class="illustrative">Illustrative example — not a real user or real events</span>
+      <div class="chat-thread">
+        <div class="bubble user">what's happening in SD tech/AI this weekend?</div>
+        <div class="bubble bot">
+          Found 6 things in the next 3 days across 5 sources. Top 3 by relevance to your saved
+          interests (AI, dev tools):
+          <div class="event-card">
+            <div class="name">Example AI Meetup — "Agents in Production" demo night</div>
+            <div class="meta">Sat 6:00pm · Makers Quarter coworking · via Meetup · 62 RSVPs</div>
+          </div>
+          <div class="event-card">
+            <div class="name">specdev/LoopDev meetup — agent orchestration talks</div>
+            <div class="meta">Sat 11:00am · Example Co-working Hub · via sdtechscene.org</div>
+          </div>
+          <div class="event-card">
+            <div class="name">Example open build session</div>
+            <div class="meta">Sun 2:00pm · Liberty Station · via Luma · 3rd time this month</div>
+          </div>
+        </div>
+        <div class="bubble user">anything for founders specifically?</div>
+        <div class="bubble bot">
+          Yes — 1 match tagged "founder/startup":
+          <div class="event-card">
+            <div class="name">DevX San Diego — founder office hours</div>
+            <div class="meta">Sun 10:00am · Downtown · via Claude meetup community · drop-in</div>
+          </div>
+          Want this added to your weekly digest automatically?
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="s2" class="scene">
+    <div class="panel">
+      <span class="illustrative">Illustrative example — not real sponsor or coverage data</span>
+      <div class="dash-grid">
+        <div class="stat"><div class="num">47</div><div class="lbl">Sources tracked</div></div>
+        <div class="stat"><div class="num">3.2 hrs</div><div class="lbl">Avg. data age</div></div>
+        <div class="stat"><div class="num">1,140</div><div class="lbl">Digest opens / wk</div></div>
+      </div>
+      <div style="font-weight:700;font-size:13.5px;margin-bottom:6px;">Source freshness — sample rows</div>
+      <div class="src-row"><span class="dot fresh"></span><span class="src-name">sdtechscene.org directory</span><span class="src-meta">synced 2 hrs ago</span></div>
+      <div class="src-row"><span class="dot fresh"></span><span class="src-name">Meetup — Example AI Meetup</span><span class="src-meta">synced 40 min ago</span></div>
+      <div class="src-row"><span class="dot fresh"></span><span class="src-name">Luma — Example Builders series</span><span class="src-meta">synced 1 hr ago</span></div>
+      <div class="src-row"><span class="dot stale"></span><span class="src-name">Instagram — @example.sd.tech</span><span class="src-meta">synced 19 hrs ago (manual-check source)</span></div>
+      <div class="src-row"><span class="dot fresh"></span><span class="src-name">Example co-working events calendar</span><span class="src-meta">synced 3 hrs ago</span></div>
+      <p class="footer-note">This is the trust layer sponsors see: which sources feed the digest,
+      and how current the data is — not just a claim, a live coverage view. Numbers above are
+      illustrative example, plausibility-bounded against RESEARCH.md's real sdtechscene.org
+      group count (150+), not decorated with fake citations.</p>
+    </div>
+  </div>
+
+  <div id="s3" class="scene">
+    <div class="panel">
+      <span class="illustrative">Illustrative example — not a real send</span>
+      <div class="email-shell">
+        <div class="email-head">
+          <strong>Hackerlantern Weekly</strong> — This Week in SD Tech &amp; AI · illustrative preview
+        </div>
+        <div class="email-body">
+          <h2>Aug 3 – Aug 9</h2>
+          <div class="week">14 events across 9 sources this week · unsubscribe anytime, one click</div>
+          <div class="digest-item">
+            <span class="t">specdev/LoopDev — Agent Orchestration Night</span>
+            <div class="m">Sat 11:00am · Example Co-working Hub</div>
+          </div>
+          <div class="digest-item">
+            <div class="t">Example AI Meetup demo night</div>
+            <div class="m">Sat 6:00pm · Makers Quarter</div>
+          </div>
+          <div class="digest-item">
+            <div class="t">DevX San Diego — founder office hours</div>
+            <div class="m">Sun 10:00am · Downtown</div>
+          </div>
+          <div class="digest-item">
+            <div class="t">Example open build session</div>
+            <div class="m">Sun 2:00pm · Liberty Station</div>
+          </div>
+          <p class="footer-note" style="margin-top:16px;">Hackerlantern · [placeholder postal address —
+          required for real send under CAN-SPAM, 15 U.S.C. §7701] · <a href="#">unsubscribe</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="footer-note">Concept demo built for the PITCH-011 pitch package, 2026-07-29. No real
+  users, sponsors, or sends exist behind this screen.</p>
+</div>
+
+<script>
+function showScene(id){
+  document.querySelectorAll('.scene').forEach(function(el){el.classList.remove('active');});
+  document.querySelectorAll('.step-btn').forEach(function(el){el.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  document.querySelector('.step-btn[data-scene="'+id+'"]').classList.add('active');
+}
+</script>
+</body>
+</html>

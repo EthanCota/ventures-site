@@ -1,0 +1,157 @@
+<meta charset="utf-8">
+<title>OneGoodIntro — Simulated match demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --ink: #1c1712; --paper: #faf6ef; --paper-2: #f1e9d8; --accent: #b5541e;
+    --accent-2: #2c5148; --line: #d9cdb2; --muted: #6b6152; --card: #ffffff;
+    --danger-bg: #fff2e0; --danger-line: #c98a3e;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  :root[data-theme="dark"] {
+    --ink: #f2ece0; --paper: #16130f; --paper-2: #201b14; --accent: #e08a4c;
+    --accent-2: #6fae9c; --line: #3a3225; --muted: #b3a891; --card: #1e1a14;
+    --danger-bg: #2a2015; --danger-line: #b5732f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #f2ece0; --paper: #16130f; --paper-2: #201b14; --accent: #e08a4c;
+      --accent-2: #6fae9c; --line: #3a3225; --muted: #b3a891; --card: #1e1a14;
+      --danger-bg: #2a2015; --danger-line: #b5732f;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); line-height: 1.5; overflow-x: hidden; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 20px 60px; }
+  .banner {
+    position: sticky; top: 0; z-index: 999;
+    background: var(--accent); color: #fff; text-align: center;
+    font-weight: 700; letter-spacing: .03em; font-size: 13px; padding: 9px 12px; text-transform: uppercase;
+  }
+  .sim-banner {
+    background: var(--danger-line); color: #241503; text-align: center;
+    font-weight: 800; letter-spacing: .03em; font-size: 12px; padding: 7px 12px; text-transform: uppercase;
+  }
+  h1 { font-family: var(--serif); font-size: 28px; margin: 36px 0 6px; }
+  p.lead { color: var(--muted); margin: 0 0 30px; }
+  .scenario {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 24px; margin-bottom: 28px;
+  }
+  .scenario h2 { font-family: var(--serif); font-size: 20px; margin: 0 0 4px; }
+  .scenario .tag {
+    display: inline-block; font-size: 11px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: .04em; color: var(--danger-line); background: var(--danger-bg);
+    border: 1px solid var(--danger-line); border-radius: 999px; padding: 3px 10px; margin-bottom: 12px;
+  }
+  .msg { display: flex; margin: 10px 0; gap: 10px; }
+  .msg .bubble {
+    max-width: 78%; padding: 10px 14px; border-radius: 14px; font-size: 14.5px;
+    background: var(--paper-2); border: 1px solid var(--line);
+  }
+  .msg.right { justify-content: flex-end; }
+  .msg.right .bubble { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .msg.system .bubble {
+    background: transparent; border: 1px dashed var(--line); color: var(--muted); font-style: italic;
+    max-width: 100%;
+  }
+  .who { font-size: 12px; color: var(--muted); margin: 0 0 3px; }
+  button.step-btn {
+    display: block; margin: 18px auto 0; padding: 10px 22px; border-radius: 999px;
+    border: 1px solid var(--accent); background: var(--accent); color: #fff; font-weight: 700;
+    font-size: 14px; cursor: pointer;
+  }
+  button.step-btn:disabled { opacity: .4; cursor: default; }
+  .step-indicator { text-align: center; color: var(--muted); font-size: 12.5px; margin-top: 10px; }
+  .hidden { display: none; }
+  .reasoning {
+    background: var(--paper-2); border-left: 3px solid var(--accent-2); padding: 12px 14px;
+    border-radius: 8px; font-size: 14px; margin: 14px 0; color: var(--muted);
+  }
+  .synth-note {
+    font-size: 12px; color: var(--muted); border-top: 1px dashed var(--line);
+    margin-top: 16px; padding-top: 10px;
+  }
+</style><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
+
+
+<div class="sim-banner">Simulated product demo — every name, message, and figure below is invented for illustration</div>
+
+<div class="wrap">
+  <h1>Two simulated matches</h1>
+  <p class="lead">Illustrative example only. Synthetic people, synthetic messages, plausibility-bounded against real figures in RESEARCH.md (no invented dollar figures carry citation-style decoration). Click through each scenario.</p>
+
+  <div class="scenario">
+    
+    <h2>A founder asks for an investor intro</h2>
+    <div id="s1-steps"></div>
+    <button class="step-btn" id="s1-next">Show next message</button>
+    <div class="step-indicator" id="s1-indicator">Step 0 of 5</div>
+  </div>
+
+  <div class="scenario">
+    
+    <h2>An advisor's offer gets matched to a founder</h2>
+    <div id="s2-steps"></div>
+    <button class="step-btn" id="s2-next">Show next message</button>
+    <div class="step-indicator" id="s2-indicator">Step 0 of 5</div>
+  </div>
+
+  <p class="synth-note">Illustrative example. Names ("Priya," "Marcus," "Elena," "Sam") and every message are synthetic — no real person, deal, or outcome is depicted. Dollar figures shown ($150 intro fee) match the real STRATEGY.md pricing; all other numbers in this demo (timelines, meeting counts) are invented and unlabeled with any source tag on purpose, per house style for synthetic data.</p>
+</div>
+
+<script>
+  function buildScenario(containerId, nextBtnId, indicatorId, steps) {
+    const container = document.getElementById(containerId);
+    const btn = document.getElementById(nextBtnId);
+    const indicator = document.getElementById(indicatorId);
+    let shown = 0;
+
+    function render() {
+      container.innerHTML = '';
+      for (let i = 0; i &lt; shown; i++) {
+        const s = steps[i];
+        const div = document.createElement('div');
+        if (s.type === 'system') {
+          div.className = 'msg system';
+          div.innerHTML = '&lt;div class="bubble"&gt;' + s.text + '&lt;/div&gt;';
+        } else if (s.type === 'reasoning') {
+          div.className = 'reasoning';
+          div.textContent = s.text;
+        } else {
+          div.className = 'msg ' + (s.side === 'right' ? 'right' : '');
+          div.innerHTML = '&lt;div&gt;&lt;div class="who"&gt;' + s.who + '&lt;/div&gt;&lt;div class="bubble"&gt;' + s.text + '&lt;/div&gt;&lt;/div&gt;';
+        }
+        container.appendChild(div);
+      }
+      indicator.textContent = 'Step ' + shown + ' of ' + steps.length;
+      btn.disabled = shown &gt;= steps.length;
+      btn.textContent = shown &gt;= steps.length ? 'Scenario complete' : 'Show next message';
+    }
+
+    btn.addEventListener('click', function () {
+      if (shown &lt; steps.length) { shown++; render(); }
+    });
+
+    render();
+  }
+
+  buildScenario('s1-steps', 's1-next', 's1-indicator', [
+    { type: 'system', text: 'Founder "Priya" (illustrative) submits a request through OneGoodIntro.' },
+    { type: 'msg', side: 'left', who: 'Priya, founder', text: '"I need one intro to an investor who\'s actually written checks into logistics-tech before Series A. Not a general VC list."' },
+    { type: 'reasoning', text: 'Curator reasoning (simulated): Priya has a specific, narrow ask — that\'s the kind of request this service is built for, not a broad "any investor" browse. Checking the opt-in pool for a match with logistics-adjacent check-writing experience.' },
+    { type: 'system', text: 'Curator finds "Marcus" (illustrative), an angel in the opt-in pool with two prior logistics-tech investments, opted in to founder intros this quarter.' },
+    { type: 'msg', side: 'right', who: 'Curator, to Marcus', text: '"Got a founder — pre-seed, logistics-tech, sharp on the specifics. Want the intro?"' },
+    { type: 'msg', side: 'right', who: 'Marcus, investor', text: '"Sure, send it over."' }
+  ]);
+
+  buildScenario('s2-steps', 's2-next', 's2-indicator', [
+    { type: 'system', text: 'Advisor "Elena" (illustrative) opts in with a standing offer: 3 advisory conversations/quarter, ops-scaling focus.' },
+    { type: 'msg', side: 'left', who: 'Elena, advisor', text: '"I\'ve got bandwidth for a few founders this quarter — anyone wrestling with ops scaling past their first 10 hires."' },
+    { type: 'reasoning', text: 'Curator reasoning (simulated): Elena\'s offer is specific (ops scaling, 10+ hires) — checking the founder pool for someone at that exact inflection point rather than broadcasting the offer widely.' },
+    { type: 'system', text: 'Curator finds "Sam" (illustrative), a founder at 9 hires who flagged hiring-process pain in their own opt-in profile.' },
+    { type: 'msg', side: 'right', who: 'Curator, to Sam', text: '"There\'s an advisor with real ops-scaling experience who has room for a conversation. $150 for the intro, one-time. Want it?"' },
+    { type: 'msg', side: 'right', who: 'Sam, founder', text: '"Yes — that\'s exactly the gap I flagged. Set it up."' }
+  ]);
+</script>

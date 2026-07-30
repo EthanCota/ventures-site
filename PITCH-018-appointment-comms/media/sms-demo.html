@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chairside — simulated SMS demo</title>
+<style>
+  :root{
+    color-scheme: light;
+    --bg:#fcfbf8; --panel:#ffffff; --ink:#231d16; --ink-2:#5b5147; --line:#e4d9c8;
+    --brand:#c8622e; --brand-deep:#9c481d;
+    --bubble-in:#eef0ee; --bubble-out:#2a78d6; --bubble-out-ink:#ffffff;
+    --sim:#c98500;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:where(:not([data-theme="light"])){
+      color-scheme: dark;
+      --bg:#161310; --panel:#1e1a15; --ink:#f5efe4; --ink-2:#cdc0af; --line:#3a3126;
+      --brand:#e0854f; --brand-deep:#f0a36c;
+      --bubble-in:#2c2721; --bubble-out:#3987e5; --bubble-out-ink:#ffffff;
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --bg:#161310; --panel:#1e1a15; --ink:#f5efe4; --ink-2:#cdc0af; --line:#3a3126;
+    --brand:#e0854f; --brand-deep:#f0a36c;
+    --bubble-in:#2c2721; --bubble-out:#3987e5; --bubble-out-ink:#ffffff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:ui-sans-serif,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .banner-stack{position:sticky;top:0;z-index:6}
+  .concept{background:#c8622e;color:#fff;text-align:center;font-weight:800;font-size:12.5px;letter-spacing:.04em;padding:8px 10px}
+  .concept b{text-decoration:underline}
+  .top{position:relative;top:0;background:var(--sim);color:#1c1310;text-align:center;font-weight:800;font-size:12.5px;letter-spacing:.06em;padding:7px;z-index:5}
+  .wrap{max-width:640px;margin:0 auto;padding:16px}
+  h1{font-size:18px;margin:6px 0 2px}
+  .sub{font-size:13px;color:var(--ink-2);margin:0 0 16px}
+  .tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+  .tab{
+    border:1px solid var(--line);background:var(--panel);color:var(--ink);
+    padding:8px 12px;border-radius:999px;font-size:12.5px;font-weight:700;cursor:pointer;
+  }
+  .tab.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .phone{
+    background:var(--panel);border:1px solid var(--line);border-radius:20px;
+    padding:16px;min-height:420px;display:flex;flex-direction:column;gap:10px;
+    box-shadow:0 8px 24px rgba(0,0,0,.08);
+  }
+  .scene-label{font-size:11.5px;font-weight:800;color:var(--brand-deep);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px}
+  .row{display:flex}
+  .row.out{justify-content:flex-end}
+  .bubble{max-width:78%;padding:9px 13px;border-radius:16px;font-size:14.5px;line-height:1.4}
+  .row.in .bubble{background:var(--bubble-in);color:var(--ink);border-bottom-left-radius:4px}
+  .row.out .bubble{background:var(--bubble-out);color:var(--bubble-out-ink);border-bottom-right-radius:4px}
+  .meta{font-size:10.5px;color:var(--ink-2);margin-top:2px;text-align:center}
+  .controls{display:flex;justify-content:space-between;align-items:center;margin-top:16px;gap:10px}
+  button.nav{
+    border:1px solid var(--line);background:var(--panel);color:var(--ink);
+    padding:9px 16px;border-radius:9px;font-weight:700;font-size:13.5px;cursor:pointer;
+  }
+  button.nav:disabled{opacity:.4;cursor:default}
+  .progress{font-size:12.5px;color:var(--ink-2)}
+  .fadein{animation:fadein .25s ease}
+  @keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+  .caption{font-size:12.5px;color:var(--ink-2);margin-top:10px;min-height:32px}
+</style>
+</head>
+<body><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
+
+<div class="wrap">
+  <h1>Chairside — sample SMS threads</h1>
+  <p class="sub">Three scripted scenarios. Every message below is illustrative, plausibility-bounded
+    against researched no-show/consent figures — not a real conversation.</p>
+
+  <div class="tabs" id="tabs"></div>
+
+  <div class="phone" id="phone"></div>
+
+  <div class="controls">
+    <button class="nav" id="prevBtn">← Back</button>
+    <span class="progress" id="progress"></span>
+    <button class="nav" id="nextBtn">Next →</button>
+  </div>
+  <div class="caption" id="caption"></div>
+</div>
+
+<script>
+const scenarios = [
+  {
+    name: "Confirm → reschedule",
+    caption: "A booking confirmation that turns into a two-way reschedule — Starter tier handles the yes/no, Pro handles the negotiation.",
+    messages: [
+      {who:"out", text:"Hi Marcus, this is Fade &amp; Line Barbershop — you're booked for a haircut Thu 7/31 at 2:00pm with James. Reply C to confirm or R to reschedule.", meta:"Sent automatically at booking · SIMULATED"},
+      {who:"in", text:"R"},
+      {who:"out", text:"No problem. James has openings Thu 4:30pm or Fri 11:00am — reply 1 or 2, or tell us a day/time that works.", meta:"SIMULATED"},
+      {who:"in", text:"Fri 11 works better"},
+      {who:"out", text:"You're set — Fri 8/1 at 11:00am with James. We'll text a reminder the day before.", meta:"SIMULATED"}
+    ]
+  },
+  {
+    name: "Reminder + prep",
+    caption: "A reminder timed to the appointment, with visit-specific prep — not a generic daily blast.",
+    messages: [
+      {who:"out", text:"Reminder: your tattoo session at Iron Wave Tattoo is tomorrow, 8/2 at 1:00pm with Ren. Eat beforehand, wear something that gives easy access to the area, and stay hydrated.", meta:"Sent 24h before appointment · SIMULATED"},
+      {who:"in", text:"Can I bring a reference pic I found?"},
+      {who:"out", text:"Yep — text it here anytime before your appointment and Ren will see it, or bring it on your phone tomorrow.", meta:"SIMULATED"},
+      {who:"in", text:"Perfect, see you then"}
+    ]
+  },
+  {
+    name: "Post-visit follow-up",
+    caption: "A short personal check-in after the visit — aftercare for tattoo, a rebooking nudge for barber/chiro. Pro tier feature.",
+    messages: [
+      {who:"out", text:"Hey Priya, hope the adjustment felt good today! Quick reminder: ice 15 min on/off tonight if you're sore, and drink extra water. — Bay Chiropractic", meta:"Sent evening of visit · SIMULATED"},
+      {who:"in", text:"Feeling way better already, thank you!"},
+      {who:"out", text:"Great to hear. Dr. Alvarez typically likes a follow-up in 2 weeks — want us to hold a spot for 8/16?", meta:"SIMULATED"},
+      {who:"in", text:"Yes please, morning if possible"},
+      {who:"out", text:"Booked — Fri 8/16, 9:00am. See you then!", meta:"SIMULATED"}
+    ]
+  }
+];
+
+let scenarioIdx = 0;
+let msgIdx = 0; // how many messages of current scenario are shown (1-based count)
+
+const tabsEl = document.getElementById('tabs');
+const phoneEl = document.getElementById('phone');
+const progressEl = document.getElementById('progress');
+const captionEl = document.getElementById('caption');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+
+scenarios.forEach((s, i) =&gt; {
+  const b = document.createElement('button');
+  b.className = 'tab' + (i === 0 ? ' active' : '');
+  b.textContent = s.name;
+  b.onclick = () =&gt; { scenarioIdx = i; msgIdx = 1; render(); };
+  tabsEl.appendChild(b);
+});
+
+function render(){
+  const scenario = scenarios[scenarioIdx];
+  [...tabsEl.children].forEach((b, i) =&gt; b.classList.toggle('active', i === scenarioIdx));
+  phoneEl.innerHTML = '&lt;div class="scene-label"&gt;' + scenario.name + '&lt;/div&gt;';
+  scenario.messages.slice(0, msgIdx).forEach(m =&gt; {
+    const row = document.createElement('div');
+    row.className = 'row ' + m.who + ' fadein';
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    bubble.textContent = m.text;
+    row.appendChild(bubble);
+    phoneEl.appendChild(row);
+    if (m.meta){
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+      meta.textContent = m.meta;
+      phoneEl.appendChild(meta);
+    }
+  });
+  progressEl.textContent = msgIdx + ' / ' + scenario.messages.length;
+  captionEl.textContent = scenario.caption;
+  prevBtn.disabled = (scenarioIdx === 0 &amp;&amp; msgIdx &lt;= 1);
+  nextBtn.disabled = (scenarioIdx === scenarios.length - 1 &amp;&amp; msgIdx &gt;= scenario.messages.length);
+  phoneEl.scrollTop = phoneEl.scrollHeight;
+}
+
+nextBtn.onclick = () =&gt; {
+  const scenario = scenarios[scenarioIdx];
+  if (msgIdx &lt; scenario.messages.length){
+    msgIdx++;
+  } else if (scenarioIdx &lt; scenarios.length - 1){
+    scenarioIdx++;
+    msgIdx = 1;
+  }
+  render();
+};
+prevBtn.onclick = () =&gt; {
+  if (msgIdx &gt; 1){
+    msgIdx--;
+  } else if (scenarioIdx &gt; 0){
+    scenarioIdx--;
+    msgIdx = scenarios[scenarioIdx].messages.length;
+  }
+  render();
+};
+
+msgIdx = 1;
+render();
+</script>
+</body>
+</html>

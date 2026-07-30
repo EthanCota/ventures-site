@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Steady Grants — simulated product walkthrough</title>
+<style>
+  :root{
+    --bg:#FBF7EF; --surface:#FFFFFF; --surface-2:#F3EEE1; --ink:#20281E; --ink-soft:#4B5A44;
+    --line:#DFD6BE; --primary:#2F5233; --primary-ink:#FFFFFF; --primary-tint:#E4EDE1;
+    --accent:#A9631A; --warn-bg:#3A2410; --warn-ink:#FFE6BE; --warn-line:#C98A2D;
+    --bubble-user:#E4EDE1; --bubble-bot:#FFFFFF;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#14180F; --surface:#1C2317; --surface-2:#232B1B; --ink:#EEEADA; --ink-soft:#BFC7B2;
+      --line:#3A4531; --primary:#8FC08D; --primary-ink:#0F1A0E; --primary-tint:#22301F;
+      --accent:#E3A15A; --warn-bg:#2E2210; --warn-ink:#FFE6BE; --warn-line:#E3A15A;
+      --bubble-user:#22301F; --bubble-bot:#1C2317;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14180F; --surface:#1C2317; --surface-2:#232B1B; --ink:#EEEADA; --ink-soft:#BFC7B2;
+    --line:#3A4531; --primary:#8FC08D; --primary-ink:#0F1A0E; --primary-tint:#22301F;
+    --accent:#E3A15A; --warn-bg:#2E2210; --warn-ink:#FFE6BE; --warn-line:#E3A15A;
+    --bubble-user:#22301F; --bubble-bot:#1C2317;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  .top-banner{ background:var(--warn-bg); color:var(--warn-ink); text-align:center; padding:10px 14px; font-size:13px; font-weight:700; border-bottom:2px solid var(--warn-line); }
+  .wrap{ max-width:720px; margin:0 auto; padding:18px 16px 40px; }
+  h1{ font-size:19px; margin:14px 0 4px; }
+  .sub{ color:var(--ink-soft); font-size:13.5px; margin:0 0 18px; }
+  .tabs{ display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+  .tab{ font-size:13px; font-weight:700; padding:8px 14px; border-radius:99px; border:1px solid var(--line); background:var(--surface); color:var(--ink); cursor:pointer; }
+  .tab.active{ background:var(--primary); color:var(--primary-ink); border-color:var(--primary); }
+  .scenario{ display:none; }
+  .scenario.active{ display:block; }
+  .stage-card{ background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px; min-height:340px; }
+  .stage-label{ font-size:11px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; color:var(--accent); margin-bottom:10px; }
+  .bubble{ max-width:88%; padding:11px 14px; border-radius:12px; margin-bottom:10px; font-size:14.5px; line-height:1.45; }
+  .bubble.bot{ background:var(--bubble-bot); border:1px solid var(--line); }
+  .bubble.user{ background:var(--bubble-user); margin-left:auto; }
+  .bubble .who{ font-size:11px; font-weight:800; color:var(--ink-soft); margin-bottom:3px; text-transform:uppercase; letter-spacing:.03em; }
+  .match-card{ border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin-bottom:10px; background:var(--surface-2); }
+  .match-card .row1{ display:flex; justify-content:space-between; gap:10px; font-weight:700; font-size:14px; }
+  .match-card .score{ background:var(--primary-tint); color:var(--primary); font-size:11.5px; font-weight:800; padding:2px 8px; border-radius:99px; }
+  .match-card .meta{ color:var(--ink-soft); font-size:12.5px; margin-top:4px; }
+  .draft{ border:1px dashed var(--accent); border-radius:10px; padding:14px; background:var(--surface-2); font-size:14px; line-height:1.55; }
+  .draft .h{ font-size:11px; font-weight:800; color:var(--accent); text-transform:uppercase; letter-spacing:.05em; margin-bottom:8px; }
+  .controls{ display:flex; justify-content:space-between; align-items:center; margin-top:14px; gap:10px; }
+  button.nav{ font-weight:700; font-size:13.5px; padding:9px 16px; border-radius:9px; border:1px solid var(--line); background:var(--surface); color:var(--ink); cursor:pointer; }
+  button.nav.primary{ background:var(--primary); color:var(--primary-ink); border-color:var(--primary); }
+  button.nav:disabled{ opacity:.4; cursor:default; }
+  .dots{ display:flex; gap:6px; }
+  .dots span{ width:7px; height:7px; border-radius:99px; background:var(--line); }
+  .dots span.on{ background:var(--primary); }
+  .example-tag{ display:inline-block; font-size:10.5px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; background:var(--warn-bg); color:var(--warn-ink); padding:2px 7px; border-radius:99px; margin-left:6px; vertical-align:middle; }
+  .foot-note{ font-size:12px; color:var(--ink-soft); margin-top:14px; }
+</style>
+</head>
+<body><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
+<div class="top-banner">SIMULATED PRODUCT WALKTHROUGH — Steady Grants does not exist yet. Every organization name, number, and message below is an illustrative example, not real data or a live system.</div>
+<div class="wrap">
+  <h1>See it work <span class="example-tag">Simulated</span></h1>
+  <p class="sub">Three scripted scenarios showing the intended product experience. Click Next to step through each one.</p>
+  <div class="tabs">
+    <button class="tab active" data-tab="0">1. Discovery scan</button>
+    <button class="tab" data-tab="1">2. Draft interview</button>
+    <button class="tab" data-tab="2">3. Pipeline dashboard</button>
+  </div>
+
+  
+  <div class="scenario active" data-scenario="0">
+    <div class="stage-card">
+      <div class="stage-label">Screen <span class="step-n">1</span> of 4 — Discovery scan</div>
+      <div class="step" data-step="0">
+        <div class="bubble bot"><div class="who">Steady Grants</div>Good morning. I ran this week's scan against your org profile for <strong>Casa Semilla Youth Arts</strong> <span class="example-tag">illustrative example</span> — a San Diego after-school arts program. Found 3 opportunities worth your time.</div>
+      </div>
+      <div class="step" data-step="1" style="display:none;">
+        <div class="match-card">
+          <div class="row1"><span>Neighborhood Arts &amp; Culture Fund</span><span class="score">91% match</span></div>
+          <div class="meta">Local family foundation · $15,000 typical award · Deadline in 34 days</div>
+        </div>
+        <div class="match-card">
+          <div class="row1"><span>Youth Creative Pathways Grant</span><span class="score">84% match</span></div>
+          <div class="meta">Regional community foundation · $8,000–$25,000 range · Deadline in 61 days</div>
+        </div>
+        <div class="match-card">
+          <div class="row1"><span>Community Enrichment Micro-Grant</span><span class="score">73% match</span></div>
+          <div class="meta">Local foundation · $2,500 typical award · Rolling deadline</div>
+        </div>
+      </div>
+      <div class="step" data-step="2" style="display:none;">
+        <div class="bubble user"><div class="who">Executive Director</div>Why is the Neighborhood Arts fund ranked highest?</div>
+        <div class="bubble bot"><div class="who">Steady Grants</div>It matches your program area (youth arts education), geography (funds San Diego-only), and your typical award range in past filings. It also excludes organizations with budgets over $750K — your profile qualifies.</div>
+      </div>
+      <div class="step" data-step="3" style="display:none;">
+        <div class="bubble bot"><div class="who">Steady Grants</div>Want me to start a first draft for the Neighborhood Arts &amp; Culture Fund application? I'll pull from your last annual report and your 2025 program budget.</div>
+        <div class="bubble user"><div class="who">Executive Director</div>Yes — start the draft.</div>
+      </div>
+      <div class="controls">
+        <button class="nav prev" disabled>Back</button>
+        <div class="dots"></div>
+        <button class="nav primary next">Next</button>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="scenario" data-scenario="1">
+    <div class="stage-card">
+      <div class="stage-label">Screen <span class="step-n">1</span> of 4 — Draft interview</div>
+      <div class="step" data-step="0">
+        <div class="bubble bot"><div class="who">Steady Grants</div>I read your 2025 annual report and last year's program budget. Before I draft the "Statement of Need" section, one number is missing from your documents: how many youth did the after-school arts program serve last year?</div>
+      </div>
+      <div class="step" data-step="1" style="display:none;">
+        <div class="bubble user"><div class="who">Executive Director</div>We served 142 kids across two sites last year, up from about 95 the year before.</div>
+        <div class="bubble bot"><div class="who">Steady Grants</div>Got it — noting that for this application and saving it to your org profile so I don't have to ask again next time.</div>
+      </div>
+      <div class="step" data-step="2" style="display:none;">
+        <div class="bubble bot"><div class="who">Steady Grants</div>Here's a first draft of the Statement of Need, grounded in your documents plus what you just told me:</div>
+        <div class="draft"><div class="h">Draft — Statement of Need <span class="example-tag">illustrative example</span></div>Casa Semilla Youth Arts served 142 youth across two San Diego sites in the 2025 program year, a 49% increase over the prior year. Demand continues to outpace capacity: our 2025 annual report notes a waitlist at both sites for the first time in the program's history. [Draft continues — review, edit, and finalize in your own voice before submitting.]</div>
+      </div>
+      <div class="step" data-step="3" style="display:none;">
+        <div class="bubble bot"><div class="who">Steady Grants</div>This is a first pass for you to edit — not a finished application. You stay the author of record; nothing here gets submitted automatically.</div>
+      </div>
+      <div class="controls">
+        <button class="nav prev" disabled>Back</button>
+        <div class="dots"></div>
+        <button class="nav primary next">Next</button>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="scenario" data-scenario="2">
+    <div class="stage-card">
+      <div class="stage-label">Screen <span class="step-n">1</span> of 3 — Pipeline dashboard</div>
+      <div class="step" data-step="0">
+        <div class="bubble bot"><div class="who">Steady Grants</div>Here's where things stand across your grant pipeline this month:</div>
+        <div class="match-card"><div class="row1"><span>Neighborhood Arts &amp; Culture Fund</span><span class="score">Draft in review</span></div><div class="meta">Due in 34 days · you're editing the draft</div></div>
+        <div class="match-card"><div class="row1"><span>Youth Creative Pathways Grant</span><span class="score">Not started</span></div><div class="meta">Due in 61 days</div></div>
+        <div class="match-card"><div class="row1"><span>City Parks Youth Partnership (2025)</span><span class="score">Submitted</span></div><div class="meta">Awaiting funder decision, $12,000 requested <span class="example-tag">illustrative example</span></div></div>
+      </div>
+      <div class="step" data-step="1" style="display:none;">
+        <div class="bubble user"><div class="who">Executive Director</div>How much drafting time have we saved so far this year?</div>
+        <div class="bubble bot"><div class="who">Steady Grants</div>Across 2 completed drafts this year, roughly 14 hours of first-draft writing time, estimated against your own past time-per-proposal. That estimate is a rough guide, not a guarantee <span class="example-tag">illustrative example</span>.</div>
+      </div>
+      <div class="step" data-step="2" style="display:none;">
+        <div class="bubble bot"><div class="who">Steady Grants</div>Next deadline: Neighborhood Arts &amp; Culture Fund in 34 days. Want a reminder in 10 days if the draft is still unfinished?</div>
+        <div class="bubble user"><div class="who">Executive Director</div>Yes, please.</div>
+      </div>
+      <div class="controls">
+        <button class="nav prev" disabled>Back</button>
+        <div class="dots"></div>
+        <button class="nav primary next">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <p class="foot-note">All organization names (Casa Semilla Youth Arts), dollar figures, dates, and conversations on this page are synthetic and illustrative. The proposal-cost figures referenced indirectly (via this pitch's pricing/breakeven) are bounded to stay within this pitch's sourced research (foundation proposal cost $1,500–$5,000, RESEARCH.md §1). The grant AWARD-size figures shown on screen ($15,000 typical award, $8,000–$25,000 range, $2,500 typical, $12,000 requested) are illustrative only — this pitch's research does not source a grant award-size range to check them against, so they are plausible-but-unverified, not range-checked. None of it was produced by a real AI system.</p>
+</div>
+<script>
+  const tabs = document.querySelectorAll('.tab');
+  const scenarios = document.querySelectorAll('.scenario');
+  function initScenario(sc){
+    const steps = sc.querySelectorAll('.step');
+    const dotsWrap = sc.querySelector('.dots');
+    dotsWrap.innerHTML = '';
+    steps.forEach((_,i)=&gt;{ const d=document.createElement('span'); if(i===0)d.className='on'; dotsWrap.appendChild(d); });
+    let cur = 0;
+    const prevBtn = sc.querySelector('.prev');
+    const nextBtn = sc.querySelector('.next');
+    const label = sc.querySelector('.step-n');
+    function render(){
+      steps.forEach((s,i)=&gt;{ s.style.display = i===cur ? '' : 'none'; });
+      Array.from(dotsWrap.children).forEach((d,i)=&gt;{ d.className = i===cur ? 'on' : ''; });
+      prevBtn.disabled = cur===0;
+      nextBtn.textContent = cur===steps.length-1 ? 'Restart' : 'Next';
+      label.textContent = cur+1;
+    }
+    prevBtn.addEventListener('click', ()=&gt;{ if(cur&gt;0){cur--; render();} });
+    nextBtn.addEventListener('click', ()=&gt;{ if(cur&lt;steps.length-1){cur++;} else {cur=0;} render(); });
+    render();
+  }
+  scenarios.forEach(initScenario);
+  tabs.forEach(t=&gt;{
+    t.addEventListener('click', ()=&gt;{
+      tabs.forEach(x=&gt;x.classList.remove('active'));
+      t.classList.add('active');
+      scenarios.forEach(s=&gt;s.classList.remove('active'));
+      document.querySelector('.scenario[data-scenario="'+t.dataset.tab+'"]').classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

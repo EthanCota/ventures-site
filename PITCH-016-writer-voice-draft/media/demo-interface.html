@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Quillecho — simulated product demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --ink:#1c2333; --parchment:#f6f1e4; --parchment-2:#efe7d3; --card:#ffffff;
+    --gold:#a97a1f; --gold-deep:#8a6416; --rust:#a13d2d; --line:#ddd3ba;
+    --text:#241f14; --text-soft:#5a5342; --shadow:0 6px 20px rgba(28,35,51,0.10);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ink:#f6f1e4; --parchment:#181510; --parchment-2:#1f1b13; --card:#221d15;
+      --gold:#e0b354; --gold-deep:#c99a3c; --rust:#e2695a; --line:#3a3325;
+      --text:#f1e9d6; --text-soft:#c8bda0; --shadow:0 6px 20px rgba(0,0,0,0.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#f6f1e4; --parchment:#181510; --parchment-2:#1f1b13; --card:#221d15;
+    --gold:#e0b354; --gold-deep:#c99a3c; --rust:#e2695a; --line:#3a3325;
+    --text:#f1e9d6; --text-soft:#c8bda0; --shadow:0 6px 20px rgba(0,0,0,0.4);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--parchment); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
+  .banner{ text-align:center; padding:.5rem 1rem; font-weight:700; font-size:.78rem;
+    letter-spacing:.04em; text-transform:uppercase; }
+  .banner-concept{ background:var(--rust); color:#fff6ee; border-bottom:2px solid var(--gold);}
+  .banner-sim{ background:var(--gold-deep); color:#241a08; border-bottom:2px solid var(--rust);}
+  main{max-width:820px; margin:0 auto; padding:1.6rem 1.2rem 3rem;}
+  h1{font-size:1.5rem; margin:.4rem 0 .2rem; font-family:Georgia,serif;}
+  .sub{color:var(--text-soft); margin-bottom:1.4rem; font-size:.95rem;}
+  .stepper{display:flex; gap:.5rem; margin-bottom:1.4rem; flex-wrap:wrap;}
+  .step-btn{
+    flex:1; min-width:150px; padding:.6rem .8rem; border-radius:10px; border:1px solid var(--line);
+    background:var(--card); cursor:pointer; font-size:.82rem; text-align:left; color:var(--text-soft);
+  }
+  .step-btn.active{ border-color:var(--gold-deep); color:var(--ink); box-shadow:var(--shadow); font-weight:600;}
+  .step-btn .num{ display:inline-block; width:1.4rem; height:1.4rem; border-radius:50%; background:var(--gold-deep);
+    color:#fff9ec; text-align:center; line-height:1.4rem; font-size:.75rem; margin-right:.4rem;}
+  .panel{ display:none; background:var(--card); border:1px solid var(--line); border-radius:14px;
+    padding:1.4rem; box-shadow:var(--shadow);}
+  .panel.active{display:block;}
+  .illustrative{ display:inline-block; font-size:.68rem; text-transform:uppercase; letter-spacing:.04em;
+    font-weight:700; padding:.15rem .5rem; border-radius:5px; background:var(--parchment-2); color:var(--gold-deep);
+    border:1px solid var(--gold-deep); margin-bottom:.8rem;}
+  .archive-list{ list-style:none; padding:0; margin:.8rem 0; }
+  .archive-list li{ padding:.5rem .7rem; border:1px solid var(--line); border-radius:8px; margin-bottom:.4rem; font-size:.88rem; background:var(--parchment-2);}
+  .arrow{ text-align:center; font-size:1.4rem; color:var(--gold-deep); margin:.6rem 0;}
+  .voice-model{ background:var(--parchment-2); border:1px dashed var(--gold-deep); border-radius:10px; padding:.9rem 1rem; font-size:.87rem;}
+  .compare{ display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1rem;}
+  @media (max-width:640px){ .compare{grid-template-columns:1fr;} }
+  .compare-col h4{ margin:0 0 .5rem; font-size:.85rem; text-transform:uppercase; letter-spacing:.03em; color:var(--text-soft);}
+  .excerpt{ background:var(--parchment-2); border:1px solid var(--line); border-radius:10px; padding:.9rem; font-size:.87rem; line-height:1.6; min-height:180px;}
+  .draft-box{ background:var(--card); border:2px solid var(--gold-deep); border-radius:10px; padding:.9rem; font-size:.87rem; line-height:1.6; min-height:180px;}
+  .chat{ margin-top:1rem; }
+  .msg{ max-width:80%; padding:.65rem .9rem; border-radius:12px; margin-bottom:.6rem; font-size:.88rem; line-height:1.5;}
+  .msg.user{ background:var(--gold-deep); color:#fff9ec; margin-left:auto; border-bottom-right-radius:2px;}
+  .msg.tool{ background:var(--parchment-2); border:1px solid var(--line); border-bottom-left-radius:2px;}
+  .nav-btns{ display:flex; justify-content:space-between; margin-top:1.2rem;}
+  button.nav{ font-family:inherit; padding:.55rem 1.1rem; border-radius:999px; border:2px solid var(--gold-deep);
+    background:transparent; color:var(--ink); cursor:pointer; font-weight:600; font-size:.85rem;}
+  button.nav:disabled{ opacity:.35; cursor:default; }
+  .caption{ font-size:.8rem; color:var(--text-soft); margin-top:.6rem;}
+</style>
+</head>
+<body><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
+
+<div class="banner banner-sim">SIMULATED — scripted mockup, not a live tool or real output</div>
+<main>
+  <h1>Quillecho: a walk through what using it looks like</h1>
+  <p class="sub">Three scripted scenarios. Every screen below is staged for this pitch — no real
+    archive was ingested and no model generated these drafts.</p>
+
+  <div class="stepper">
+    <button class="step-btn active" data-step="1"><span class="num">1</span>Connect your archive</button>
+    <button class="step-btn" data-step="2"><span class="num">2</span>Get a voice-matched draft</button>
+    <button class="step-btn" data-step="3"><span class="num">3</span>Revise in your voice</button>
+  </div>
+
+  <div class="panel active" id="panel-1">
+    <span class="illustrative">Illustrative example</span>
+    <h3>Step 1 — Connect one archive source</h3>
+    <p>A writer pastes in their Substack export URL. Quillecho pulls the published pieces it can
+      reach and starts building a private voice model from them.</p>
+    <ul class="archive-list">
+      <li>"Why I Stopped Reading the News Every Morning" — Mar 2026</li>
+      <li>"The Slow Newsletter Manifesto" — Feb 2026</li>
+      <li>"What Nobody Tells You About Writing Weekly" — Jan 2026</li>
+      <li>… 24 more pieces found in archive</li>
+    </ul>
+    <div class="arrow">↓</div>
+    <div class="voice-model">
+      <strong>Voice model built:</strong> short punchy opening lines, frequent rhetorical questions,
+      a habit of ending sections with a one-line turn, informal-but-precise word choice.
+      <em>(Illustrative summary — an actual model would not surface as a plain-English list like this;
+      shown here for the pitch, not as a real UI element.)</em>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-2">
+    <span class="illustrative">Illustrative example</span>
+    <h3>Step 2 — Generate a draft, and judge it yourself</h3>
+    <p>The writer gives Quillecho a topic: <em>"a piece about why I'm cutting back on social media
+      posting."</em> No automated "voice-match score" is shown — just the archive next to the draft,
+      for the writer to judge.</p>
+    <div class="compare">
+      <div class="compare-col">
+        <h4>From the archive (excerpt)</h4>
+        <div class="excerpt">"I used to think posting more was the job. Turns out the job was
+          writing something worth reading, and posting was just the delivery truck. I noticed this
+          the week I missed three days on purpose and nothing broke — the newsletter still
+          landed, the inbox still filled. So here's the question I keep circling back to: what am I
+          actually optimizing for?"</div>
+      </div>
+      <div class="compare-col">
+        <h4>Draft, from Quillecho</h4>
+        <div class="draft-box">"I used to think showing up online every day was the job. It isn't
+          — the job is writing something worth someone's five minutes, and posting is just the
+          delivery truck. I found this out by accident, cutting back for a week and watching nothing
+          break. Which leaves an obvious question I can't fully answer yet: what was I actually
+          optimizing for?"</div>
+      </div>
+    </div>
+    <p class="caption">Both blocks above are invented for this demo — no real writer's archive
+      or output. The point being illustrated: matched rhythm and phrasing, not a copy-paste.</p>
+  </div>
+
+  <div class="panel" id="panel-3">
+    <span class="illustrative">Illustrative example</span>
+    <h3>Step 3 — A plain-language revision loop</h3>
+    <p>The writer doesn't like the ending and asks for a punchier close, in their own words.</p>
+    <div class="chat">
+      <div class="msg user">make it punchier — the ending's too soft, end on the question harder</div>
+      <div class="msg tool">Got it. Tightened the close — cut the hedge, kept your rhetorical-question habit:</div>
+      <div class="msg tool"><strong>New ending:</strong> "...watching nothing break. So: what was I
+        actually optimizing for? Not an answer I have yet. Just the question I should've asked a
+        year ago."</div>
+      <div class="msg user">better. keep that.</div>
+    </div>
+    <p class="caption">Simulated exchange — illustrative example only. The revision loop targets
+      the writer's own stated notes, not a generic "make it better" rewrite.</p>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nav" id="prevBtn" disabled>← Back</button>
+    <button class="nav" id="nextBtn">Next →</button>
+  </div>
+</main>
+<script>
+  const steps = [1,2,3];
+  let cur = 1;
+  const btns = document.querySelectorAll('.step-btn');
+  const panels = document.querySelectorAll('.panel');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  function show(n){
+    cur = n;
+    btns.forEach(b=&gt;b.classList.toggle('active', +b.dataset.step === n));
+    panels.forEach(p=&gt;p.classList.toggle('active', p.id === 'panel-'+n));
+    prevBtn.disabled = n === 1;
+    nextBtn.disabled = n === steps.length;
+    nextBtn.textContent = n === steps.length ? 'End of demo' : 'Next →';
+  }
+  btns.forEach(b=&gt;b.addEventListener('click', ()=&gt;show(+b.dataset.step)));
+  prevBtn.addEventListener('click', ()=&gt;{ if(cur&gt;1) show(cur-1); });
+  nextBtn.addEventListener('click', ()=&gt;{ if(cur&lt;steps.length) show(cur+1); });
+</script>
+</body>
+</html>

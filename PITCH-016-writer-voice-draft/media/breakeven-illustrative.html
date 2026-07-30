@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Quillecho — illustrative payback comparison</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --ink:#1c2333; --parchment:#f6f1e4; --card:#ffffff; --gold:#a97a1f; --gold-deep:#8a6416;
+    --rust:#a13d2d; --line:#ddd3ba; --text:#241f14; --text-soft:#5a5342;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ink:#f6f1e4; --parchment:#181510; --card:#221d15; --gold:#e0b354; --gold-deep:#c99a3c;
+      --rust:#e2695a; --line:#3a3325; --text:#f1e9d6; --text-soft:#c8bda0;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#f6f1e4; --parchment:#181510; --card:#221d15; --gold:#e0b354; --gold-deep:#c99a3c;
+    --rust:#e2695a; --line:#3a3325; --text:#f1e9d6; --text-soft:#c8bda0;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--parchment); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
+  .banner{ text-align:center; padding:.5rem 1rem; font-weight:700; font-size:.78rem;
+    letter-spacing:.04em; text-transform:uppercase;}
+  .banner-concept{ background:var(--rust); color:#fff6ee; border-bottom:2px solid var(--gold);}
+  .banner-sim{ background:var(--gold-deep); color:#241a08; border-bottom:2px solid var(--rust);}
+  main{max-width:640px; margin:0 auto; padding:1.6rem 1.2rem 3rem;}
+  h1{font-size:1.3rem; font-family:Georgia,serif; margin-bottom:.2rem;}
+  .sub{color:var(--text-soft); font-size:.9rem; margin-bottom:1.2rem;}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:1.4rem;}
+  .illustrative{ display:inline-block; font-size:.68rem; text-transform:uppercase; letter-spacing:.04em;
+    font-weight:700; padding:.15rem .5rem; border-radius:5px; background:var(--parchment); color:var(--gold-deep);
+    border:1px solid var(--gold-deep); margin-bottom:1rem;}
+  .row{ display:flex; align-items:center; gap:.8rem; margin-bottom:1rem;}
+  .row .label{ width:150px; font-size:.85rem; color:var(--text-soft); text-align:right;}
+  .bar-track{ flex:1; background:var(--parchment); border-radius:8px; overflow:hidden; height:34px; border:1px solid var(--line);}
+  .bar-fill{ height:100%; display:flex; align-items:center; padding-left:.6rem; color:#fff9ec; font-size:.82rem; font-weight:600; border-radius:8px 0 0 8px;}
+  .fill-cost{ background:var(--gold-deep); width:18%; }
+  .fill-value{ background:var(--rust); width:70%; }
+  .note{font-size:.82rem; color:var(--text-soft); margin-top:1rem; line-height:1.5;}
+</style>
+</head>
+<body><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
+
+<div class="banner banner-sim">ILLUSTRATIVE EXAMPLE — invented figures, plausibility-bounded, not measured data</div>
+<main>
+  <h1>Payback, illustrated at Starter tier ($24/mo)</h1>
+  <p class="sub">A single hypothetical weekly-newsletter writer, for comparison only. Not a customer
+    result — no customers exist yet.</p>
+  <div class="card">
+    <span class="illustrative">Illustrative example</span>
+    <div class="row">
+      <div class="label">Monthly cost</div>
+      <div class="bar-track"><div class="bar-fill fill-cost">$24</div></div>
+    </div>
+    <div class="row">
+      <div class="label">Time saved, valued</div>
+      <div class="bar-track"><div class="bar-fill fill-value">~$67–150</div></div>
+    </div>
+    <p class="note">
+      Illustrative math: roughly 20–30 minutes saved per weekly issue (4 issues/month) at a
+      conservative $50–75/hr value of the writer's own time → about $67–150/month of
+      recovered time against a $24/month tool. The hourly rate is an assumption, not a sourced
+      figure for this specific population — treat this chart as directional, not a promised
+      return.
+    </p>
+  </div>
+</main>
+</body>
+</html>

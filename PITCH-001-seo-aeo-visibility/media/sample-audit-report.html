@@ -1,0 +1,89 @@
+<title>Harborcite — Sample Audit Report (illustrative)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --teal:#0A9C8F; --coral:#D9714E; --ink:#12262A; --ink-2:#3C5257; --muted:#6B7C80;
+    --surface:#FCFCFB; --card:#FFFFFF; --border:#E1DBCC; --surface-2:#F1EDE4;
+  }
+  :root[data-theme="dark"]{ --ink:#EDEFEE; --ink-2:#C8D2D3; --muted:#9AA8AA; --surface:#141A1B; --card:#1E2627; --border:#2C3536; --surface-2:#1B2223; }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --ink:#EDEFEE; --ink-2:#C8D2D3; --muted:#9AA8AA; --surface:#141A1B; --card:#1E2627; --border:#2C3536; --surface-2:#1B2223; } }
+  *{box-sizing:border-box;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; background:var(--surface); color:var(--ink); margin:0; padding:0;}
+  .banner{background:#12262A; color:#F6E9C9; text-align:center; font-weight:700; font-size:12.5px; padding:8px; border-bottom:2px solid var(--coral);}
+  .illustrative{
+    background:#3A331C; color:#F1E3B8; text-align:center; font-size:12.5px; font-weight:600; padding:8px;
+  }
+  main{max-width:760px; margin:0 auto; padding:32px 20px 60px;}
+  .head{display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; margin-bottom:26px;}
+  .brand{font-weight:800; font-size:17px;}
+  .brand span{color:var(--coral);}
+  .meta{color:var(--muted); font-size:12.5px; text-align:right;}
+  h1{font-size:24px; margin:0 0 4px;}
+  .subject{color:var(--ink-2); margin:0 0 30px;}
+  .score-row{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:30px;}
+  .score-card{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px; text-align:center;}
+  .score-card .num{font-size:30px; font-weight:800; color:var(--teal);}
+  .score-card.low .num{color:var(--coral);}
+  .score-card .label{font-size:12px; color:var(--muted); margin-top:4px;}
+  h2{font-size:16px; border-bottom:1px solid var(--border); padding-bottom:8px; margin:30px 0 14px;}
+  table{width:100%; border-collapse:collapse; font-size:13.5px;}
+  th,td{text-align:left; padding:9px 8px; border-bottom:1px solid var(--border);}
+  th{color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.04em;}
+  .status{display:inline-block; font-size:11px; font-weight:700; padding:2px 8px; border-radius:5px;}
+  .status.miss{background:#3A2420; color:#F0B39C;}
+  .status.partial{background:#3A331C; color:#F1E3B8;}
+  .status.ok{background:#123832; color:#8FE4D6;}
+  :root:not([data-theme="dark"]) .status.miss{background:#FBE4DC; color:#9A3617;}
+  :root:not([data-theme="dark"]) .status.partial{background:#F6ECD2; color:#7A5E0E;}
+  :root:not([data-theme="dark"]) .status.ok{background:#DCF3EE; color:#0A6B5E;}
+  .footnote{margin-top:34px; font-size:12px; color:var(--muted); border-top:1px dashed var(--border); padding-top:14px;}
+</style><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
+
+<div class="illustrative">ILLUSTRATIVE EXAMPLE — synthetic data for a fictional business, not a real client or a real scan.</div>
+<main>
+  <div class="head">
+    <div class="brand">Harborcite<span>.</span> — Visibility Audit</div>
+    <div class="meta">Sample report<br>Prepared for a fictional business<br>illustrative example</div>
+  </div>
+  <h1>Cabrillo Family Dental (fictional example)</h1>
+  <p class="subject">Single-location dental practice — the kind of business the audit is built for. No real business by this description was scanned.</p>
+
+  <div class="score-row">
+    <div class="score-card low"><div class="num">3/10</div><div class="label">Google Business Profile score</div></div>
+    <div class="score-card low"><div class="num">0/5</div><div class="label">AI-answer citations found</div></div>
+    <div class="score-card"><div class="num">p.2</div><div class="label">Organic rank, "dentist [city]"</div></div>
+  </div>
+
+  <h2>Google Business Profile findings</h2>
+  <table>
+    <tr><th>Item</th><th>Status</th></tr>
+    <tr><td>Profile claimed &amp; verified</td><td><span class="status ok">OK</span></td></tr>
+    <tr><td>Service categories complete</td><td><span class="status miss">Missing</span></td></tr>
+    <tr><td>Recent photos (last 90 days)</td><td><span class="status miss">Missing</span></td></tr>
+    <tr><td>Review count</td><td><span class="status partial">7 reviews</span></td></tr>
+    <tr><td>Posts / updates cadence</td><td><span class="status miss">None in 6+ months</span></td></tr>
+  </table>
+
+  <h2>AI-answer citation check</h2>
+  <p style="font-size:13.5px; color:var(--ink-2);">Query pattern tested: "best dentist near [neighborhood], San Diego" and 4 close variants.</p>
+  <table>
+    <tr><th>Assistant</th><th>Cited?</th></tr>
+    <tr><td>ChatGPT</td><td><span class="status miss">Not cited</span></td></tr>
+    <tr><td>Google AI Overview</td><td><span class="status miss">Not cited</span></td></tr>
+    <tr><td>Perplexity</td><td><span class="status miss">Not cited</span></td></tr>
+  </table>
+
+  <h2>Prioritized fix list</h2>
+  <table>
+    <tr><th>#</th><th>Fix</th><th>Est. effort</th></tr>
+    <tr><td>1</td><td>Complete GBP service categories &amp; attributes</td><td>Low</td></tr>
+    <tr><td>2</td><td>Add schema markup (LocalBusiness + Dentist)</td><td>Medium</td></tr>
+    <tr><td>3</td><td>Restart monthly photo/post cadence</td><td>Low</td></tr>
+    <tr><td>4</td><td>Build 2 AI-citeable service pages (FAQ-structured)</td><td>Medium</td></tr>
+    <tr><td>5</td><td>Organic review-request workflow (no incentives, no gating)</td><td>Low</td></tr>
+  </table>
+
+  <div class="footnote">
+    All scores, review counts, and rankings on this page are invented for illustration and bounded to plausible ranges seen in RESEARCH.md's real market findings — no scan of any actual business was performed. This is a mockup of the audit deliverable, not a dataset.
+  </div>
+</main>

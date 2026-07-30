@@ -1,0 +1,142 @@
+<meta charset="utf-8">
+<title>Fareloop — simulated patron flow</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --bg:#faf6f0; --ink:#241a12; --ink-soft:#5a4a3a; --card:#fff; --line:#e6d9c4;
+    --amber:#c2540f; --amber-ink:#7a3208; --teal:#0e5c56; --teal-ink:#0a3f3b; --gold:#c9932b;
+  }
+  :root[data-theme="dark"]{
+    --bg:#171310; --ink:#f3ead9; --ink-soft:#cbb99e; --card:#231d17; --line:#3a2f22;
+    --amber:#e07a34; --amber-ink:#ffcfa8; --teal:#3fb8ac; --teal-ink:#bdf0e8; --gold:#e0b354;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#171310; --ink:#f3ead9; --ink-soft:#cbb99e; --card:#231d17; --line:#3a2f22;
+      --amber:#e07a34; --amber-ink:#ffcfa8; --teal:#3fb8ac; --teal-ink:#bdf0e8; --gold:#e0b354;
+    }
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--ink); font-family:'Avenir Next',Helvetica,Arial,sans-serif;}
+  .wrap{max-width:640px; margin:0 auto; padding:0 18px 60px;}
+  .concept-banner{
+    position:sticky; top:0; z-index:10;
+    background:repeating-linear-gradient(135deg,var(--amber),var(--amber) 12px,var(--amber-ink) 12px,var(--amber-ink) 24px);
+    color:#fff; text-align:center; font-weight:700; letter-spacing:.04em; font-size:.8rem; padding:8px;
+  }
+  .sim-banner{
+    background:var(--gold); color:#2a1d00; text-align:center; font-weight:800; letter-spacing:.05em;
+    padding:9px; font-size:.82rem;
+  }
+  h1{font-size:1.3rem; margin:22px 0 4px;}
+  .sub{color:var(--ink-soft); font-size:.9rem; margin-bottom:24px;}
+  .stepper{display:flex; gap:6px; margin-bottom:22px;}
+  .dot{flex:1; height:6px; border-radius:3px; background:var(--line);}
+  .dot.active{background:var(--teal);}
+  .screen{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; min-height:340px; box-shadow:0 2px 10px rgba(0,0,0,.08);}
+  .phone-head{font-size:.75rem; color:var(--ink-soft); text-align:center; margin-bottom:14px;}
+  .msg{border-radius:14px; padding:12px 14px; margin-bottom:10px; font-size:.92rem; max-width:85%;}
+  .msg.app{background:var(--bg); border:1px solid var(--line);}
+  .msg.system{background:var(--teal); color:#fff; margin-left:auto;}
+  .msg.success{background:#dff0d8; color:#2c5e1a; border:1px solid #b6d9a8;}
+  :root[data-theme="dark"] .msg.success{background:#1f3a17; color:#b7e6a3; border-color:#33501f;}
+  .post-thumb{
+    width:100%; aspect-ratio:4/3; border-radius:10px; margin:10px 0;
+    background:linear-gradient(135deg,var(--teal),var(--gold));
+    display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:.85rem;
+    text-align:center; padding:10px;
+  }
+  .token{display:inline-flex; align-items:center; gap:8px; background:var(--amber); color:#fff; padding:8px 14px; border-radius:24px; font-weight:700; font-size:.9rem;}
+  .caption-box{background:var(--bg); border:1px dashed var(--line); border-radius:10px; padding:10px 12px; font-size:.82rem; color:var(--ink-soft); margin-top:10px;}
+  .nav{display:flex; justify-content:space-between; margin-top:18px;}
+  button{
+    font-family:inherit; font-weight:700; border:none; border-radius:8px; padding:10px 18px;
+    background:var(--teal); color:#fff; cursor:pointer; font-size:.88rem;
+  }
+  button:disabled{opacity:.35; cursor:default;}
+  button.secondary{background:transparent; color:var(--teal-ink); border:1px solid var(--teal);}
+  .illustrative{font-size:.72rem; color:var(--ink-soft); text-align:center; margin-top:20px;}
+  .badge-illustrative{background:var(--internal-bg,#fff4d6); border:1px solid var(--gold); border-radius:6px; padding:1px 6px; font-size:.68rem; font-weight:700;}
+</style><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
+
+
+<div class="sim-banner">SIMULATED PRODUCT DEMO — scripted, not a working app</div>
+
+<div class="wrap">
+  <h1>Patron flow: post → verify → redeem</h1>
+  <p class="sub">A scripted walkthrough of the intended experience for a Fareloop patron in San
+    Diego. Every screen below is <b>illustrative example</b> data, not a real user or venue.</p>
+
+  <div class="stepper" id="stepper"></div>
+  <div class="screen" id="screen"></div>
+  <div class="nav">
+    <button class="secondary" id="prevBtn">Back</button>
+    <button id="nextBtn">Next</button>
+  </div>
+  <p class="illustrative">All names, amounts, and venues on this screen are <span class="badge-illustrative">ILLUSTRATIVE EXAMPLE</span> — plausibility-bounded, not real transactions.</p>
+</div>
+
+<script>
+const steps = [
+  {
+    head: "Maya's phone — Saturday, 8:42pm",
+    html: `
+      &lt;div class="msg app"&gt;Maya just posted a story from &lt;b&gt;Salt &amp;amp; Sail&lt;/b&gt; (illustrative venue)
+      — a photo of the rooftop sunset with the caption "best view in Gaslamp 🌅". No brand deal,
+      no ask. She was going to post it anyway.&lt;/div&gt;
+      &lt;div class="post-thumb"&gt;📷 Story: rooftop sunset&lt;br&gt;tagged @saltandsail (illustrative)&lt;/div&gt;
+    `
+  },
+  {
+    head: "Fareloop — detection",
+    html: `
+      &lt;div class="msg app"&gt;Fareloop's venue integration picks up the tag within a few minutes of
+      posting.&lt;/div&gt;
+      &lt;div class="msg system"&gt;Checking: location match ✓ &amp;nbsp; recent visit window ✓ &amp;nbsp;
+      account not previously flagged ✓&lt;/div&gt;
+      &lt;div class="msg app" style="font-size:.82rem; color:var(--ink-soft);"&gt;Illustrative example —
+      the actual verification model (geofencing + account history) is a design target, not a
+      benchmarked or built system yet.&lt;/div&gt;
+    `
+  },
+  {
+    head: "Fareloop — patron notification",
+    html: `
+      &lt;div class="msg system"&gt;🎉 Your post at Salt &amp;amp; Sail qualified! You've earned a
+      &lt;b&gt;Fareloop token&lt;/b&gt;.&lt;/div&gt;
+      &lt;div class="token"&gt;🪙 1 token — food/merch, redeemable at Salt &amp;amp; Sail + 2 partner venues&lt;/div&gt;
+      &lt;div class="caption-box"&gt;Suggested disclosure, auto-appended to Maya's caption:&lt;br&gt;
+      &lt;i&gt;"received a free item from Salt &amp;amp; Sail via Fareloop"&lt;/i&gt; — required, not optional
+      (FTC endorsement guidance).&lt;/div&gt;
+    `
+  },
+  {
+    head: "Two weeks later — Rico's Taqueria (partner venue, illustrative)",
+    html: `
+      &lt;div class="msg app"&gt;Maya redeems her token at &lt;b&gt;Rico's Taqueria&lt;/b&gt;, a Fareloop partner
+      venue she's never visited before — discovered through the cross-venue network, not an ad.&lt;/div&gt;
+      &lt;div class="msg success"&gt;✅ Token redeemed: 1 free appetizer (illustrative example — not a
+      real menu item or price)&lt;/div&gt;
+      &lt;div class="msg app" style="font-size:.82rem; color:var(--ink-soft);"&gt;This is the
+      cross-venue loop the product is built around: content at Venue A drives a real visit to
+      Venue B.&lt;/div&gt;
+    `
+  }
+];
+
+let i = 0;
+const screen = document.getElementById('screen');
+const stepper = document.getElementById('stepper');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+
+function render(){
+  screen.innerHTML = `&lt;div class="phone-head"&gt;${steps[i].head}&lt;/div&gt;` + steps[i].html;
+  stepper.innerHTML = steps.map((_,idx)=&gt;`&lt;div class="dot ${idx&lt;=i?'active':''}"&gt;&lt;/div&gt;`).join('');
+  prevBtn.disabled = i===0;
+  nextBtn.textContent = i===steps.length-1 ? 'Restart' : 'Next';
+}
+prevBtn.onclick = ()=&gt;{ if(i&gt;0){ i--; render(); } };
+nextBtn.onclick = ()=&gt;{ if(i===steps.length-1){ i=0; } else { i++; } render(); };
+render();
+</script>

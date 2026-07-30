@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GuestWaypoint — simulated product demo</title>
+<style>
+  :root{
+    --navy:#16323f; --navy-2:#0f2530; --ink:#182226; --ink-soft:#4a5a60;
+    --terracotta:#d9724a; --terracotta-dark:#b1552f;
+    --sand:#f6efe3; --sand-2:#eee2cc; --card:#ffffff; --bg:#faf6ee; --border:#e4d9c4;
+    --banner-bg:#3a2410; --banner-fg:#ffe8cf;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ink:#eef0ee; --ink-soft:#b9c3c2; --card:#132229; --bg:#0c1a20; --border:#24393f;
+      --sand:#16232a; --sand-2:#1b2b32;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#eef0ee; --ink-soft:#b9c3c2; --card:#132229; --bg:#0c1a20; --border:#24393f;
+    --sand:#16232a; --sand-2:#1b2b32;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  #concept-banner{
+    position:sticky;top:0;z-index:1000;background:var(--banner-bg);color:var(--banner-fg);
+    text-align:center;padding:9px 12px;font-size:13.5px;letter-spacing:.04em;font-weight:700;
+    border-bottom:2px solid var(--terracotta);
+  }
+  #sim-banner{
+    background:var(--terracotta);color:#fff;text-align:center;padding:8px 12px;
+    font-size:12.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  }
+  .wrap{max-width:840px;margin:0 auto;padding:28px 20px 70px;}
+  h1{font-size:24px;margin:6px 0 4px;}
+  .lead{color:var(--ink-soft);font-size:14.5px;max-width:64ch;}
+  .tabs{display:flex;gap:8px;margin:22px 0 20px;flex-wrap:wrap;}
+  .tab{
+    font-size:13.5px;font-weight:700;padding:9px 14px;border-radius:999px;
+    border:1.5px solid var(--border);background:var(--card);color:var(--ink-soft);cursor:pointer;
+  }
+  .tab[aria-selected="true"]{background:var(--navy);color:#fff;border-color:var(--navy);}
+  .scenario{display:none;}
+  .scenario.active{display:block;}
+  .steprow{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+  .stepper{display:flex;gap:6px;}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--border);}
+  .dot.on{background:var(--terracotta);}
+  .navbtns{display:flex;gap:8px;}
+  .navbtns button{
+    font-size:13px;font-weight:700;padding:7px 14px;border-radius:7px;border:1.5px solid var(--border);
+    background:var(--card);color:var(--ink);cursor:pointer;
+  }
+  .navbtns button:disabled{opacity:.4;cursor:default;}
+  .navbtns button.primary{background:var(--terracotta);border-color:var(--terracotta);color:#fff;}
+
+  .panel{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;min-height:340px;}
+  .panel h2{font-size:15px;margin:0 0 4px;}
+  .meta{font-size:12.5px;color:var(--ink-soft);margin-bottom:16px;}
+
+  .profile-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;}
+  .chip{font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px;background:var(--sand-2);color:var(--ink-soft);}
+  .chip.active{background:var(--navy);color:#fff;}
+
+  .guide-card{
+    border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;
+    background:var(--sand);
+  }
+  .guide-card .name{font-weight:700;font-size:14.5px;margin-bottom:2px;}
+  .guide-card .sub{font-size:12.5px;color:var(--ink-soft);margin-bottom:8px;}
+  .guide-card .tags{display:flex;gap:6px;flex-wrap:wrap;}
+  .guide-card .tags span{font-size:10.5px;font-weight:700;background:var(--sand-2);color:var(--ink-soft);padding:2px 7px;border-radius:999px;}
+
+  .chatline{display:flex;gap:10px;margin-bottom:10px;font-size:13.5px;}
+  .chatline .who{font-weight:700;flex:none;width:74px;font-size:11.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;padding-top:2px;}
+  .bubble{background:var(--sand-2);border-radius:10px;padding:9px 12px;flex:1;}
+  .chatline.guest .bubble{background:var(--sand-2);}
+  .chatline.guide .bubble{background:var(--card);border:1px solid var(--border);}
+
+  .illustrative{
+    font-size:11px;font-weight:700;color:var(--terracotta-dark);
+    border:1px dashed var(--terracotta);border-radius:999px;padding:2px 9px;
+    display:inline-block;margin-bottom:10px;
+  }
+  footer{text-align:center;padding:20px;color:var(--ink-soft);font-size:12px;}
+</style>
+</head>
+<body><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
+
+
+<div id="sim-banner">Simulated product demo — every scenario below is scripted, not a live system</div>
+
+<div class="wrap">
+  <h1>GuestWaypoint walkthrough</h1>
+  <p class="lead">Three scripted scenarios showing what a guest sees once a host turns on
+    GuestWaypoint for their property. All property names, guest details, and venue picks below
+    are <strong>illustrative examples</strong> built for this demo, plausibility-bounded against
+    RESEARCH.md's real San Diego figures — not real bookings, real venues, or real guests.</p>
+
+  <div class="tabs" role="tablist" aria-label="Demo scenarios">
+    <button class="tab" role="tab" aria-selected="true" data-scenario="a">Scenario A — Family, Mission Beach</button>
+    <button class="tab" role="tab" aria-selected="false" data-scenario="b">Scenario B — Couple, La Jolla</button>
+    <button class="tab" role="tab" aria-selected="false" data-scenario="c">Scenario C — Couple, Gaslamp</button>
+  </div>
+
+  
+  <div class="scenario active" id="scenario-a">
+    <span class="illustrative">Illustrative example — synthetic data</span>
+    <div class="steprow">
+      <div class="stepper" aria-hidden="true"><div class="dot on" data-dot="0"></div><div class="dot" data-dot="1"></div><div class="dot" data-dot="2"></div></div>
+      <div class="navbtns">
+        <button data-prev disabled>← Back</button>
+        <button data-next class="primary">Next →</button>
+      </div>
+    </div>
+
+    <div class="panel" data-step="0">
+      <h2>Step 1 · Host sets up the property</h2>
+      <div class="meta">Property: "Driftwood Bungalow" (illustrative example, Mission Beach) · STRO Tier 3</div>
+      <div class="profile-row">
+        <span class="chip active">Party: Family of 4</span>
+        <span class="chip active">Spend tier: Mid-range</span>
+        <span class="chip active">Stay: 4 nights</span>
+        <span class="chip">Kids: ages 6 &amp; 9</span>
+      </div>
+      <p style="font-size:13.5px;color:var(--ink-soft);">The host confirms the property profile once. GuestWaypoint pre-fills the guide from the
+        booking's guest-count and length of stay; the host just approves it.</p>
+    </div>
+
+    <div class="panel" data-step="1" style="display:none;">
+      <h2>Step 2 · Guest opens the guide (day 1)</h2>
+      <div class="meta">Sent automatically at check-in, branded as "Driftwood Bungalow Guide"</div>
+      <div class="chatline guest"><div class="who">Guest</div><div class="bubble">Kids are getting antsy — anything close by that's actually fun for a 6 and 9 year old, not just a beach?</div></div>
+      <div class="chatline guide"><div class="who">Guide</div><div class="bubble">Belmont Park is an 8-minute walk from Driftwood Bungalow — rides + arcade, mid-range pricing.<br>Mission Bay Aquatic Center rents kayaks/paddleboards a few blocks over if they want to burn energy on the water.</div></div>
+      <div class="guide-card">
+        <div class="name">Belmont Park</div>
+        <div class="sub">0.4 mi from property · $$ · illustrative example</div>
+        <div class="tags"><span>Kid-fun</span><span>Walkable</span><span>Mid-range</span></div>
+      </div>
+      <div class="guide-card">
+        <div class="name">Mission Bay Aquatic Center</div>
+        <div class="sub">0.9 mi from property · $$ · illustrative example</div>
+        <div class="tags"><span>Kid-fun</span><span>Active</span><span>Mid-range</span></div>
+      </div>
+    </div>
+
+    <div class="panel" data-step="2" style="display:none;">
+      <h2>Step 3 · Guest opens the food/bar map (evening)</h2>
+      <div class="meta">Same guide, filtered to "food &amp; drinks near me" — spend tier still mid-range</div>
+      <div class="guide-card">
+        <div class="name">Guava Beach Bar &amp; Grill</div>
+        <div class="sub">0.3 mi · $$ · kid menu available · illustrative example</div>
+        <div class="tags"><span>Family-friendly</span><span>Casual</span><span>Waterfront</span></div>
+      </div>
+      <div class="guide-card">
+        <div class="name">South Beach Bar &amp; Grille</div>
+        <div class="sub">0.5 mi · $$ · illustrative example</div>
+        <div class="tags"><span>Family-friendly</span><span>Casual</span></div>
+      </div>
+      <p style="font-size:12.5px;color:var(--ink-soft);margin-top:10px;">Host-side note (not guest-visible): this guest thread would previously have come to the
+        host directly by text — the pain point GuestWaypoint targets, per Hostfully's own
+        guest-communication research (full citation trail retained in the provenance record).</p>
+    </div>
+  </div>
+
+  
+  <div class="scenario" id="scenario-b">
+    <span class="illustrative">Illustrative example — synthetic data</span>
+    <div class="steprow">
+      <div class="stepper" aria-hidden="true"><div class="dot on" data-dot="0"></div><div class="dot" data-dot="1"></div><div class="dot" data-dot="2"></div></div>
+      <div class="navbtns"><button data-prev disabled>← Back</button><button data-next class="primary">Next →</button></div>
+    </div>
+    <div class="panel" data-step="0">
+      <h2>Step 1 · Host sets up the property</h2>
+      <div class="meta">Property: "The Cormorant Inn" (illustrative example, La Jolla) · boutique inn, 12 rooms</div>
+      <div class="profile-row">
+        <span class="chip active">Party: Couple</span>
+        <span class="chip active">Spend tier: Upscale</span>
+        <span class="chip active">Stay: 3 nights</span>
+        <span class="chip">Occasion: anniversary</span>
+      </div>
+      <p style="font-size:13.5px;color:var(--ink-soft);">Front desk flags the occasion at check-in; GuestWaypoint weights recommendations toward
+        higher-tier, reservation-worthy picks instead of the mid-range default.</p>
+    </div>
+    <div class="panel" data-step="1" style="display:none;">
+      <h2>Step 2 · Guest asks for a live-music, date-night evening</h2>
+      <div class="meta">Guide branded "The Cormorant Inn Guide"</div>
+      <div class="chatline guest"><div class="who">Guest</div><div class="bubble">We want a nice dinner and maybe live music after — nothing touristy, we're celebrating.</div></div>
+      <div class="chatline guide"><div class="who">Guide</div><div class="bubble">Two picks near The Cormorant Inn, both reservation-recommended for a Friday:<br>Dinner at a seafood-forward upscale spot 6 minutes away, then a wine bar with a small jazz set two blocks further.</div></div>
+      <div class="guide-card">
+        <div class="name">Bluewater Grill (illustrative)</div>
+        <div class="sub">0.6 mi · $$$ · reservation recommended</div>
+        <div class="tags"><span>Upscale</span><span>Date-night</span></div>
+      </div>
+      <div class="guide-card">
+        <div class="name">La Jolla Wine Room (illustrative)</div>
+        <div class="sub">0.8 mi · $$$ · live jazz Fri/Sat</div>
+        <div class="tags"><span>Upscale</span><span>Live music</span></div>
+      </div>
+    </div>
+    <div class="panel" data-step="2" style="display:none;">
+      <h2>Step 3 · Booking through the guide (affiliate layer)</h2>
+      <div class="meta">Guest taps "reserve" inside the guide</div>
+      <div class="guide-card">
+        <div class="name">Booking link disclosure</div>
+        <div class="sub">Required per FTC 16 CFR §255.5 — shown on every monetized link</div>
+        <div class="tags"><span>"We may earn a commission if you book through this link — it doesn't change your price."</span></div>
+      </div>
+      <p style="font-size:12.5px;color:var(--ink-soft);">Illustrative example only — no real booking, no real commission processed in this demo.</p>
+    </div>
+  </div>
+
+  
+  <div class="scenario" id="scenario-c">
+    <span class="illustrative">Illustrative example — synthetic data</span>
+    <div class="steprow">
+      <div class="stepper" aria-hidden="true"><div class="dot on" data-dot="0"></div><div class="dot" data-dot="1"></div><div class="dot" data-dot="2"></div></div>
+      <div class="navbtns"><button data-prev disabled>← Back</button><button data-next class="primary">Next →</button></div>
+    </div>
+    <div class="panel" data-step="0">
+      <h2>Step 1 · Host sets up the property</h2>
+      <div class="meta">Property: "Gaslamp Loft 4B" (illustrative example, Gaslamp/Downtown) · STRO Tier 3</div>
+      <div class="profile-row">
+        <span class="chip active">Party: Couple</span>
+        <span class="chip active">Spend tier: Budget-conscious</span>
+        <span class="chip active">Stay: 2 nights</span>
+      </div>
+      <p style="font-size:13.5px;color:var(--ink-soft);">Same generator, different spend tier — the guide swaps toward craft breweries and casual
+        eats instead of reservation-tier picks.</p>
+    </div>
+    <div class="panel" data-step="1" style="display:none;">
+      <h2>Step 2 · Guest asks about breweries</h2>
+      <div class="meta">Guide branded "Gaslamp Loft 4B Guide"</div>
+      <div class="chatline guest"><div class="who">Guest</div><div class="bubble">We're on a budget this trip but want to hit a couple good breweries within walking distance.</div></div>
+      <div class="chatline guide"><div class="who">Guide</div><div class="bubble">Three craft spots within 10 minutes on foot, all $ - $$, no reservation needed:</div></div>
+      <div class="guide-card">
+        <div class="name">Gaslamp Ale House (illustrative)</div>
+        <div class="sub">0.2 mi · $ · walk-in only</div>
+        <div class="tags"><span>Craft brewery</span><span>Budget</span></div>
+      </div>
+      <div class="guide-card">
+        <div class="name">Downtown Hop Co. (illustrative)</div>
+        <div class="sub">0.5 mi · $$ · walk-in only</div>
+        <div class="tags"><span>Craft brewery</span><span>Budget</span></div>
+      </div>
+    </div>
+    <div class="panel" data-step="2" style="display:none;">
+      <h2>Step 3 · Guest checks the food/bar map before dinner</h2>
+      <div class="meta">Map view filtered to $ - $$ within 0.5 mi</div>
+      <div class="guide-card">
+        <div class="name">Taco stand row, 5th Ave (illustrative)</div>
+        <div class="sub">0.3 mi · $ · cash-friendly</div>
+        <div class="tags"><span>Casual</span><span>Budget</span></div>
+      </div>
+      <p style="font-size:12.5px;color:var(--ink-soft);margin-top:10px;">This is the "easier than Google Maps for what food is around" moment the founder's original
+        pain statement described — a short, spend-matched list instead of a citywide map dump.</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>GuestWaypoint demo — simulated walkthrough for pitch purposes only. No real product,
+  venues, or bookings. See site/index.html for the full alpha product.</footer>
+
+<script>
+  (function(){
+    const tabs = document.querySelectorAll('.tab');
+    const scenarios = { a: document.getElementById('scenario-a'), b: document.getElementById('scenario-b'), c: document.getElementById('scenario-c') };
+    tabs.forEach(t =&gt; t.addEventListener('click', () =&gt; {
+      tabs.forEach(x =&gt; x.setAttribute('aria-selected','false'));
+      t.setAttribute('aria-selected','true');
+      Object.values(scenarios).forEach(s =&gt; s.classList.remove('active'));
+      scenarios[t.dataset.scenario].classList.add('active');
+    }));
+
+    document.querySelectorAll('.scenario').forEach(sc =&gt; {
+      let step = 0;
+      const panels = sc.querySelectorAll('.panel');
+      const dots = sc.querySelectorAll('.dot');
+      const prevBtn = sc.querySelector('[data-prev]');
+      const nextBtn = sc.querySelector('[data-next]');
+      function render(){
+        panels.forEach((p,i) =&gt; p.style.display = (i===step ? '' : 'none'));
+        dots.forEach((d,i) =&gt; d.classList.toggle('on', i===step));
+        prevBtn.disabled = step === 0;
+        nextBtn.textContent = step === panels.length-1 ? 'Restart ↻' : 'Next →';
+      }
+      prevBtn.addEventListener('click', () =&gt; { if(step&gt;0){ step--; render(); }});
+      nextBtn.addEventListener('click', () =&gt; {
+        if(step &lt; panels.length-1){ step++; } else { step = 0; }
+        render();
+      });
+      render();
+    });
+  })();
+</script>
+
+</body>
+</html>

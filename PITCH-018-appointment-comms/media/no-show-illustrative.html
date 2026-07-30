@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chairside — illustrative no-show example</title>
+<style>
+  :root{
+    color-scheme: light;
+    --bg:#fcfbf8; --panel:#ffffff; --ink:#231d16; --ink-2:#5b5147; --line:#e4d9c8;
+    --before:#c9772f; --after:#1baf7a; --sim:#c98500;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:where(:not([data-theme="light"])){
+      color-scheme: dark;
+      --bg:#161310; --panel:#1e1a15; --ink:#f5efe4; --ink-2:#cdc0af; --line:#3a3126;
+      --before:#e0854f; --after:#3fc493;
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --bg:#161310; --panel:#1e1a15; --ink:#f5efe4; --ink-2:#cdc0af; --line:#3a3126;
+    --before:#e0854f; --after:#3fc493;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:ui-sans-serif,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;padding:0}
+  .concept{background:#c8622e;color:#fff;text-align:center;font-weight:800;font-size:12.5px;letter-spacing:.04em;padding:8px 10px}
+  .concept b{text-decoration:underline}
+  .top{background:var(--sim);color:#1c1310;text-align:center;font-weight:800;font-size:12.5px;letter-spacing:.06em;padding:7px}
+  .wrap{max-width:640px;margin:0 auto;padding:22px 18px 34px}
+  h1{font-size:19px;margin:4px 0 4px}
+  .sub{font-size:13px;color:var(--ink-2);margin:0 0 22px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px}
+  .rows{display:flex;flex-direction:column;gap:16px}
+  .rowlabel{display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:5px}
+  .rowlabel b{color:var(--ink)}
+  .track{background:rgba(120,110,95,.14);border-radius:7px;height:28px;position:relative}
+  .fill{height:100%;border-radius:7px;display:flex;align-items:center;padding-left:10px;font-weight:800;font-size:13px;color:#1c1310}
+  .note{font-size:12.5px;color:var(--ink-2);margin-top:20px;line-height:1.5}
+  .badge{display:inline-block;background:var(--sim);color:#1c1310;font-size:10.5px;font-weight:800;letter-spacing:.05em;padding:2px 8px;border-radius:999px;margin-left:6px;vertical-align:2px}
+</style>
+</head>
+<body><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
+
+<div class="top">ILLUSTRATIVE EXAMPLE — one hypothetical clinic, not a measured result</div>
+<div class="wrap">
+  <h1>One illustrative chiro clinic, before / after</h1>
+  <p class="sub">A single made-up example shop used to make the pricing math concrete. Bounded to
+    RESEARCH.md's real reported range (15-20% no-show without reminders, under 5% with) — not a
+    Chairside customer, not a measured outcome.</p>
+  <div class="card">
+    <div class="rows">
+      <div>
+        <div class="rowlabel"><span>Before automated reminders</span><b>18% no-show rate</b></div>
+        <div class="track"><div class="fill" style="width:72%;background:var(--before)">18%</div></div>
+      </div>
+      <div>
+        <div class="rowlabel"><span>After automated reminders</span><b>4% no-show rate</b></div>
+        <div class="track"><div class="fill" style="width:16%;background:var(--after)">4%</div></div>
+      </div>
+    </div>
+    <div class="note">
+      Illustrative clinic assumptions: ~$1,600/mo in lost production at the 18% no-show rate,
+      inside the $1,250-3,333/mo range reported for chiropractic clinics without reminders
+      <span class="badge">illustrative</span>. Dropping to 4% recovers roughly $1,240/mo of that —
+      several times over the $79-149/mo Chairside price. These are made-up round numbers chosen to
+      sit inside the real reported range, not a citation-backed measurement — no source tag is
+      attached because none of this is sourced; it's a worked example only.
+    </div>
+  </div>
+</div>
+</body>
+</html>

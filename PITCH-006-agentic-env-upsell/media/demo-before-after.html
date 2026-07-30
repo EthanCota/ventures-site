@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loadout — Simulated Demo: Default vs. Configured</title>
+<style>
+  :root {
+    --bg: #f6f4ef; --bg-alt: #ffffff; --ink: #1c1a17; --ink-soft: #55504a;
+    --line: #e2ddd2; --brass: #a8712f; --brass-deep: #7a4e1c;
+    --moss: #556b4f; --moss-deep: #3d4d38;
+    --danger-bg: #fff1e8; --danger-line: #d97b3d; --danger-ink: #7a3a12;
+    --bad-bg: #fdeceb; --bad-line: #c85a4a; --bad-ink: #8a2f21;
+    --good-bg: #eef4ea; --good-line: #6f9459; --good-ink: #3c5a31;
+    --mono: "SF Mono", "Menlo", "Consolas", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  :root[data-theme="dark"] {
+    --bg: #17140f; --bg-alt: #1f1b15; --ink: #f1ede4; --ink-soft: #b9b0a1;
+    --line: #332c22; --brass: #d99a4e; --brass-deep: #f0b569;
+    --moss: #8faa82; --moss-deep: #a9c49c;
+    --danger-bg: #2e1c0f; --danger-line: #d97b3d; --danger-ink: #f0b078;
+    --bad-bg: #2c1712; --bad-line: #c85a4a; --bad-ink: #e79184;
+    --good-bg: #182a14; --good-line: #6f9459; --good-ink: #a8cc98;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17140f; --bg-alt: #1f1b15; --ink: #f1ede4; --ink-soft: #b9b0a1;
+      --line: #332c22; --brass: #d99a4e; --brass-deep: #f0b569;
+      --moss: #8faa82; --moss-deep: #a9c49c;
+      --danger-bg: #2e1c0f; --danger-line: #d97b3d; --danger-ink: #f0b078;
+      --bad-bg: #2c1712; --bad-line: #c85a4a; --bad-ink: #e79184;
+      --good-bg: #182a14; --good-line: #6f9459; --good-ink: #a8cc98;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); overflow-x:hidden; }
+
+  .concept-banner {
+    position: sticky; top:0; z-index:100;
+    background: var(--danger-bg); border-bottom:2px solid var(--danger-line); color:var(--danger-ink);
+    text-align:center; padding:8px 14px; font-size:13px; font-weight:700;
+    letter-spacing:0.03em; text-transform:uppercase;
+  }
+  .concept-banner span.sub { font-weight:500; text-transform:none; letter-spacing:normal; opacity:0.9; }
+
+  .sim-banner {
+    background: var(--bad-bg); border-bottom: 2px dashed var(--bad-line); color: var(--bad-ink);
+    text-align:center; padding:10px 14px; font-size:13px; font-weight:700;
+  }
+
+  main { max-width: 960px; margin: 0 auto; padding: 32px 20px 70px; }
+  h1 { font-size: 26px; margin: 4px 0 6px; }
+  .wordmark { font-family: var(--mono); font-weight:700; font-size:13px; color:var(--moss-deep); letter-spacing:0.04em; margin-bottom:6px; }
+  p.lede { color: var(--ink-soft); max-width: 62ch; margin: 0 0 26px; }
+
+  .stepper { display:flex; gap:8px; flex-wrap:wrap; margin-bottom: 24px; }
+  .step-btn {
+    font-family: var(--mono); font-size: 13px; padding: 8px 14px; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--bg-alt); color: var(--ink-soft); cursor: pointer;
+  }
+  .step-btn.active { border-color: var(--brass); color: var(--brass-deep); font-weight: 700; background: color-mix(in srgb, var(--brass) 10%, var(--bg-alt)); }
+
+  .scenario { display: none; }
+  .scenario.active { display: block; }
+  .scenario-tag {
+    display:inline-block; font-family:var(--mono); font-size:11px; font-weight:800; letter-spacing:0.05em;
+    padding:4px 10px; border-radius:6px; background:var(--danger-bg); color:var(--danger-ink); border:1px solid var(--danger-line);
+    margin-bottom: 10px;
+  }
+  .scenario h2 { font-size: 20px; margin: 0 0 4px; }
+  .scenario .synth-note { color: var(--ink-soft); font-size: 13px; margin-bottom: 18px; }
+
+  .compare { display:grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 780px) { .compare { grid-template-columns: 1fr; } }
+
+  .panel { border-radius: 12px; border: 1px solid var(--line); overflow:hidden; background: var(--bg-alt); }
+  .panel-head {
+    padding: 12px 16px; font-family: var(--mono); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.03em; text-transform: uppercase;
+  }
+  .panel.bad .panel-head { background: var(--bad-bg); color: var(--bad-ink); border-bottom: 1px solid var(--bad-line); }
+  .panel.good .panel-head { background: var(--good-bg); color: var(--good-ink); border-bottom: 1px solid var(--good-line); }
+  .panel-body { padding: 16px; font-size: 14px; }
+  .msg { margin-bottom: 14px; padding: 10px 12px; border-radius: 8px; }
+  .msg.user { background: color-mix(in srgb, var(--ink) 6%, transparent); }
+  .msg.claude { background: color-mix(in srgb, var(--brass) 8%, transparent); }
+  .msg .who { font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; opacity: 0.65; margin-bottom: 4px; }
+  .msg p { margin: 0; white-space: pre-wrap; }
+
+  .verdict { margin-top: 14px; padding: 10px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; }
+  .verdict.bad { background: var(--bad-bg); color: var(--bad-ink); }
+  .verdict.good { background: var(--good-bg); color: var(--good-ink); }
+
+  .nav-row { display:flex; justify-content: space-between; margin-top: 22px; }
+  .nav-btn {
+    font-family: var(--mono); font-size: 13px; padding: 9px 16px; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--bg-alt); color: var(--ink); cursor: pointer;
+  }
+  .nav-btn:disabled { opacity: 0.35; cursor: default; }
+
+  .back-link { display:inline-block; margin-top: 30px; font-family: var(--mono); font-size: 13px; color: var(--brass-deep); }
+</style>
+</head>
+<body><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
+
+  
+  <div class="sim-banner">SIMULATED DEMO — scripted scenarios, synthetic data only, no real client or transcript</div>
+
+  <main>
+    <div class="wordmark">LOADOUT · DEMO</div>
+    <h1>Same task, default Claude vs. a Loadout-configured environment</h1>
+    <p class="lede">
+      Three scripted scenarios, stepped one at a time. Left panel: a default Claude Code session
+      with no CLAUDE.md, no skills, no memory. Right panel: the same prompt on a Loadout-configured
+      environment. All names, clients, and figures below are illustrative examples, not real.
+    </p>
+
+    <div class="stepper" id="stepper"></div>
+
+    <div id="scenarios"></div>
+
+    <div class="nav-row">
+      <button class="nav-btn" id="prevBtn">← Previous</button>
+      <button class="nav-btn" id="nextBtn">Next →</button>
+    </div>
+
+    <a class="back-link" href="../site/index.html?v=2">← Back to Loadout</a>
+  </main>
+
+<script>
+  const scenarios = [
+    {
+      title: "New client kickoff — \"pull together what we know about Rivergate Dental\"",
+      note: "Illustrative example. \"Rivergate Dental\" is a synthetic client, not a real business.",
+      bad: [
+        { who: "You", text: "Pull together what we know about Rivergate Dental before my call in 10 min." },
+        { who: "Claude", text: "I don't have any prior context on Rivergate Dental. Could you share notes, past emails, or files so I can help summarize?" },
+        { who: "You", text: "[pastes 3 half-remembered details, spends 6 minutes hunting for the last email thread]" },
+      ],
+      badVerdict: "6+ minutes lost re-assembling context that already existed somewhere — nothing persisted between sessions.",
+      good: [
+        { who: "You", text: "Pull together what we know about Rivergate Dental before my call in 10 min." },
+        { who: "Claude", text: "Here's the standing summary from your CRM notes (last updated 9 days ago): 3-chair practice, evaluating a scheduling upgrade, prior call flagged budget as the blocker. Want me to draft 3 opening questions for today's call?" },
+      ],
+      goodVerdict: "Under 30 seconds — memory layer already had the client context indexed and current.",
+    },
+    {
+      title: "Repeated workflow — \"draft this week's client update email\"",
+      note: "Illustrative example. Figures and client names are synthetic.",
+      bad: [
+        { who: "You", text: "Draft this week's update email for the Millbrook account." },
+        { who: "Claude", text: "Sure — what tone do you usually use, and what should this email cover? I don't have a template or prior examples on file." },
+        { who: "You", text: "[re-explains tone, format, and client history it explained two weeks ago]" },
+      ],
+      badVerdict: "Same instructions re-typed for the third time this month — no reusable skill for a recurring task.",
+      good: [
+        { who: "You", text: "Draft this week's update email for the Millbrook account." },
+        { who: "Claude", text: "Using your client-update skill and last week's numbers from the data layer — here's a draft matching your usual tone, three bullets, no attachments. Want the send-ready version or a rougher first pass?" },
+      ],
+      goodVerdict: "One line in, ready draft out — a saved skill encodes the format once.",
+    },
+    {
+      title: "Data-layer check — \"what did we bill Harmon Group last quarter?\"",
+      note: "Illustrative example. \"Harmon Group\" and all figures are synthetic, not real billing data.",
+      bad: [
+        { who: "You", text: "What did we bill Harmon Group last quarter?" },
+        { who: "Claude", text: "I don't have access to your billing records in this session. You'll need to paste the relevant numbers or upload the file." },
+      ],
+      badVerdict: "Dead end — no memory/data-layer scaffold means every financial question starts from zero.",
+      good: [
+        { who: "You", text: "What did we bill Harmon Group last quarter?" },
+        { who: "Claude", text: "Q2 (illustrative): $4,200 across 2 invoices, both paid on time. Q1 was $3,600 — a 17% increase. Want the invoice-level breakdown or a trend note for your quarterly review?" },
+      ],
+      goodVerdict: "Answered directly from the configured data layer — no manual lookup required.",
+    },
+  ];
+
+  const stepperEl = document.getElementById('stepper');
+  const scenariosEl = document.getElementById('scenarios');
+  let current = 0;
+
+  scenarios.forEach((s, i) =&gt; {
+    const btn = document.createElement('button');
+    btn.className = 'step-btn' + (i === 0 ? ' active' : '');
+    btn.textContent = 'Scenario ' + (i + 1);
+    btn.onclick = () =&gt; show(i);
+    stepperEl.appendChild(btn);
+
+    const div = document.createElement('div');
+    div.className = 'scenario' + (i === 0 ? ' active' : '');
+    div.innerHTML = `
+      &lt;span class="scenario-tag"&gt;SIMULATED&lt;/span&gt;
+      &lt;h2&gt;${s.title}&lt;/h2&gt;
+      &lt;p class="synth-note"&gt;${s.note}&lt;/p&gt;
+      &lt;div class="compare"&gt;
+        &lt;div class="panel bad"&gt;
+          &lt;div class="panel-head"&gt;Default Claude — no config&lt;/div&gt;
+          &lt;div class="panel-body"&gt;
+            ${s.bad.map(m =&gt; `&lt;div class="msg ${m.who === 'You' ? 'user' : 'claude'}"&gt;&lt;div class="who"&gt;${m.who}&lt;/div&gt;&lt;p&gt;${m.text}&lt;/p&gt;&lt;/div&gt;`).join('')}
+            &lt;div class="verdict bad"&gt;${s.badVerdict}&lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="panel good"&gt;
+          &lt;div class="panel-head"&gt;Loadout-configured environment&lt;/div&gt;
+          &lt;div class="panel-body"&gt;
+            ${s.good.map(m =&gt; `&lt;div class="msg ${m.who === 'You' ? 'user' : 'claude'}"&gt;&lt;div class="who"&gt;${m.who}&lt;/div&gt;&lt;p&gt;${m.text}&lt;/p&gt;&lt;/div&gt;`).join('')}
+            &lt;div class="verdict good"&gt;${s.goodVerdict}&lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    `;
+    scenariosEl.appendChild(div);
+  });
+
+  function show(i) {
+    current = i;
+    document.querySelectorAll('.step-btn').forEach((b, idx) =&gt; b.classList.toggle('active', idx === i));
+    document.querySelectorAll('.scenario').forEach((s, idx) =&gt; s.classList.toggle('active', idx === i));
+    document.getElementById('prevBtn').disabled = i === 0;
+    document.getElementById('nextBtn').disabled = i === scenarios.length - 1;
+  }
+  document.getElementById('prevBtn').onclick = () =&gt; current &gt; 0 &amp;&amp; show(current - 1);
+  document.getElementById('nextBtn').onclick = () =&gt; current &lt; scenarios.length - 1 &amp;&amp; show(current + 1);
+  show(0);
+</script>
+</body>
+</html>

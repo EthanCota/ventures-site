@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cuspid — the clinical layer for Vornix-connected practices</title>
+<style>
+
+  :root{
+    --paper: oklch(0.985 0.005 175.9);
+    --card: oklch(1 0 0);
+    --card-2: oklch(0.96 0.008 175.9);
+    --ink: oklch(0.25 0.016 175.9);
+    --ink-2: oklch(0.43 0.02 175.9);
+    --muted: oklch(0.55 0.018 175.9);
+    --line: oklch(0.885 0.009 175.9);
+    --accent: oklch(0.482 0.087 175.9);
+    --accent-dark: oklch(0.4 0.075 175.9);
+    --accent-100: oklch(0.93 0.032 175.9);
+    --accent-ink: oklch(0.99 0.004 175.9);
+    --coral: oklch(0.657 0.163 38.3);
+    --coral-deep: oklch(0.5 0.15 38.3);
+    --coral-ink: oklch(0.18 0.035 38.3);
+    --gold: oklch(0.6 0.14 73.2);
+    --gold-ink: oklch(0.28 0.055 73.2);
+    --gold-bg: oklch(0.94 0.045 73.2);
+    --good: oklch(0.55 0.13 145);
+    --good-ink: oklch(0.24 0.09 145);
+    --good-bg: oklch(0.93 0.045 145);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper: oklch(0.2 0.014 175.9);
+      --card: oklch(0.245 0.016 175.9);
+      --card-2: oklch(0.29 0.018 175.9);
+      --ink: oklch(0.93 0.01 175.9);
+      --ink-2: oklch(0.76 0.014 175.9);
+      --muted: oklch(0.62 0.016 175.9);
+      --line: oklch(0.38 0.02 175.9);
+      --accent: oklch(0.7 0.11 175.9);
+      --accent-dark: oklch(0.58 0.1 175.9);
+      --accent-100: oklch(0.3 0.05 175.9);
+      --accent-ink: oklch(0.14 0.02 175.9);
+      --coral: oklch(0.74 0.15 38.3);
+      --coral-deep: oklch(0.78 0.14 38.3);
+      --coral-ink: oklch(0.16 0.03 38.3);
+      --gold: oklch(0.72 0.13 73.2);
+      --gold-ink: oklch(0.88 0.05 73.2);
+      --gold-bg: oklch(0.28 0.045 73.2);
+      --good: oklch(0.68 0.12 145);
+      --good-ink: oklch(0.88 0.06 145);
+      --good-bg: oklch(0.26 0.05 145);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper: oklch(0.2 0.014 175.9);
+    --card: oklch(0.245 0.016 175.9);
+    --card-2: oklch(0.29 0.018 175.9);
+    --ink: oklch(0.93 0.01 175.9);
+    --ink-2: oklch(0.76 0.014 175.9);
+    --muted: oklch(0.62 0.016 175.9);
+    --line: oklch(0.38 0.02 175.9);
+    --accent: oklch(0.7 0.11 175.9);
+    --accent-dark: oklch(0.58 0.1 175.9);
+    --accent-100: oklch(0.3 0.05 175.9);
+    --accent-ink: oklch(0.14 0.02 175.9);
+    --coral: oklch(0.74 0.15 38.3);
+    --coral-deep: oklch(0.78 0.14 38.3);
+    --coral-ink: oklch(0.16 0.03 38.3);
+    --gold: oklch(0.72 0.13 73.2);
+    --gold-ink: oklch(0.88 0.05 73.2);
+    --gold-bg: oklch(0.28 0.045 73.2);
+    --good: oklch(0.68 0.12 145);
+    --good-ink: oklch(0.88 0.06 145);
+    --good-bg: oklch(0.26 0.05 145);
+    color-scheme: dark;
+  }
+  :root[data-theme="light"]{
+    --paper: oklch(0.985 0.005 175.9);
+    --card: oklch(1 0 0);
+    --card-2: oklch(0.96 0.008 175.9);
+    --ink: oklch(0.25 0.016 175.9);
+    --ink-2: oklch(0.43 0.02 175.9);
+    --muted: oklch(0.55 0.018 175.9);
+    --line: oklch(0.885 0.009 175.9);
+    --accent: oklch(0.482 0.087 175.9);
+    --accent-dark: oklch(0.4 0.075 175.9);
+    --accent-100: oklch(0.93 0.032 175.9);
+    --accent-ink: oklch(0.99 0.004 175.9);
+    --coral: oklch(0.657 0.163 38.3);
+    --coral-deep: oklch(0.5 0.15 38.3);
+    --coral-ink: oklch(0.18 0.035 38.3);
+    --gold: oklch(0.6 0.14 73.2);
+    --gold-ink: oklch(0.28 0.055 73.2);
+    --gold-bg: oklch(0.94 0.045 73.2);
+    --good: oklch(0.55 0.13 145);
+    --good-ink: oklch(0.24 0.09 145);
+    --good-bg: oklch(0.93 0.045 145);
+    color-scheme: light;
+  }
+
+  --font-head: Optima, Candara, 'Noto Sans', sans-serif;
+
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:system-ui,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+    font-size:16px;line-height:1.6;}
+  h1,h2,h3{font-family:Optima,Candara,'Noto Sans',sans-serif;font-weight:600;
+    letter-spacing:-.005em;text-wrap:balance;}
+  img,svg{max-width:100%;}
+  a{color:var(--accent-dark);}
+  @media (prefers-color-scheme: dark){ a{color:var(--accent);} }
+  :root[data-theme="dark"] a{color:var(--accent);}
+  :root[data-theme="light"] a{color:var(--accent-dark);}
+
+  .num, .b-time, td.num, .mono{font-variant-numeric:tabular-nums;
+    font-family:ui-monospace,'SF Mono','Cascadia Code','Source Code Pro',Menlo,Consolas,'DejaVu Sans Mono',monospace;}
+
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;
+      transition-duration:.001ms!important;scroll-behavior:auto!important;}
+  }
+  a:focus-visible, button:focus-visible, summary:focus-visible, .btn:focus-visible{
+    outline:2px solid var(--accent); outline-offset:2px; border-radius:4px;
+  }
+
+  
+  .status-strip{background:var(--card-2);border-bottom:1px solid var(--line);
+    padding:10px 20px;display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;}
+  .status-chip{flex:none;background:var(--gold);color:#fff;font-weight:800;font-size:.72rem;
+    letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:5px;
+    margin-top:.15em;}
+  .status-text{font-size:.98rem;color:var(--ink);max-width:920px;}
+
+  
+  .topbar{border-bottom:1px solid var(--line);background:var(--paper);}
+  .topbar-inner{max-width:1140px;margin:0 auto;padding:14px 20px;display:flex;
+    align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .wordmark{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-head);
+    font-weight:700;font-size:1.2rem;letter-spacing:-.01em;color:var(--ink);text-decoration:none;}
+  .wordmark .dot{width:9px;height:9px;border-radius:50%;background:var(--coral);display:inline-block;}
+  .topbar nav{display:flex;gap:4px;flex-wrap:wrap;}
+  .topbar nav a{display:inline-flex;align-items:center;min-height:44px;padding:0 12px;
+    font-size:.88rem;font-weight:600;color:var(--ink-2);text-decoration:none;border-radius:8px;}
+  .topbar nav a:hover{background:var(--card-2);color:var(--ink);}
+
+  
+  .hero{padding:40px 20px 8px;}
+  .hero-inner{max-width:720px;margin:0 auto;text-align:center;}
+  h1{font-size:clamp(1.7rem,3.4vw,2.35rem);margin:.2em 0 .35em;color:var(--ink);}
+  .lede{color:var(--ink-2);font-size:1.05rem;margin:0 0 20px;}
+  .fence{font-size:.86rem;color:var(--ink-2);border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:0 10px 10px 0;padding:12px 16px;background:var(--card);text-align:left;}
+  .fence strong{color:var(--ink);}
+
+  
+  .board{max-width:1140px;margin:32px auto 0;padding:0 20px 44px;}
+  .board-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:4px;}
+  .board-title{font-size:1.1rem;margin:0;color:var(--ink);}
+  .sim-badge{display:inline-block;background:var(--coral);color:var(--coral-ink);font-weight:800;
+    font-size:.68rem;letter-spacing:.05em;text-transform:uppercase;padding:4px 9px;border-radius:6px;}
+  .board-note{color:var(--muted);font-size:.82rem;margin:2px 0 16px;}
+  .board-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);
+    border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+  .board-col{background:var(--card);padding:14px 16px 16px;}
+  .board-col-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+    border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:8px;}
+  .board-col-name{font-family:var(--font-head);font-weight:700;font-size:.95rem;color:var(--accent-dark);}
+  :root[data-theme="dark"] .board-col-name{color:var(--accent);}
+  @media (prefers-color-scheme:dark){ .board-col-name{color:var(--accent);} }
+  :root[data-theme="light"] .board-col-name{color:var(--accent-dark);}
+  .board-col-meta{font-size:.72rem;color:var(--muted);}
+  .board-rows{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;}
+  .board-rows li{display:flex;align-items:center;gap:8px;font-size:.83rem;flex-wrap:wrap;}
+  .b-time{font-weight:700;color:var(--ink);min-width:2.6em;}
+  .b-who{font-weight:600;color:var(--ink);}
+  .b-what{color:var(--ink-2);flex:1;}
+  .pill{font-size:.68rem;font-weight:700;letter-spacing:.02em;padding:2px 8px;border-radius:999px;
+    white-space:nowrap;}
+  .pill-good{background:var(--good-bg);color:var(--good-ink);}
+  .pill-warn{background:var(--gold-bg);color:var(--gold-ink);}
+
+  main{max-width:1140px;margin:0 auto;padding:0 20px;}
+  section{padding:52px 0;border-top:1px solid var(--line);}
+  h2{font-size:1.45rem;margin:0 0 .3em;color:var(--ink);}
+  .kicker{text-transform:uppercase;letter-spacing:.09em;font-size:.72rem;font-weight:800;
+    color:var(--accent-dark);margin-bottom:.5em;}
+  @media (prefers-color-scheme:dark){ .kicker{color:var(--accent);} }
+  :root[data-theme="dark"] .kicker{color:var(--accent);}
+  :root[data-theme="light"] .kicker{color:var(--accent-dark);}
+  .section-lede{color:var(--ink-2);max-width:680px;margin-bottom:1.6em;}
+  .section-note{color:var(--ink-2);font-size:.92rem;margin-top:1em;}
+
+  
+  .today-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 34px;
+    padding:16px 18px;background:var(--card-2);border-radius:12px;}
+  .today-label{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+    color:var(--muted);margin-right:2px;}
+  .chip{display:inline-block;background:var(--card);border:1px solid var(--line);color:var(--ink-2);
+    font-size:.82rem;font-weight:600;padding:6px 12px;border-radius:999px;}
+  .chip-accent{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);}
+  .today-arrow{color:var(--muted);font-size:1.1rem;}
+
+  
+  .cap-rows{display:flex;flex-direction:column;gap:36px;}
+  .cap-row{display:grid;grid-template-columns:minmax(200px,340px) 1fr;gap:28px;align-items:center;}
+  .cap-row-rev{grid-template-columns:1fr minmax(200px,340px);}
+  .cap-row-rev .cap-panel{order:2;}
+  .cap-row-rev .cap-text{order:1;}
+  .cap-panel{background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:16px;}
+  .cap-panel-head{font-family:var(--font-head);font-weight:700;font-size:.85rem;color:var(--ink-2);
+    margin-bottom:10px;}
+  .cap-mini-row{display:flex;justify-content:space-between;gap:8px;font-size:.78rem;
+    padding:6px 0;border-top:1px solid var(--line);color:var(--ink-2);}
+  .cap-mini-row:first-of-type{border-top:none;}
+  .cap-mini-row b{color:var(--ink);font-weight:600;}
+  .cap-bubble{font-size:.76rem;border-radius:10px;padding:7px 10px;margin-bottom:6px;max-width:88%;}
+  .cap-bubble.out{background:var(--accent-100);color:var(--ink);margin-left:auto;}
+  .cap-bubble.in{background:var(--card-2);color:var(--ink-2);}
+  .cap-text .mod-badge{display:inline-block;font-size:.68rem;font-weight:800;letter-spacing:.05em;
+    text-transform:uppercase;padding:3px 9px;border-radius:5px;background:var(--accent-100);
+    color:var(--accent-dark);margin-bottom:10px;}
+  @media (prefers-color-scheme:dark){ .cap-text .mod-badge{color:var(--accent);} }
+  :root[data-theme="dark"] .cap-text .mod-badge{color:var(--accent);}
+  :root[data-theme="light"] .cap-text .mod-badge{color:var(--accent-dark);}
+  .cap-text h3{margin:0 0 .4em;font-size:1.15rem;}
+  .cap-text p{margin:0;color:var(--ink-2);font-size:.94rem;}
+
+  
+  .icp-box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px 24px;}
+  .icp-box&gt;p{margin:0;color:var(--ink);font-size:1rem;}
+  .icp-box ul{margin:1em 0 0;padding-left:0;list-style:none;color:var(--ink-2);font-size:.93rem;}
+  .icp-box li{margin-bottom:.7em;padding-left:1.6em;position:relative;}
+  .icp-box li::before{content:"✓";position:absolute;left:0;color:var(--accent-dark);font-weight:800;}
+  @media (prefers-color-scheme:dark){ .icp-box li::before{color:var(--accent);} }
+  :root[data-theme="dark"] .icp-box li::before{color:var(--accent);}
+  :root[data-theme="light"] .icp-box li::before{color:var(--accent-dark);}
+
+  
+  .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;}
+  table{border-collapse:collapse;width:100%;min-width:560px;font-size:.9rem;}
+  th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line);}
+  thead th{background:var(--card-2);font-size:.74rem;text-transform:uppercase;
+    letter-spacing:.04em;color:var(--ink-2);}
+  tbody tr:last-child td{border-bottom:none;}
+  td.num{white-space:nowrap;}
+  .cite{color:var(--ink-2);font-size:.78rem;}
+
+  
+  .chartcard{background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:22px 22px 18px;margin-top:22px;}
+  .chartcard h3{margin:0 0 4px;font-size:1rem;font-family:var(--font-head);}
+  .chartcard .cite{margin-bottom:14px;display:block;}
+  .bar-row{display:grid;grid-template-columns:180px 1fr 70px;align-items:center;gap:10px;
+    margin-bottom:12px;font-size:.86rem;}
+  .bar-track{background:var(--card-2);border-radius:6px;height:16px;overflow:hidden;position:relative;}
+  .bar-fill{height:100%;border-radius:6px 0 0 6px;}
+  .bar-fill.s1{background:var(--accent);}
+  .bar-fill.s2{background:var(--coral);}
+  .bench-line{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--ink);opacity:.55;}
+  .legend{display:flex;gap:18px;font-size:.8rem;color:var(--ink-2);margin-top:6px;flex-wrap:wrap;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:10px;height:10px;border-radius:2px;display:inline-block;}
+  .num{font-variant-numeric:tabular-nums;}
+
+  
+  .demo-box{background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:22px;text-align:center;}
+  .demo-box iframe{width:100%;height:560px;border:1px solid var(--line);border-radius:10px;
+    margin-top:16px;background:var(--paper);}
+  .btn{display:inline-flex;align-items:center;min-height:44px;background:var(--accent);color:var(--accent-ink);
+    font-weight:700;text-decoration:none;padding:0 22px;border-radius:9px;font-size:.94rem;}
+
+  
+  .faq-list{display:flex;flex-direction:column;gap:10px;max-width:800px;}
+  .faq-list details{background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:4px 18px;}
+  .faq-list summary{cursor:pointer;font-weight:600;font-size:.98rem;padding:14px 0;color:var(--ink);
+    list-style:none;display:flex;justify-content:space-between;gap:12px;align-items:center;}
+  .faq-list summary::-webkit-details-marker{display:none;}
+  .faq-list summary::after{content:"+";font-size:1.2rem;color:var(--muted);flex:none;}
+  .faq-list details[open] summary::after{content:"\2212";}
+  .faq-list p{margin:0 0 16px;color:var(--ink-2);font-size:.92rem;}
+  .faq-list p strong{color:var(--ink);}
+
+  
+  .cta{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:12px;padding:28px 30px;display:flex;align-items:center;justify-content:space-between;
+    gap:28px;flex-wrap:wrap;text-align:left;}
+  .cta-text{flex:1;min-width:260px;}
+  .cta h2{color:var(--ink);font-size:1.25rem;margin:0 0 .35em;}
+  .cta p{color:var(--ink-2);margin:0;max-width:520px;}
+  .cta .btn{background:var(--accent);color:var(--accent-ink);flex:none;}
+  .contact-note{font-size:.78rem;color:var(--muted);margin-top:10px;}
+
+  footer.site-foot{text-align:center;color:var(--muted);font-size:.8rem;padding:30px 20px 50px;}
+
+  
+  .internal{margin-top:0;padding:44px 0 70px;border-top:6px solid var(--gold);
+    background:var(--gold-bg);color:var(--gold-ink);}
+  .internal-inner{max-width:1140px;margin:0 auto;padding:0 20px;}
+  .internal-banner{display:inline-block;background:var(--gold);color:#fff;
+    font-weight:800;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;
+    padding:5px 12px;border-radius:6px;margin-bottom:14px;}
+  .internal h2{color:var(--gold-ink);font-family:var(--font-head);}
+  .internal h3{color:var(--gold-ink);margin-top:1.6em;font-size:1.1rem;font-family:var(--font-head);}
+  .internal p, .internal li{color:var(--gold-ink);opacity:.92;font-size:.92rem;}
+  .internal .tablewrap{background:var(--card);border-color:var(--line);}
+  .internal table{color:var(--ink);}
+  .internal table .cite{color:var(--ink-2);}
+  .internal th,.internal td{border-bottom-color:var(--line);}
+  .internal .flag{border-left:4px solid var(--gold);background:rgba(0,0,0,.05);
+    padding:10px 14px;margin:.8em 0;font-size:.88rem;border-radius:0 8px 8px 0;}
+  @media (prefers-color-scheme:dark){ .internal .flag{background:rgba(255,255,255,.06);} }
+  :root[data-theme="dark"] .internal .flag{background:rgba(255,255,255,.06);}
+  :root[data-theme="light"] .internal .flag{background:rgba(0,0,0,.05);}
+
+  @media (max-width:900px){
+    .board-grid{grid-template-columns:1fr;}
+    .cap-row, .cap-row-rev{grid-template-columns:1fr;}
+    .cap-row-rev .cap-panel, .cap-row-rev .cap-text{order:0;}
+  }
+  @media (max-width:700px){
+    .bar-row{grid-template-columns:110px 1fr 56px;}
+    .demo-box iframe{height:480px;}
+    section{padding:40px 0;}
+  }
+</style>
+</head>
+<body><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
+
+
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="wordmark" href="#top">Cuspid<span class="dot" aria-hidden="true"></span></a>
+    <nav aria-label="Page sections">
+      <a href="#what">What it is</a>
+      <a href="#who">Who it's for</a>
+      <a href="#compare">Compare</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#demo">Demo</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <div class="hero-inner">
+    <h1>The clinical layer for Vornix-connected practices</h1>
+    <p class="lede">Ambient charting, recall &amp; confirmation texting, and PMS-assist tools — built
+  as add-on modules on top of the phone system a practice already trusts, not a new vendor to
+  onboard.</p>
+    <div class="fence">This is <strong>not</strong> a new company or a new sales motion.</div>
+  </div>
+
+  <div class="board" aria-label="Simulated day-in-the-practice board">
+    <div class="board-head">
+      <h2 class="board-title">A day in the practice</h2>
+      <span class="sim-badge">Simulated — illustrative mock, not a working system</span>
+    </div>
+    <p class="board-note">Fictional practice, fictional patients — shown to illustrate what the three modules below would surface, not a live screenshot.</p>
+    <div class="board-grid">
+      <div class="board-col">
+        <div class="board-col-head"><span class="board-col-name">Schedule</span><span class="board-col-meta">Dr. Cota · Tue 8/4</span></div>
+        <ul class="board-rows">
+          <li><span class="b-time">8:00</span><span class="b-who">Alvarez, J.</span><span class="b-what">Recall exam</span></li>
+          <li><span class="b-time">9:30</span><span class="b-who">Chen, R.</span><span class="b-what">Restorative</span></li>
+          <li><span class="b-time">11:00</span><span class="b-who">Patel, S.</span><span class="b-what">Hygiene</span></li>
+          <li><span class="b-time">2:00</span><span class="b-who">Alvarez, J.</span><span class="b-what">Follow-up</span></li>
+        </ul>
+      </div>
+      <div class="board-col">
+        <div class="board-col-head"><span class="board-col-name">Recall</span><span class="board-col-meta">Aug batch</span></div>
+        <ul class="board-rows">
+          <li><span class="b-who">41 patients</span><span class="b-what">due this month</span><span class="pill pill-warn">due</span></li>
+          <li><span class="b-who">Alvarez, J.</span><span class="b-what">6-mo cleaning</span><span class="pill pill-good">sent</span></li>
+          <li><span class="b-who">Chen, R.</span><span class="b-what">recall reminder</span><span class="pill pill-warn">awaiting</span></li>
+        </ul>
+      </div>
+      <div class="board-col">
+        <div class="board-col-head"><span class="board-col-name">Comms</span><span class="board-col-meta">SMS thread</span></div>
+        <ul class="board-rows">
+          <li><span class="b-who">Alvarez, J.</span><span class="b-what">confirmed Tue 2:00pm</span><span class="pill pill-good">confirmed</span></li>
+          <li><span class="b-who">Patel, S.</span><span class="b-what">reminder sent</span><span class="pill pill-warn">awaiting</span></li>
+          <li><span class="b-who">Chen, R.</span><span class="b-what">confirmation sent</span><span class="pill pill-good">confirmed</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<main>
+
+  <section id="what">
+    <div class="kicker">What it is</div>
+    <h2>Three modules, one existing relationship</h2>
+    <p class="section-lede">Vornix already answers the phone. Cuspid is the next layer up: turning
+    the clinical and administrative work that happens around that phone call — charting the visit,
+    reminding the patient, keeping the practice-management system in sync — into the same trusted
+    product, instead of three separate vendor relationships.</p>
+
+    <div class="today-row">
+      <span class="today-label">Separately, today:</span>
+      <span class="chip">Ambient charting</span>
+      <span class="chip">Recall &amp; confirmation SMS</span>
+      <span class="chip">PMS-assist</span>
+      <span class="today-arrow" aria-hidden="true">→</span>
+      <span class="chip chip-accent">One Cuspid relationship</span>
+    </div>
+
+    <p class="section-note" style="margin-top:-18px;margin-bottom:28px;">Panel mockups below are illustrative only — see the labeled Simulated walkthrough for the scripted, working scenarios.</p>
+
+    <div class="cap-rows">
+      <div class="cap-row">
+        <div class="cap-panel cap-panel-chart">
+          <div class="cap-panel-head">Chart note</div>
+          <div class="cap-mini-row"><span>Note type</span><b>Clinical exam</b></div>
+          <div class="cap-mini-row"><span>Format</span><b>Tooth / surface</b></div>
+          <div class="cap-mini-row"><span>Status</span><span class="pill pill-warn">ready for review</span></div>
+        </div>
+        <div class="cap-text">
+          <span class="mod-badge">Module 1</span>
+          <h3>Ambient charting</h3>
+          <p>Visit audio → a dental-shaped chart note (tooth/surface notation, periodontal readings),
+        ready for the clinician to review and file. Not a generic medical scribe reformatted —
+        built for how a dental chart actually reads.</p>
+        </div>
+      </div>
+
+      <div class="cap-row cap-row-rev">
+        <div class="cap-panel cap-panel-sms">
+          <div class="cap-panel-head">Message thread</div>
+          <div class="cap-bubble out">Recall reminder sent</div>
+          <div class="cap-bubble in">Confirmed ✓</div>
+        </div>
+        <div class="cap-text">
+          <span class="mod-badge">Module 2</span>
+          <h3>Recall &amp; confirmation SMS</h3>
+          <p>Automated recall reminders, appointment confirmations, and follow-ups over text —
+        riding on the phone number and client relationship Vornix already owns, not a bolt-on
+        comms subscription.</p>
+        </div>
+      </div>
+
+      <div class="cap-row">
+        <div class="cap-panel cap-panel-pms">
+          <div class="cap-panel-head">PMS sync</div>
+          <div class="cap-mini-row"><span>Open Dental</span><span class="pill pill-good">bridged</span></div>
+          <div class="cap-mini-row"><span>Chart write</span><span class="pill pill-warn">per-PMS unconfirmed</span></div>
+        </div>
+        <div class="cap-text">
+          <span class="mod-badge">Module 3</span>
+          <h3>PMS-assist</h3>
+          <p>A bridge into the practice-management system (via the Kolla Unify integration layer)
+        so chart notes, schedules, and patient records can start talking to the rest of the
+        practice's software — scoped honestly to what's technically confirmed today (see demo).</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="who">
+    <div class="kicker">Who it's for</div>
+    <h2>The existing Vornix book — not a new market</h2>
+    <div class="icp-box">
+      <p>An existing or prospective Vornix client: a
+      single-location or small-group (2-4 dentist) independent dental practice in San Diego County,
+      owner-operated, already running or evaluating Vornix's voice-reception product.</p>
+      <ul>
+        <li></li>
+        <li>Runs one of the 8 PMS platforms the Kolla Unify bridge covers: Dentrix, Dentrix
+        Enterprise, Open Dental, Eaglesoft, Denticon, Dolphin, WinOMS, OrthoTrac. <span class="cite">
+        [sourced, RESEARCH.md §2.3]</span></li>
+        <li>Not a 10+-location DSO-adjacent group — that's a different buyer, enterprise procurement,
+        outside Vornix's current motion.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="compare">
+    <div class="kicker">Compare</div>
+    <h2>What the pieces cost elsewhere</h2>
+    <p class="section-lede">Ops buyers compare — so the same competitive review that anchors the internal appendix below is reproduced here, not just summarized.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Vendor</th><th>Price</th><th>Note</th></tr></thead>
+        <tbody>
+          <tr><td>Freed</td><td class="num">$39–119/mo</td><td>Generic clinician scribe, no dental-specific structure. <span class="cite">freed.ai/pricing, 2026-07-29</span></td></tr>
+          <tr><td>Heidi Health</td><td class="num">$110–180/mo</td><td>Same generic-clinician gap. <span class="cite">heidihealth.com/pricing, 2026-07-29</span></td></tr>
+          <tr><td>Abridge</td><td class="num">no public price</td><td>Enterprise/health-system sales-led; /pricing 404s. <span class="cite">abridge.com, 2026-07-29</span></td></tr>
+          <tr><td>Weave (comms)</td><td class="num">$199+/mo</td><td>Comms-bundle price floor; no standalone appointment-SMS seller found under $199/mo. <span class="cite">INDUSTRY-NOTES.md, PITCH-018</span></td></tr>
+          <tr><td>Kolla Unify (PMS bridge)</td><td class="num">$19–29/loc, 10-loc min</td><td>Covers 8 PMS platforms; chart-write field-completeness unconfirmed per PMS. <span class="cite">RESEARCH.md §2.3</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>No dental-specific ambient-charting competitor was found this pass — a real gap, not yet
+    exhaustively confirmed absent (WebSearch was exhausted). <span class="cite">RESEARCH.md §2.1</span></p>
+  </section>
+
+  <section id="pricing">
+    <div class="kicker">Pricing</div>
+    <h2>Priced as upsells, not a new price ladder</h2>
+    <p class="section-lede">Sold on top of the existing Vornix relationship ($2.5K setup + $500/mo
+    shape, cited as structural reference, not restated) — module-by-module, not a bundled
+    all-or-nothing platform fee.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Module</th><th>Price</th><th>Basis</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Ambient charting</td>
+            <td class="num">$79–119/mo per clinician</td>
+            <td class="cite"> positioned inside Freed's Core-tier band; RESEARCH.md §2.1</td>
+          </tr>
+          <tr>
+            <td>Recall / confirmation SMS</td>
+            <td class="num">$79–149/mo</td>
+            <td class="cite"> below Weave's $199/mo comms-bundle floor; RESEARCH.md §2.2</td>
+          </tr>
+          <tr>
+            <td>PMS-assist</td>
+            <td class="num">$19–29/location pass-through + services markup</td>
+            <td class="cite"> Kolla Unify floor, 10-location pooling minimum; RESEARCH.md §2.3</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="chartcard">
+      <h3>Delivery gross margin vs. services-industry benchmark</h3>
+      <span class="cite"> component cost at Base ($37/mo) and Retell-quality
+      ($200/mo) build tiers against a $500/mo retainer shape; benchmark from
+      background/SAAS-ECONOMICS.md §5. RESEARCH.md §4.</span>
+      <div class="bar-row">
+        <span>Lean build (Base)</span>
+        <div class="bar-track"><div class="bar-fill s1" style="width:93%;"></div>
+          <div class="bench-line" style="left:55%;" title="55-70% benchmark band start"></div>
+          <div class="bench-line" style="left:70%;" title="benchmark band end"></div>
+        </div>
+        <span class="num">~93%</span>
+      </div>
+      <div class="bar-row">
+        <span>Quality build (Retell-tier)</span>
+        <div class="bar-track"><div class="bar-fill s2" style="width:60%;"></div>
+          <div class="bench-line" style="left:55%;"></div>
+          <div class="bench-line" style="left:70%;"></div>
+        </div>
+        <span class="num">~60%</span>
+      </div>
+      <div class="legend">
+        <span><span class="swatch" style="background:#0d6e5c;"></span>Lean build margin</span>
+        <span><span class="swatch" style="background:#eb6834;"></span>Quality build margin</span>
+        <span>| marks = 55–70% services-delivery benchmark band</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="demo">
+    <div class="kicker">Demo</div>
+    <h2>Simulated product walkthrough</h2>
+    <p class="section-lede">Three scripted scenarios of what actually using each module would look
+    like — every scenario synthetic and clearly labeled. This is a mockup for the roadmap
+    conversation, not a working system.</p>
+    <div class="demo-box">
+      <p style="margin:0;color:var(--ink-2);font-size:.9rem;">Interactive walkthrough (embedded
+      below) — or open it directly: <a href="./media/simulated-demo.html">media/simulated-demo.html</a></p>
+      <iframe src="./media/simulated-demo.html?v=1" title="Cuspid simulated product walkthrough" loading="lazy"></iframe>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="kicker">FAQ</div>
+    <h2>Questions before the roadmap review</h2>
+    <p class="section-lede">Five hardest objections, answered from this idea's own research — reused from PITCH.md, not softened for this page.</p>
+    <div class="faq-list">
+      <details>
+        <summary>Why pay extra when Freed/Heidi exist cheaper?</summary>
+        <p>Neither is dental-charting-shaped; the wedge is fit, not price.</p>
+      </details>
+      <details>
+        <summary>Does it actually write into our PMS?</summary>
+        <p><strong>Honest answer: unconfirmed today.</strong> Generates a note ready for clinician review, not a guaranteed direct chart write, until Kolla's field-level write completeness is tested per PMS.</p>
+      </details>
+      <details>
+        <summary>Is it HIPAA-compliant?</summary>
+        <p>Infrastructure BAA chain is largely in place; a PMS-specific BAA is a real per-practice item still to handle before write-access ships.</p>
+      </details>
+      <details>
+        <summary>Does the Kolla fee raise my cost below 10 pooled locations?</summary>
+        <p>Yes, structurally, until Vornix pools 10+ locations; Vornix absorbs or flat-fees this near-term.</p>
+      </details>
+      <details>
+        <summary>Why extend instead of just raising the existing retainer price?</summary>
+        <p>Cross-selling a trusted vendor is lower-CAC than either a price-risk-churn move or a cold net-new sales motion this idea has no built channel for.</p>
+      </details>
+    </div>
+  </section>
+
+  <section id="cta">
+    <div class="cta">
+      <div class="cta-text">
+        <h2>The ask</h2>
+        <p>A prioritized roadmap review: which of these three modules the 3 pending
+        Vornix clients would pay for first. Not a signup, not a sale — a working session.</p>
+        <p class="contact-note">Placeholder contact only — no real inbox exists yet.</p>
+      </div>
+      <a class="btn" href="mailto:placeholder@cuspid.example">Request the roadmap review</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-foot">Cuspid is an early-access alpha product. No purchases, signups,
+or patient data are processed by this page.</footer>
+
+
+
+</body>
+</html>

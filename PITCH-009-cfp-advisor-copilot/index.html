@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TallyHelm — The practice copilot for solo &amp; small CFP® advisors</title>
+<style>
+  :root{
+    --font-serif: Charter, 'Bitstream Charter', 'Sitka Text', Cambria, Georgia, serif;
+    --font-sans: Optima, Candara, 'Noto Sans', source-sans-pro, sans-serif;
+    color-scheme: light dark;
+
+    --paper:#f7f3eb; --paper-2:#f1ece2; --paper-3:#eae4d7; --rule:#cfcabf;
+    --ink:#112732; --ink-2:#325261; --ink-muted:#526c78;
+    --ink-navy:#1f4e61; --seal-gold:#8d631b;
+    --good:#2d6d42; --warn:#8d5400; --danger:#933331;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#201910; --paper-2:#2a2318; --paper-3:#352c20; --rule:#4a4134;
+      --ink:#ece7de; --ink-2:#c4bdb0; --ink-muted:#a09788;
+      --ink-navy:#8ec7e1; --seal-gold:#d9b070;
+      --good:#73b785; --warn:#dbb06b; --danger:#e18881;
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --paper:#201910; --paper-2:#2a2318; --paper-3:#352c20; --rule:#4a4134;
+    --ink:#ece7de; --ink-2:#c4bdb0; --ink-muted:#a09788;
+    --ink-navy:#8ec7e1; --seal-gold:#d9b070;
+    --good:#73b785; --warn:#dbb06b; --danger:#e18881;
+  }
+  :root[data-theme="light"]{
+    color-scheme: light;
+    --paper:#f7f3eb; --paper-2:#f1ece2; --paper-3:#eae4d7; --rule:#cfcabf;
+    --ink:#112732; --ink-2:#325261; --ink-muted:#526c78;
+    --ink-navy:#1f4e61; --seal-gold:#8d631b;
+    --good:#2d6d42; --warn:#8d5400; --danger:#933331;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--font-serif); font-size:1.06rem; line-height:1.62;
+    font-variant-numeric: tabular-nums;
+  }
+  img,svg{ max-width:100%; }
+  ::selection{ background:var(--seal-gold); color:var(--paper); }
+
+  a{ color:var(--ink-navy); text-decoration-thickness:1px; text-underline-offset:.16em; transition:color .15s ease; }
+  a:hover{ color:var(--ink); }
+  a:focus-visible, :focus-visible{ outline:2px solid var(--ink-navy); outline-offset:3px; }
+
+  .wrap{ max-width:70ch; margin:0 auto; padding:0 1.25rem; }
+
+  h1,h2,h3{ font-family:var(--font-serif); font-weight:600; color:var(--ink); text-wrap:balance; margin:0 0 .6rem; }
+  h1{ font-size:1.85rem; line-height:1.24; max-width:20ch; }
+  h2{ font-size:1.32rem; line-height:1.3; }
+  h3{ font-size:1.06rem; }
+  p{ margin:0 0 1rem; }
+  .lede{ color:var(--ink-2); }
+  ul,ol{ padding-left:1.3em; margin:0 0 1rem; }
+  li{ margin-bottom:.4rem; }
+  li::marker{ color:var(--ink-navy); }
+  code{ font-family:var(--font-sans); font-size:.85em; background:var(--paper-2); padding:.05em .32em; border-radius:2px; }
+  .table-wrap{ overflow-x:auto; }
+
+  .eyebrow{ font-family:var(--font-sans); font-size:.76rem; letter-spacing:.09em; font-variant:small-caps; color:var(--ink-muted); margin:0 0 .35rem; }
+  .footnote{ font-size:.86rem; color:var(--ink-muted); border-top:1px solid var(--rule); padding-top:.9rem; margin-top:1.5rem; }
+
+  
+  .tag{ display:inline-block; font-family:var(--font-sans); font-size:.66rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; padding:.05rem .42rem; border-radius:3px; border:1px solid currentColor; line-height:1.5; }
+  .tag.sourced{ color:var(--good); }
+  .tag.derived{ color:var(--warn); }
+  .tag.unverified{ color:var(--danger); }
+  .tag.open{ color:var(--ink-muted); }
+
+  
+  header.letterhead{ padding:3rem 0 0; text-align:center; }
+  .seal{ width:56px; height:56px; display:block; margin:0 auto .9rem; }
+  .wordmark{ font-family:var(--font-serif); font-size:1.55rem; font-weight:600; letter-spacing:.02em; margin:0; }
+  .tagline{ font-family:var(--font-sans); font-size:.83rem; color:var(--ink-2); margin:.4rem 0 1.6rem; }
+  nav.contents{
+    font-family:var(--font-sans); font-size:.74rem; letter-spacing:.03em; font-variant:small-caps;
+    display:flex; flex-wrap:wrap; justify-content:center; gap:.3rem 1rem;
+    padding:1.1rem 0; border-top:1px solid var(--seal-gold);
+  }
+  nav.contents a{ color:var(--ink-2); text-decoration:none; padding:.4rem .15rem; }
+  nav.contents a:hover, nav.contents a:focus-visible{ color:var(--ink-navy); text-decoration:underline; }
+
+  
+  .notice{ margin-top:1.9rem; padding:.8rem 0; border-top:1px solid var(--rule); border-bottom:1px solid var(--rule); background:var(--paper-2); }
+  .notice p{ margin:0; text-align:center; font-family:var(--font-sans); font-size:.86rem; font-weight:700; letter-spacing:.01em; color:var(--ink-2); }
+
+  
+  section#opening{ padding:2.6rem 0 0; }
+  .quiet-cta{ font-family:var(--font-sans); font-size:.94rem; }
+  .quiet-cta a{ font-weight:600; }
+
+  
+  main{ counter-reset:docsec; }
+  main section{ padding-top:2.75rem; margin-top:2.75rem; border-top:1px solid var(--rule); }
+  main section &gt; h2{ counter-increment:docsec; }
+  main section &gt; h2::before{ content:counter(docsec) ". "; color:var(--ink-navy); }
+
+  
+  .profile-box{ border-top:1.5px solid var(--ink-navy); border-bottom:1.5px solid var(--ink-navy); padding:1.3rem 0; margin-top:1rem; }
+  .profile-box p:last-child, .profile-box ul:last-child{ margin-bottom:0; }
+
+  
+  ol.schedule{ list-style:decimal; padding-left:1.4em; margin:1rem 0 0; }
+  ol.schedule &gt; li{ padding-left:.5em; padding-bottom:1.4rem; margin-bottom:1.4rem; border-bottom:1px solid var(--rule); }
+  ol.schedule &gt; li:last-child{ border-bottom:none; margin-bottom:0; padding-bottom:0; }
+  ol.schedule &gt; li::marker{ font-family:var(--font-sans); font-weight:700; color:var(--ink-navy); }
+  ol.schedule h3{ margin:0 0 .35rem; }
+  ol.schedule p{ margin:0; color:var(--ink-2); }
+
+  
+  table{ width:100%; border-collapse:collapse; font-size:.93rem; }
+  thead th{ text-align:left; font-family:var(--font-sans); font-size:.68rem; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-muted); font-weight:700; padding:.5rem .6rem; border-bottom:1.5px solid var(--ink-navy); }
+  tbody th, tbody td{ text-align:left; padding:.65rem .6rem; border-bottom:1px solid var(--rule); vertical-align:top; }
+  tbody th[scope="row"]{ font-family:var(--font-serif); font-weight:600; white-space:nowrap; }
+  .fee-table{ margin-top:1.1rem; }
+
+  
+  .exhibit{ border:1px solid var(--seal-gold); border-radius:2px; padding:1.5rem 1.5rem 1.3rem; margin-top:1.75rem; background:var(--paper-2); }
+  .exhibit-label{ font-family:var(--font-sans); font-size:.7rem; letter-spacing:.09em; text-transform:uppercase; color:var(--seal-gold); font-weight:700; margin:0 0 .5rem; }
+  .exhibit h3{ margin:0 0 .5rem; }
+  .breakeven-wrap{ overflow-x:auto; margin-top:.75rem; }
+  .legend{ display:flex; gap:1.25rem; flex-wrap:wrap; font-size:.83rem; margin-top:.85rem; font-family:var(--font-sans); }
+  .legend span{ display:inline-flex; align-items:center; gap:.4rem; }
+  .swatch{ width:11px; height:11px; border-radius:2px; display:inline-block; }
+  .chart-caption{ font-size:.82rem; color:var(--ink-muted); margin-top:.75rem; margin-bottom:0; }
+
+  
+  .specimen-frame{ border:1px solid var(--ink-navy); border-radius:2px; overflow:hidden; margin-top:1.1rem; }
+  .specimen-frame iframe{ width:100%; height:640px; border:0; display:block; background:var(--paper-2); }
+  .specimen-caption{ font-family:var(--font-sans); font-size:.72rem; letter-spacing:.07em; text-transform:uppercase; color:var(--ink-muted); text-align:center; margin:.65rem 0 1.5rem; }
+
+  
+  .faq-item{ border-bottom:1px solid var(--rule); padding:1.2rem 0; }
+  main section#questions .faq-item:first-of-type{ padding-top:0; }
+  .faq-item:last-child{ border-bottom:none; padding-bottom:0; }
+  .faq-item h3{ font-style:italic; font-weight:500; margin:0 0 .5rem; }
+  .faq-item p{ margin:0; color:var(--ink-2); }
+
+  
+  .signature-line{ margin-top:1.4rem; }
+  .signature-line a{ font-family:var(--font-sans); font-size:.98rem; font-weight:700; }
+  .colophon{ padding:2.25rem 0 3.5rem; }
+  .colophon p{ margin:0; text-align:center; color:var(--ink-muted); font-size:.85rem; }
+
+  
+  #internal{
+    --paper:#201910; --paper-2:#2a2318; --paper-3:#352c20; --rule:#4a4134;
+    --ink:#ece7de; --ink-2:#c4bdb0; --ink-muted:#a09788;
+    --ink-navy:#8ec7e1; --seal-gold:#d9b070;
+    --good:#73b785; --warn:#dbb06b; --danger:#e18881;
+    background:var(--paper); color:var(--ink); border-top:3px solid var(--seal-gold); padding-bottom:1rem;
+  }
+  #internal .wrap{ padding-top:2.5rem; }
+  .internal-banner{
+    font-family:var(--font-sans); font-weight:700; text-transform:uppercase; letter-spacing:.05em; font-size:.82rem;
+    text-align:center; padding:.65rem 1rem; border:1px solid var(--seal-gold); border-radius:2px; margin-bottom:2rem; color:var(--seal-gold);
+  }
+  #internal .apx{ padding-top:2.1rem; margin-top:2.1rem; border-top:1px solid var(--rule); }
+  #internal .apx:first-of-type{ padding-top:0; margin-top:0; border-top:none; }
+  #internal .apx h3{ margin-bottom:.6rem; }
+  #internal .apx p, #internal .apx li{ color:var(--ink-2); }
+
+  @media (max-width:640px){
+    h1{ font-size:1.55rem; }
+    header.letterhead{ padding-top:2.25rem; }
+    .specimen-frame iframe{ height:480px; }
+    nav.contents{ gap:.25rem .7rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; scroll-behavior:auto !important; }
+  }
+</style>
+</head>
+<body><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
+
+  <header class="letterhead">
+    <div class="wrap">
+      <svg class="seal" viewbox="0 0 64 64" role="img" aria-labelledby="sealTitle">
+        <title id="sealTitle">TallyHelm monogram seal</title>
+        <circle cx="32" cy="32" r="29" fill="none" stroke="var(--ink-navy)" stroke-width="1.25"></circle>
+        <circle cx="32" cy="32" r="24" fill="none" stroke="var(--seal-gold)" stroke-width="1"></circle>
+        <g stroke="var(--seal-gold)" stroke-width="1">
+          <line x1="57.2" y1="32.0" x2="59.8" y2="32.0"></line>
+          <line x1="53.8" y1="44.6" x2="56.1" y2="45.9"></line>
+          <line x1="44.6" y1="53.8" x2="45.9" y2="56.1"></line>
+          <line x1="32.0" y1="57.2" x2="32.0" y2="59.8"></line>
+          <line x1="19.4" y1="53.8" x2="18.1" y2="56.1"></line>
+          <line x1="10.2" y1="44.6" x2="7.9" y2="45.9"></line>
+          <line x1="6.8" y1="32.0" x2="4.2" y2="32.0"></line>
+          <line x1="10.2" y1="19.4" x2="7.9" y2="18.1"></line>
+          <line x1="19.4" y1="10.2" x2="18.1" y2="7.9"></line>
+          <line x1="32.0" y1="6.8" x2="32.0" y2="4.2"></line>
+          <line x1="44.6" y1="10.2" x2="45.9" y2="7.9"></line>
+          <line x1="53.8" y1="19.4" x2="56.1" y2="18.1"></line>
+        </g>
+        <text x="32" y="39" text-anchor="middle" font-family="Charter, Georgia, serif" font-size="20" fill="var(--ink-navy)">TH</text>
+      </svg>
+      <p class="wordmark">TallyHelm</p>
+      <p class="tagline">A practice copilot for solo &amp; small-team CFP® advisers</p>
+      <nav class="contents" aria-label="Contents">
+        <a href="#opening">Opening Statement</a>
+        <a href="#client-profile">Client Profile</a>
+        <a href="#schedule">Schedule of Services</a>
+        <a href="#fee-schedule">Fee Schedule</a>
+        <a href="#specimen">Specimen Walkthrough</a>
+        <a href="#questions">Questions</a>
+        <a href="#closing">Closing</a>
+        
+      </nav>
+    </div>
+  </header>
+
+  
+
+  <section id="opening" class="wrap">
+    <p class="eyebrow">Re:</p>
+    <h1>The practice copilot that tracks what your CRM never does.</h1>
+    <p class="lede">TallyHelm is a KPI dashboard, contact-cadence queue, form autofill, and low-friction client
+      data layer for solo and small-team CFP®-credentialed advisers — the four things one real advisor built
+      by hand in a spreadsheet because nothing on the market did all four together.</p>
+    <p class="quiet-cta"><a href="#specimen">See the specimen walkthrough →</a></p>
+    <p class="footnote">
+      <strong>Where this comes from:</strong> the product brief is Carsten Glass's own working personal
+      dashboard — a real fee-only CFP® who hand-built a spreadsheet to track exactly these four things because
+      no vendor covers more than one of them (see <a href="#questions">Questions a fiduciary should ask us</a>
+      and the comparison in the internal appendix). TallyHelm's first pilot conversation
+      is with him, by name.
+    </p>
+  </section>
+
+  <main class="wrap">
+
+    <section id="client-profile">
+      <h2>Client Profile</h2>
+      <p class="lede">Not every advisory shop — a specific, mechanically identifiable slice of one.</p>
+      <div class="profile-box">
+        <p><strong>Solo and small-team (1-5 advisor) CFP®-credentialed principals</strong> running their own
+          Registered Investment Adviser (RIA) — fee-only or hybrid — with AUM plausibly under the ~$100M
+          SEC-registration line, meaning most are <strong>state-registered</strong>, not SEC-registered.</p>
+        <ul>
+          <li>Runs client relationships without a dedicated ops/admin staffer</li>
+          <li>Currently tracks KPI goals, contact cadence, intake forms, and client data across disconnected
+            tools or an ad hoc personal spreadsheet</li>
+          <li>Findable today on two public registries: <strong>SEC IAPD</strong> (adviserinfo.sec.gov, filtered
+            by state + reported AUM) cross-referenced against <strong>CFP Board's Verify tool</strong>
+            (cfp.net/verify-a-cfp-professional) for active CFP® status</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="schedule">
+      <h2>Schedule of Services</h2>
+      <p class="lede">Mapped directly to the four needs the product was built around — not a generic feature
+        list.</p>
+      <ol class="schedule">
+        <li>
+          <h3>KPI-goal dashboard</h3>
+          <p>New AUM, new households, reviews completed, referrals — set targets, see progress against them at
+            a glance, every login.</p>
+        </li>
+        <li>
+          <h3>Contact-cadence queue</h3>
+          <p>Who's actually due for a touch and why, pulled from each household's own cadence rule — not a
+            birthday-card default blast.</p>
+        </li>
+        <li>
+          <h3>Form organize + autofill</h3>
+          <p>Reuse client data you've already entered once across forms — not a second questionnaire builder,
+            a way to stop retyping the same address a third time.</p>
+        </li>
+        <li>
+          <h3>Low-friction client data entry</h3>
+          <p>One clean place to add and update household data — the thing that makes the other three tools
+            actually stay current instead of going stale.</p>
+        </li>
+      </ol>
+    </section>
+
+    <section id="fee-schedule">
+      <h2>Fee Schedule</h2>
+      <p class="lede">Priced against the workflow it replaces, not a generic per-seat SaaS number.
+         from the mid-weight vertical-tool band ($99-299/mo) in
+        <code>ventures/background/SAAS-ECONOMICS.md</code> §1 — not yet market-tested against a CFP-specific
+        willingness-to-pay figure.</p>
+
+      <div class="table-wrap">
+        <table class="fee-table">
+          <thead>
+            <tr><th scope="col">Tier</th><th scope="col">Monthly fee</th><th scope="col">Seats</th><th scope="col">Included services</th><th scope="col">Breakeven</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Solo</th>
+              <td>$149/mo</td>
+              <td>1 advisor seat</td>
+              <td>KPI-goal dashboard; contact-cadence queue; low-friction client data entry</td>
+              <td>~0.6–1 hr/mo saved </td>
+            </tr>
+            <tr>
+              <th scope="row">Practice</th>
+              <td>$299/mo</td>
+              <td>Up to 5 advisor seats</td>
+              <td>Everything in Solo; form organize + autofill; small-team ready (1–5 seats)</td>
+              <td>~1.2–2 hrs/mo saved </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="exhibit" id="exhibit-a">
+        <p class="exhibit-label">Exhibit A</p>
+        <h3>The breakeven math, visually</h3>
+        <p class="lede">At a $150–250/hr self-valuation of an advisor's own time
+           (unverified),
+          recovering 1.2–2 hours a month clears the Practice tier's cost.</p>
+        <div class="breakeven-wrap">
+          <svg viewbox="0 0 620 220" role="img" aria-labelledby="chartTitle chartDesc" style="width:100%; max-width:620px; font-family:var(--font-sans);">
+            <title id="chartTitle">Monthly cost vs. monthly value recovered</title>
+            <desc id="chartDesc">Practice tier costs $299 per month. Recovering 1.2 to 2 hours of admin time per
+              month at a $150-250 per hour self-valuation recovers $225 to $500 of value per month, which exceeds
+              the $299 cost.</desc>
+            <line x1="140" y1="20" x2="140" y2="180" stroke="var(--rule)" stroke-width="1"></line>
+            <text x="20" y="55" fill="var(--ink)" font-size="13" font-weight="600">Practice tier cost</text>
+            <rect x="140" y="42" width="185" height="26" rx="1.5" fill="var(--ink-navy)"></rect>
+            <text x="335" y="60" fill="var(--ink)" font-size="13" font-weight="700">$299/mo</text>
+
+            <text x="20" y="105" fill="var(--ink)" font-size="13" font-weight="600">Value recovered (low)</text>
+            <rect x="140" y="92" width="139" height="26" rx="1.5" fill="var(--good)"></rect>
+            <text x="289" y="110" fill="var(--ink)" font-size="13" font-weight="700">$225/mo (1.2 hrs × $150–250/hr low end)</text>
+
+            <text x="20" y="155" fill="var(--ink)" font-size="13" font-weight="600">Value recovered (high)</text>
+            <rect x="140" y="142" width="309" height="26" rx="1.5" fill="var(--good)"></rect>
+            <text x="460" y="160" fill="var(--ink)" font-size="13" font-weight="700">$500/mo (2 hrs × $150–250/hr high end)</text>
+          </svg>
+          <div class="legend">
+            <span><span class="swatch" style="background:var(--ink-navy)"></span> What TallyHelm's Practice tier costs</span>
+            <span><span class="swatch" style="background:var(--good)"></span> Value of admin time recovered, at the stated hourly range</span>
+          </div>
+          <p class="chart-caption">Bar lengths are proportional to dollar values shown (scale: 1px ≈ $1.62/mo).
+             from SAAS-ECONOMICS.md §6 Example B, built specifically for
+            this vertical.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="specimen">
+      <h2>Specimen Walkthrough</h2>
+      <p class="lede">TallyHelm doesn't exist yet — this is a scripted mockup of what using it would look like,
+        built from Carsten's own described workflow. Every screen is labeled <strong>SIMULATED</strong>; nothing
+        here is a real client or a working application.</p>
+      <p>Three scenarios: the KPI dashboard, the contact-cadence queue, and form autofill. Step through them
+        below.</p>
+      <div class="specimen-frame">
+        <iframe src="./media/product-demo.html?v=1" title="TallyHelm simulated product walkthrough" loading="lazy"></iframe>
+      </div>
+      <p class="specimen-caption">Specimen I — Simulated Product Walkthrough</p>
+      <p class="footnote">Frame not loading? Open the walkthrough directly:
+        <a href="./media/product-demo.html">media/product-demo.html</a></p>
+    </section>
+
+    <section id="questions">
+      <h2>Questions a fiduciary should ask us</h2>
+      <p class="lede">The five hardest questions, answered from this idea's own research — not generic copy.</p>
+
+      <div class="faq-item">
+        <h3>"I already have Wealthbox or Redtail for CRM — why do I need another tool?"</h3>
+        <p>No single incumbent — Wealthbox, Redtail, Holistiplan, PreciseFP, or AdvicePay — covers more than one
+          of the four needs above. A full CRM + forms stack alone runs $75–160/mo 
+          and still has zero KPI-dashboard or cadence-queue coverage. TallyHelm isn't a CRM replacement; it's
+          the layer none of those tools built.</p>
+      </div>
+      <div class="faq-item">
+        <h3>"Is this actually compliant with my recordkeeping obligations, or just another vendor asking me to trust it?"</h3>
+        <p>17 CFR 275.204-2 requires RIAs to "make and keep true, accurate and current" specified records,
+          including communications — TallyHelm's contact-cadence logs are built to be retrievable/exportable
+          for the 5-year window the rule requires, not a generic "we're secure" claim. Honest caveat: your
+          specific state's rules also apply and haven't been individually reviewed for your firm.</p>
+      </div>
+      <div class="faq-item">
+        <h3>"How is this different from PreciseFP, which already does forms?"</h3>
+        <p>PreciseFP ($89/mo, 100 profiles) is a questionnaire/e-signature intake tool — it doesn't do KPI
+          tracking or contact cadence, and TallyHelm's "form autofill" means pulling from data you've already
+          entered once, not building a second questionnaire. Complementary, not identical.</p>
+      </div>
+      <div class="faq-item">
+        <h3>"What's my actual ROI — is $299/mo worth it?"</h3>
+        <p>Recovering 1.2–2 hours/month of admin time at a $150–250/hr self-valuation clears the $299/mo cost —
+          see Exhibit A above. Below that specific threshold, it honestly isn't worth it yet.</p>
+      </div>
+      <div class="faq-item">
+        <h3>"You're not a CFP or an advisor — why should I trust a tool built by an outsider?"</h3>
+        <p>The product's own design brief is Carsten Glass's real, working, hand-built personal dashboard — the
+          template artifact came from a real advisor's own tool, not a guess at what advisors need.</p>
+      </div>
+    </section>
+
+    <section id="closing">
+      <h2>Closing</h2>
+      <p><strong>One ask: a 20-minute pilot conversation.</strong> No purchase, no commitment — just a look at
+        whether the KPI dashboard and cadence queue match how you actually work.</p>
+      <p class="signature-line"><a href="mailto:PLACEHOLDER-contact@tallyhelm.example">Book a pilot conversation →</a></p>
+      <p class="footnote">Contact address is a PLACEHOLDER — no live inbox exists yet. Real contact method is, not published here.</p>
+    </section>
+
+  </main>
+
+  <footer class="colophon">
+    
+  </footer>
+
+  
+  
+  
+  
+
+</body>
+</html>

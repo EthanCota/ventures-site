@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PraxisKB — simulated product demo</title>
+<style>
+  :root{
+    --bg:#faf7f2; --surface:#ffffff; --surface-2:#f3efe7; --ink:#16233a; --ink-2:#52514e; --muted:#898781;
+    --border:rgba(22,35,58,0.12); --border-strong:rgba(22,35,58,0.22);
+    --accent:#eb6834; --accent2:#2f6f62; --good:#0ca30c;
+    --sim-bg:#7a1f1f; --sim-ink:#fdf1ec; --sim-accent:#7a1f1f;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#11161f; --surface:#1a2130; --surface-2:#212a3b; --ink:#f5f1ea; --ink-2:#c9c2b5; --muted:#8b8a84;
+           --border:rgba(245,241,234,0.14); --border-strong:rgba(245,241,234,0.26);
+           --accent:#d95926; --accent2:#4f9c8a; --good:#0ca30c;
+           --sim-bg:#c0392b; --sim-ink:#1a1005; --sim-accent:#e2854a; }
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;padding:22px 16px 40px;background:var(--bg);color:var(--ink);
+       font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5;}
+  .wrap{max-width:640px;margin:0 auto;}
+  .sim-banner{background:var(--sim-bg);color:var(--sim-ink);font-size:12.5px;font-weight:700;
+    letter-spacing:.03em;text-align:center;padding:9px 14px;border-radius:8px;margin-bottom:14px;}
+  .sub-cap{font-size:12.5px;color:var(--muted);margin:0 0 18px;}
+  .sub-cap a{color:var(--accent2);}
+  .frame{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;
+         box-shadow:0 1px 3px rgba(0,0,0,.08);}
+  .frame header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;
+    gap:8px;flex-wrap:wrap;}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--accent2);flex:none;}
+  .frame header .who{font-weight:700;font-size:13.5px;}
+  .frame header em{font-style:normal;color:var(--muted);font-size:11.5px;margin-left:auto;}
+  .sim-tag{font-size:9.5px;font-weight:800;letter-spacing:.05em;color:var(--sim-accent);
+    border:1px solid var(--sim-accent);border-radius:99px;padding:2px 8px;flex:none;}
+  .tabs{display:flex;gap:6px;padding:12px 16px 0;flex-wrap:wrap;}
+  .tab{font:inherit;font-size:12px;font-weight:700;padding:7px 11px;border-radius:8px;
+    border:1px solid var(--border-strong);background:transparent;color:var(--ink-2);cursor:pointer;}
+  .tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .body{padding:16px;min-height:230px;}
+  .thread{display:flex;flex-direction:column;gap:10px;}
+  .sysline{font-size:11px;color:var(--muted);text-align:center;margin:2px 0 6px;}
+  .msg{font-size:13.5px;line-height:1.55;border-radius:10px;padding:9px 12px 10px;max-width:94%;}
+  .msg.staff{background:var(--surface-2);align-self:flex-start;color:var(--ink);}
+  .msg.kb{background:transparent;border:1px solid var(--border);align-self:flex-start;color:var(--ink);}
+  .msg .role{display:block;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:4px;}
+  .msg.kb .role{color:var(--sim-accent);}
+  .cite{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--accent2);
+        border:1px solid var(--border);border-radius:6px;padding:2px 7px;margin:3px 4px 0 0;white-space:nowrap;}
+  .foot{padding:12px 16px 16px;display:flex;align-items:center;gap:12px;border-top:1px solid var(--border);
+    flex-wrap:wrap;}
+  .btn{font:inherit;font-size:13px;font-weight:700;padding:9px 16px;border-radius:8px;border:1px solid var(--accent);
+       background:var(--accent);color:#fff;cursor:pointer;}
+  .foot .note{font-size:11.5px;color:var(--muted);}
+  .cap{font-size:11px;color:var(--muted);margin-top:16px;max-width:640px;}
+  a.back{font-size:12.5px;color:var(--accent2);}
+</style>
+</head>
+<body><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
+<div class="wrap">
+  
+  <p class="sub-cap">Three scripted scenarios showing how staff at "Riverbend Family Dental" (fictional)
+    would query PraxisKB once built. <a class="back" href="../site/index.html">← back to the pitch page</a></p>
+
+  <div class="frame">
+    <header>
+      <div class="dot" aria-hidden="true"></div>
+      <span class="who">Riverbend Family Dental — knowledge base</span>
+      <span class="sim-tag">SIMULATED</span>
+      <em id="hdrTime">—</em>
+    </header>
+    <div class="tabs" role="tablist" aria-label="Demo scenarios">
+      <button class="tab" role="tab" aria-selected="true" data-i="0">Insurance denial</button>
+      <button class="tab" role="tab" aria-selected="false" data-i="1">New-hire onboarding</button>
+      <button class="tab" role="tab" aria-selected="false" data-i="2">Patient-record boundary</button>
+    </div>
+    <div class="body">
+      <div class="thread" id="thread" role="log" aria-live="polite" aria-label="Simulated conversation"></div>
+    </div>
+    <div class="foot">
+      <button class="btn" id="play" type="button">Play scenario</button>
+      <span class="note" id="scenarioNote"></span>
+    </div>
+  </div>
+
+  <p class="cap">SIMULATED — every scenario on this page is scripted and pre-written, not a live product or
+    a live model call. Practice name, staff, and document names (Front-Desk-SOP.pdf, Billing-Playbook.pdf,
+    Front-Desk-Onboarding.pdf, Records-Release-Policy.pdf) are fictional, built to show the shape of
+    PraxisKB's cited-answer behavior described in STRATEGY.md §7 / site FAQ. Scenario 3 shows PraxisKB
+    correctly staying in scope — it answers from practice SOPs/policies and does not store or return
+    individual patient records, consistent with STRATEGY.md's own framing of the product (a knowledge base
+    built from SOPs, protocols, and insurance workflows) and its BAA-gated PHI handling (STRATEGY.md §6,
+    45 CFR §164.308(b)(1)). Nothing here represents a real practice, patient, or document.</p>
+</div>
+
+<script>
+(function () {
+  var PRACTICE = "Riverbend Family Dental";
+
+  var scenarios = [
+    {
+      label: "Insurance denial",
+      time: "Front desk · mid-morning",
+      lines: [
+        { t: "sys", x: "Front desk opens PraxisKB to check the SOP" },
+        { t: "staff", who: "Front Desk", x: "What's our process when an insurance claim comes back denied?" },
+        { t: "kb", x: "Front desk checks the denial code against the payer's EOB first [[Front-Desk-SOP.pdf, p.4]]. If it's a coding issue, route to Dr. Alvarez for a corrected claim before resubmitting [[Billing-Playbook.pdf, p.11]]. Patient gets a status call within 2 business days [[Patient-Comm-Policy.pdf, p.2]]." },
+        { t: "staff", who: "Front Desk", x: "And if the patient calls asking why it's taking so long?" },
+        { t: "kb", x: "Use the standard status-call script — acknowledge the delay, confirm we're actively working the claim, and repeat the 2-business-day commitment [[Patient-Comm-Policy.pdf, p.2]]. Don't quote a coverage outcome before the payer responds." }
+      ]
+    },
+    {
+      label: "New-hire onboarding",
+      time: "Practice manager · Monday morning",
+      lines: [
+        { t: "sys", x: "Practice manager prepping a new hire's first week" },
+        { t: "staff", who: "Practice Manager", x: "It's Maria's first week at the front desk — what does she need for day one?" },
+        { t: "kb", x: "Day-one checklist: PMS login plus a phone-script walkthrough [[Front-Desk-Onboarding.pdf, p.1]], the insurance-verification steps for new patients [[Front-Desk-SOP.pdf, p.2]], and the after-hours emergency triage script [[Patient-Comm-Policy.pdf, p.5]]. Full first-week schedule is in the onboarding doc." },
+        { t: "staff", who: "Practice Manager", x: "Where's the script for when a new patient calls to book?" },
+        { t: "kb", x: "New-patient booking script, with the required intake fields — insurance carrier, referral source, reason for visit [[Front-Desk-Onboarding.pdf, p.3]]." }
+      ]
+    },
+    {
+      label: "Patient-record boundary",
+      time: "New team member · compliance-flavored",
+      lines: [
+        { t: "sys", x: "A newer staff member tries a patient-specific lookup" },
+        { t: "staff", who: "Staff", x: "Can you pull up John Martinez's treatment history?" },
+        { t: "kb", x: "PraxisKB indexes practice SOPs, policies, and procedures — not individual patient charts or records. For a specific patient's treatment history, use your PMS (Dentrix / Open Dental). Here's the SOP for that lookup if you need the steps [[Front-Desk-SOP.pdf, p.1]]." },
+        { t: "staff", who: "Staff", x: "Got it. What about our policy on releasing records to another provider?" },
+        { t: "kb", x: "Records-release policy: written patient authorization is required before any transfer, logged on the release-tracking sheet [[Records-Release-Policy.pdf, p.1]]. That's a procedure question, so it's in scope — happy to help with more like it." }
+      ]
+    }
+  ];
+
+  var thread = document.getElementById("thread");
+  var playBtn = document.getElementById("play");
+  var hdrTime = document.getElementById("hdrTime");
+  var note = document.getElementById("scenarioNote");
+  var tabs = Array.prototype.slice.call(document.querySelectorAll(".tab"));
+  var active = 0;
+  var timers = [];
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function clearThread() {
+    timers.forEach(function (id) { clearTimeout(id); });
+    timers = [];
+    thread.innerHTML = "";
+  }
+
+  function appendWithCites(container, text) {
+    var re = /\[\[([^\]]+)\]\]/g;
+    var last = 0, m;
+    while ((m = re.exec(text))) {
+      if (m.index &gt; last) container.appendChild(document.createTextNode(text.slice(last, m.index)));
+      var cite = document.createElement("span");
+      cite.className = "cite";
+      cite.textContent = "📄 " + m[1];
+      container.appendChild(cite);
+      last = re.lastIndex;
+    }
+    if (last &lt; text.length) container.appendChild(document.createTextNode(text.slice(last)));
+  }
+
+  function lineNode(m) {
+    if (m.t === "sys") {
+      var s = document.createElement("div");
+      s.className = "sysline";
+      s.textContent = m.x;
+      return s;
+    }
+    var d = document.createElement("div");
+    d.className = "msg " + (m.t === "kb" ? "kb" : "staff");
+    var role = document.createElement("span");
+    role.className = "role";
+    role.textContent = m.t === "kb" ? "PraxisKB — SIMULATED" : m.who;
+    d.appendChild(role);
+    var body = document.createElement("span");
+    appendWithCites(body, m.x);
+    d.appendChild(body);
+    return d;
+  }
+
+  function render(i, animate) {
+    clearThread();
+    var sc = scenarios[i];
+    hdrTime.textContent = sc.time;
+    note.textContent = "Scenario " + (i + 1) + " of " + scenarios.length + " — scripted, not live";
+    if (!animate || reduce) {
+      sc.lines.forEach(function (m) { thread.appendChild(lineNode(m)); });
+      thread.scrollTop = thread.scrollHeight;
+      playBtn.textContent = "Play scenario";
+      return;
+    }
+    playBtn.textContent = "Replay scenario";
+    var delay = 0;
+    sc.lines.forEach(function (m) {
+      var wait = m.t === "sys" ? 400 : Math.min(2200, 500 + String(m.x).length * 9);
+      timers.push(setTimeout(function () {
+        thread.appendChild(lineNode(m));
+        thread.scrollTop = thread.scrollHeight;
+      }, delay));
+      delay += wait;
+    });
+  }
+
+  function selectTab(i) {
+    tabs.forEach(function (b, bi) {
+      b.setAttribute("aria-selected", String(bi === i));
+    });
+    active = i;
+  }
+
+  tabs.forEach(function (btn, i) {
+    btn.addEventListener("click", function () {
+      selectTab(i);
+      render(active, true);
+    });
+  });
+
+  playBtn.addEventListener("click", function () { render(active, true); });
+
+  selectTab(0);
+  render(0, false);
+})();
+</script>
+</body>
+</html>

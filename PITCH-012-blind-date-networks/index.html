@@ -1,0 +1,457 @@
+<meta charset="utf-8">
+<title>OneGoodIntro — One well-vetted introduction, not a directory</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Concierge-curated introductions for pre-seed San Diego founders. One human-vetted intro to an investor, advisor, or peer. $150 flat.">
+<style>
+  
+  :root {
+    --ink: #221a12;
+    --paper: #f8f2e5;
+    --paper-2: #efe4cc;
+    --accent: #9c4519;
+    --accent-2: #3f6a5e;
+    --line: #dbcda8;
+    --muted: #6b5d47;
+    --card: #fffdf7;
+    --danger-bg: #f3e3c9;
+    --danger-line: #8a4b13;
+    --radius: 2px;
+    --didone: Didot, "Bodoni MT", "Noto Serif Display", "URW Palladio L", P052, Sylfaen, serif;
+    --serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+    --sans: system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  :root[data-theme="dark"] {
+    --ink: #ece2cd;
+    --paper: #16110a;
+    --paper-2: #1e1710;
+    --accent: #e2884a;
+    --accent-2: #7fb3a3;
+    --line: #382c1c;
+    --muted: #b8a888;
+    --card: #201a12;
+    --danger-bg: #241a0f;
+    --danger-line: #c97a3d;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #ece2cd;
+      --paper: #16110a;
+      --paper-2: #1e1710;
+      --accent: #e2884a;
+      --accent-2: #7fb3a3;
+      --line: #382c1c;
+      --muted: #b8a888;
+      --card: #201a12;
+      --danger-bg: #241a0f;
+      --danger-line: #c97a3d;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 1.05rem;
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, .btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+  .col { max-width: 42rem; margin: 0 auto; padding: 0 22px; }
+
+  
+  .concept-banner {
+    display: block;
+    text-align: center;
+    font-family: var(--sans);
+    font-weight: 600;
+    letter-spacing: .05em;
+    font-size: 12.5px;
+    line-height: 1.5;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: var(--paper-2);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    padding: 10px 16px;
+  }
+  .concept-banner strong { color: var(--ink); font-weight: 800; }
+
+  
+  .letterhead {
+    padding: 46px 0 26px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px 20px;
+    border-top: 1px solid var(--line);
+    border-bottom: 3px double var(--line);
+    margin-bottom: 34px;
+  }
+  .seal {
+    display: inline-block;
+    border: 1px solid var(--accent);
+    padding: 7px 11px;
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .32em;
+    text-transform: uppercase;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .letterhead-main { text-align: right; }
+  .wordmark {
+    font-family: var(--didone);
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    margin: 0 0 4px;
+    text-align: right;
+  }
+  .folio {
+    font-family: var(--sans);
+    font-size: 12px;
+    letter-spacing: .05em;
+    color: var(--muted);
+    margin: 0;
+    text-align: right;
+  }
+  header.hero { padding-bottom: 44px; }
+  .hero h1 {
+    font-family: var(--didone);
+    font-weight: 400;
+    font-size: clamp(28px, 6vw, 44px);
+    line-height: 1.18;
+    text-align: center;
+    margin: 0 0 22px;
+    text-wrap: balance;
+  }
+  .hero h1 em { color: var(--accent); font-style: italic; }
+  .hero p.lead {
+    font-size: 1.15rem;
+    color: var(--muted);
+    max-width: 46ch;
+    margin: 0 auto 30px;
+    text-align: center;
+  }
+  .cta-row { display: flex; gap: 22px; flex-wrap: wrap; justify-content: center; }
+  .btn {
+    display: inline-block;
+    padding: 11px 4px 9px;
+    text-decoration: none;
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: 13.5px;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    border: none;
+    border-bottom: 2px solid var(--accent);
+    color: var(--ink);
+    background: transparent;
+    min-height: 44px;
+  }
+  .btn-primary { color: var(--accent); }
+  .btn-secondary { color: var(--muted); border-bottom-color: var(--line); }
+
+  section { padding: 50px 0; border-bottom: 1px solid var(--line); }
+  section:last-of-type { border-bottom: none; }
+  .salutation {
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--muted);
+    font-size: .98rem;
+    margin: 0 0 6px;
+  }
+  h2.section-title {
+    font-family: var(--didone);
+    font-weight: 400;
+    font-size: 1.9rem;
+    margin: 0 0 10px;
+  }
+  p.section-sub { color: var(--muted); max-width: 60ch; margin: 0 0 30px; }
+
+  
+  .entries { display: flex; flex-direction: column; gap: 26px; }
+  .entry { padding: 0 0 0 18px; border-left: 2px solid var(--line); }
+  .entry .label {
+    display: block;
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .entry h3 { margin: 0 0 6px; font-size: 1.05rem; font-family: var(--serif); font-weight: 700; }
+  .entry p { margin: 0; color: var(--ink); }
+  .entry .cite { color: var(--muted); font-size: .82rem; }
+
+  .dropcap:first-letter {
+    font-family: var(--didone);
+    color: var(--accent);
+    font-size: 3.3rem;
+    line-height: .78;
+    float: left;
+    padding: 4px 8px 0 0;
+  }
+
+  
+  ol.steps { list-style: none; counter-reset: step; margin: 0; padding: 0; }
+  .step {
+    counter-increment: step;
+    display: grid;
+    grid-template-columns: 2.6rem 1fr;
+    gap: 14px;
+    padding: 16px 0;
+    border-bottom: 1px dashed var(--line);
+  }
+  .step:last-child { border-bottom: none; }
+  .step::before {
+    content: counter(step, upper-roman);
+    font-family: var(--didone);
+    font-size: 1.15rem;
+    color: var(--accent);
+    text-align: right;
+  }
+  .step h4 { margin: 0 0 4px; font-size: 1rem; font-family: var(--serif); font-weight: 700; }
+  .step p { margin: 0; color: var(--muted); }
+
+  
+  p.arrangement-lede { font-size: 1.05rem; margin: 0 0 26px; }
+  .table-wrap { overflow-x: auto; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
+  table { width: 100%; min-width: 480px; border-collapse: collapse; font-size: .95rem; }
+  th, td { text-align: left; padding: 14px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th {
+    font-family: var(--sans); font-weight: 700; font-size: 11px;
+    text-transform: uppercase; letter-spacing: .06em; color: var(--muted);
+  }
+  tr:last-child td { border-bottom: none; }
+  .price { font-family: var(--didone); font-size: 1.5rem; font-weight: 400; font-variant-numeric: tabular-nums; }
+  .price small { font-size: .78rem; font-family: var(--serif); font-weight: 400; color: var(--muted); }
+  .cite { font-size: .82rem; color: var(--muted); }
+
+  
+  .enclosure {
+    border: 1px solid var(--line);
+    padding: 26px 24px;
+    background: var(--card);
+  }
+  .enclosure .tag {
+    display: inline-block;
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--danger-line);
+    border: 1px solid var(--danger-line);
+    padding: 3px 10px;
+    margin-bottom: 14px;
+  }
+
+  
+  footer.closing {
+    padding: 60px 0 70px;
+    text-align: center;
+  }
+  footer.closing h2 { font-family: var(--didone); font-weight: 400; font-size: 1.7rem; margin-bottom: 12px; }
+  footer.closing p { color: var(--muted); margin-bottom: 24px; max-width: 48ch; margin-left: auto; margin-right: auto; }
+  .signature {
+    font-family: var(--didone);
+    font-style: italic;
+    font-size: 1.05rem;
+    margin: 30px 0 22px;
+  }
+  .ask-note {
+    max-width: 46ch; margin: 22px auto 0; font-size: .82rem; color: var(--muted);
+  }
+
+  
+  .internal-section {
+    background: var(--danger-bg);
+    border-top: 3px solid var(--danger-line);
+    padding: 54px 0 64px;
+  }
+  .internal-banner {
+    display: inline-block;
+    font-family: var(--sans);
+    background: var(--danger-line);
+    color: var(--paper);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    font-size: 11.5px;
+    padding: 5px 12px;
+    margin-bottom: 16px;
+  }
+  .internal-section h2 { font-family: var(--didone); font-weight: 400; font-size: 1.6rem; margin: 0 0 6px; }
+  .internal-section &gt; .col &gt; p.sub { color: var(--muted); margin-bottom: 28px; max-width: 66ch; }
+  .ip-block {
+    background: var(--card);
+    border: 1px solid var(--danger-line);
+    padding: 20px 22px;
+    margin-bottom: 18px;
+  }
+  .ip-block h3 {
+    font-family: var(--serif); font-size: 1.05rem; margin: 0 0 10px; color: var(--danger-line);
+  }
+  .ip-block ul { margin: 8px 0; padding-left: 20px; }
+  .ip-block li { margin-bottom: 6px; font-size: .92rem; }
+  .ip-block p { font-size: .92rem; margin: 8px 0; }
+  .kill-list { border-color: var(--danger-line); }
+  .verdict-line {
+    font-family: var(--serif); font-size: 1.05rem; font-weight: 700; color: var(--danger-line);
+    margin-top: 20px;
+  }
+  code.cite-inline { font-size: .78rem; background: var(--paper-2); padding: 1px 6px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
+  }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
+
+
+
+<header class="hero">
+  <div class="col">
+    <div class="letterhead">
+      <span class="seal">OGI</span>
+      <div class="letterhead-main">
+        <p class="wordmark">OneGoodIntro</p>
+        <p class="folio">A letter of introduction · San Diego · early-access</p>
+      </div>
+    </div>
+    <h1>Not a directory. <em>One</em> well-vetted introduction.</h1>
+    <p class="lead">A concierge intro service for San Diego founders who are past the "browse a directory" stage and want one human-checked warm intro — to an investor, advisor, or peer founder — sourced through real local networks, not a database.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="#ask">Request the pilot ask</a>
+      <a class="btn btn-secondary" href="#demo">See how a match works</a>
+    </div>
+  </div>
+</header>
+
+<section id="what">
+  <div class="col">
+    <p class="salutation">First, plainly—</p>
+    <h2 class="section-title">What it is</h2>
+    <p class="section-sub dropcap">A single curated introduction, made by a person who knows both sides — not a swipe deck, not a self-serve directory, not a membership you pay into and hope pays off.</p>
+    <div class="entries">
+      <div class="entry">
+        <span class="label">Opt-in only</span>
+        <h3>Consent-first, always</h3>
+        <p>Every person in the pool joined on purpose. Nobody is scraped, imported, or "found" without asking first. A person we haven't gotten a yes from is a lead, never a match.</p>
+      </div>
+      <div class="entry">
+        <span class="label">Human-made</span>
+        <h3>A person reads both sides</h3>
+        <p>No algorithm decides the match. A human who has actually talked to both people proposes the pairing and explains, in plain language, why it makes sense.</p>
+      </div>
+      <div class="entry">
+        <span class="label">One-time, not a subscription</span>
+        <h3>Pay for the intro, not a seat</h3>
+        <p>$150, once, when you get your intro. No monthly fee, no annual dues, no membership tier to justify re-upping.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="who">
+  <div class="col">
+    <p class="salutation">This is meant for—</p>
+    <h2 class="section-title">Who it's for</h2>
+    <p class="section-sub">Pre-seed and bootstrapped San Diego-area founders and solo operators — people below the revenue thresholds that gate the existing peer networks, who want one specific, well-vetted connection instead of a membership they can't yet justify.</p>
+    <div class="entries">
+      <div class="entry">
+        <h3>Founders below the EO / YPO line</h3>
+        <p>Entrepreneurs' Organization requires at least $1M in annual revenue to join; YPO requires $16M+ in revenue or 50+ full-time employees. <span class="cite">[sourced, eonetwork.org/membership &amp; ypo.org/membership, fetched 2026-07-29]</span> Everyone below those lines is currently served by nothing built for curated, one-off intros.</p>
+      </div>
+      <div class="entry">
+        <h3>Investors and advisors willing to meet one good founder</h3>
+        <p>Not a pitch-deck inbox to manage — one specific, pre-vetted conversation at a time, sourced through a real co-working hub or builder circle, not a cold-outreach list.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="col">
+    <p class="salutation">Here is exactly how it goes—</p>
+    <h2 class="section-title">How it works</h2>
+    <p class="section-sub">Four steps, no software, no self-serve browsing.</p>
+    <ol class="steps">
+      <li class="step">
+        <div><h4>You tell us the one connection you actually need</h4><p>Not "investors in general" — the specific kind of person and conversation that would move things forward right now.</p></div>
+      </li>
+      <li class="step">
+        <div><h4>We check our opt-in pool</h4><p>Sourced from co-working hubs, builder communities, and direct referral — never scraped, never cold-added.</p></div>
+      </li>
+      <li class="step">
+        <div><h4>A human proposes the match and why</h4><p>Both sides get a short, honest reasoning note before anyone agrees to anything.</p></div>
+      </li>
+      <li class="step">
+        <div><h4>Both sides say yes — then you meet</h4><p>No intro happens without both people opting in a second time, at the actual moment of connection.</p></div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="col">
+    <p class="salutation">On the matter of the fee—</p>
+    <h2 class="section-title">The arrangement</h2>
+    <p class="arrangement-lede section-sub">Flat, one-time, no membership.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Plan</th><th>Price</th><th>Who it's for</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Single intro</strong></td>
+            <td><span class="price">$150 <small>/ one intro</small></span></td>
+            <td>An individual founder who wants one specific, well-vetted connection.</td>
+          </tr>
+          <tr>
+            <td><strong>Hub partner (white-label)</strong></td>
+            <td><span class="price">$300–500 <small>/ mo</small></span></td>
+            <td>A co-working space or community that wants curated intros offered as a member perk, under its own brand.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="cite" style="margin-top:14px;">Pricing derived from professional-services time-value conventions ($150–250/hr) applied to a founder's own search time, and from the "heavier platform" subscription band ($300–900+/mo, bespoke/high-touch services), adapted for a concierge model. <em>[derived, unverified hourly-value convention — see internal plan below for the full caveat]</em></p>
+  </div>
+</section>
+
+<section id="demo">
+  <div class="col">
+    <p class="salutation">A specimen, so you can see it—</p>
+    <h2 class="section-title">A demonstration</h2>
+    <p class="section-sub">Two simulated match scenarios — a founder asking for an investor intro, and an investor's advisory offer being matched to a founder. Every name and message below is invented for illustration.</p>
+    <div class="enclosure">
+      
+      <p style="margin:0 0 16px;">Full scripted walkthrough, both sides of a match, with the human's reasoning shown at each step.</p>
+      <a class="btn btn-primary" href="./media/demo.html">Open the simulated demo →</a>
+    </div>
+  </div>
+</section>
+
+<footer class="closing" id="ask">
+  <div class="col">
+    <h2>One ask, nothing else.</h2>
+    <p>We're not asking you to sign anything. We're asking for a 20-minute pilot conversation to test one real match.</p>
+    <p class="signature">— OneGoodIntro</p>
+    <a class="btn btn-primary" href="mailto:PLACEHOLDER@onegoodintro.example">Book a 20-minute pilot conversation</a>
+    <p class="ask-note">Contact address shown is a placeholder — this is a early-access pitch artifact, not a live inbox. See PITCH.md for the real next step.</p>
+  </div>
+</footer>
+
+

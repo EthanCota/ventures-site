@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Steady Grants — grant drafts grounded in your own documents</title>
+<style>
+  :root{
+    --paper:#FAF8F3; --card:#FFFFFF; --card-2:#F1ECDD; --ink:#1C2618; --ink-2:#3F4A38;
+    --line:#D9D2BD; --accent:#2F5233; --accent-ink:#FFFFFF; --accent-tint:#E4EDE1;
+    --good:#256A34; --warn-bg:#F6E6D2; --warn-ink:#3A2A0A; --warn-line:#A9631A;
+    --danger:#8A2E22; --band-bg:#1C2618; --band-ink:#F3EEDD; --band-line:#A9631A;
+    --shadow: 0 2px 10px rgba(28,38,24,0.07);
+    --radius: 8px;
+    --focus: 3px solid #A9631A;
+  }
+  :root[data-theme="dark"]{
+    --paper:#12160E; --card:#1A2014; --card-2:#212A18; --ink:#EDEAD9; --ink-2:#B9C0A9;
+    --line:#33402A; --accent:#9FCE9D; --accent-ink:#0F1A0E; --accent-tint:#22301F;
+    --good:#8FC08D; --warn-bg:#2E2210; --warn-ink:#FFE6BE; --warn-line:#E3A15A;
+    --danger:#E2897B; --band-bg:#EDEAD9; --band-ink:#12160E; --band-line:#A9631A;
+    --shadow: 0 2px 10px rgba(0,0,0,0.5);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#12160E; --card:#1A2014; --card-2:#212A18; --ink:#EDEAD9; --ink-2:#B9C0A9;
+      --line:#33402A; --accent:#9FCE9D; --accent-ink:#0F1A0E; --accent-tint:#22301F;
+      --good:#8FC08D; --warn-bg:#2E2210; --warn-ink:#FFE6BE; --warn-line:#E3A15A;
+      --danger:#E2897B; --band-bg:#EDEAD9; --band-ink:#12160E; --band-line:#A9631A;
+      --shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important; }
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);}
+  body{font-family:'Segoe UI',system-ui,'Helvetica Neue',Helvetica,Arial,sans-serif; line-height:1.55; overflow-x:hidden;}
+  h1,h2,h3,h4{font-family:'Segoe UI',system-ui,'Helvetica Neue',Helvetica,Arial,sans-serif; font-weight:700; letter-spacing:-0.005em; color:var(--ink); margin:0 0 .5em; text-wrap:balance;}
+  p{margin:0 0 1em; max-width:70ch;}
+  a{color:var(--accent);}
+  a:focus-visible, button:focus-visible, summary:focus-visible, details:focus-visible{outline:var(--focus); outline-offset:2px;}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 20px;}
+  .doc{max-width:760px;}
+  img{max-width:100%; display:block;}
+  .skip-link{ position:absolute; left:-9999px; top:0; background:var(--card); color:var(--ink); padding:10px 16px; z-index:200; border:1px solid var(--line); }
+  .skip-link:focus{ left:10px; top:10px; }
+
+  
+  #concept-banner{
+    position:sticky; top:0; z-index:100; background:var(--band-bg); color:var(--band-ink);
+    border-bottom:3px solid var(--band-line); font-size:13.5px; font-weight:600;
+    text-align:center; padding:9px 14px; letter-spacing:.01em;
+  }
+  #concept-banner .flag{ display:inline-block; margin-right:6px;}
+  #concept-banner b{ font-weight:800; }
+
+  
+  header.program-header{ background:var(--card); border-bottom:1px solid var(--line); padding:20px 0; }
+  .program-id{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+  .program-id .agency{ font-size:12.5px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-2); }
+  .program-id .name{ font-size:19px; font-weight:800; letter-spacing:-0.01em; }
+  .program-tag{ margin-top:6px; font-size:14px; color:var(--ink-2); }
+
+  
+  .page{ display:grid; grid-template-columns:210px 1fr; gap:40px; padding:36px 0 0; align-items:start; }
+  @media (max-width:979px){ .page{ grid-template-columns:1fr; } }
+  nav.toc{ position:sticky; top:56px; align-self:start; font-size:13.5px; }
+  nav.toc .toc-label{ text-transform:uppercase; letter-spacing:.08em; font-size:11px; font-weight:700; color:var(--ink-2); margin-bottom:10px; }
+  nav.toc ol{ list-style:none; margin:0; padding:0; border-left:2px solid var(--line); }
+  nav.toc li{ margin-bottom:2px; }
+  nav.toc a{ display:block; padding:6px 0 6px 14px; color:var(--ink-2); text-decoration:none; border-left:2px solid transparent; margin-left:-2px; }
+  nav.toc a:hover, nav.toc a:focus-visible{ color:var(--ink); border-left-color:var(--accent); }
+  @media (max-width:979px){
+    nav.toc{ position:static; border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px; background:var(--card); }
+    nav.toc ol{ border-left:none; display:flex; flex-wrap:wrap; gap:4px 14px; }
+    nav.toc a{ padding:2px 0; border-left:none; }
+  }
+
+  main.doc-col{ min-width:0; padding-bottom:60px; }
+  section{ padding:38px 0; border-top:1px solid var(--line); scroll-margin-top:56px; }
+  section.first{ border-top:none; padding-top:0; }
+  .eyebrow{ text-transform:uppercase; font-size:11.5px; font-weight:700; letter-spacing:.08em; color:var(--ink-2); margin-bottom:10px; }
+  h2{ font-size:clamp(21px,2.6vw,26px); max-width:32ch; }
+  .lede{ font-family:Georgia,'Times New Roman',serif; font-size:16.5px; color:var(--ink-2); max-width:65ch; }
+
+  
+  .summary-box{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; }
+  .summary-box .sb-head{ background:var(--card-2); padding:12px 20px; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:var(--ink-2); border-bottom:1px solid var(--line); }
+  .summary-box dl{ margin:0; padding:20px; display:grid; gap:16px; }
+  .summary-box dt{ font-weight:700; font-size:14px; margin-bottom:4px; }
+  .summary-box dd{ margin:0; color:var(--ink-2); font-size:15px; }
+  .summary-actions{ display:flex; gap:12px; flex-wrap:wrap; padding:0 20px 20px; }
+
+  .btn{ font-family:'Segoe UI',system-ui,sans-serif; font-weight:700; font-size:14.5px; padding:11px 18px; border-radius:6px; border:1.5px solid var(--accent); cursor:pointer; text-decoration:none; display:inline-block; }
+  .btn-primary{ background:var(--accent); color:var(--accent-ink); }
+  .btn-ghost{ background:transparent; border-color:var(--line); color:var(--ink); }
+  .btn:hover{ filter:brightness(0.97); }
+
+  
+  .icp-list{ list-style:none; margin:20px 0 0; padding:0; display:grid; gap:10px; }
+  .icp-list li{ display:flex; gap:12px; align-items:flex-start; background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:13px 15px; font-size:15px; }
+  .icp-list li .mark{ color:var(--good); font-weight:800; flex:none; }
+  .icp-list .not{ opacity:.92; }
+  .icp-list .not .mark{ color:var(--danger); }
+
+  
+  .process{ margin-top:22px; display:grid; gap:14px; }
+  .process .step{ display:grid; grid-template-columns:40px 1fr; gap:16px; background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:16px 18px; }
+  .process .step .num{ font-weight:800; font-size:16px; color:var(--accent); border:1.5px solid var(--accent); border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center; }
+  .process .step h3{ font-size:15.5px; margin-bottom:6px; }
+  .process .step p{ color:var(--ink-2); font-size:14.5px; margin-bottom:0; }
+
+  
+  .table-scroll{ overflow-x:auto; border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); min-width:0; }
+  table{ width:100%; min-width:460px; border-collapse:collapse; font-size:14.5px; }
+  th,td{ text-align:left; padding:12px 16px; border-bottom:1px solid var(--line); }
+  thead th{ background:var(--card-2); font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-2); font-weight:700; }
+  tbody tr:last-child td{ border-bottom:none; }
+  tbody tr:nth-child(2){ background:var(--accent-tint); }
+  td.num{ font-variant-numeric:tabular-nums; }
+  .fee-band{ display:grid; grid-template-columns:1fr; gap:18px; margin-top:20px; align-items:start; }
+  @media (min-width:760px){ .fee-band{ grid-template-columns:1.1fr 0.9fr; } }
+  .ethics-note{ background:var(--warn-bg); border:1px solid var(--warn-line); border-radius:var(--radius); padding:16px 18px; min-width:0; }
+  .ethics-note .glyph{ font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; color:var(--warn-ink); display:block; margin-bottom:6px; }
+  .ethics-note p{ margin:0; font-size:14px; color:var(--warn-ink); }
+  .ethics-note strong{ display:block; margin-bottom:4px; font-size:14.5px; }
+  .setup-note{ margin-top:10px; font-size:13.5px; color:var(--ink-2); }
+
+  .breakeven{ margin-top:26px; background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:20px; box-shadow:var(--shadow); min-width:0; }
+  .breakeven h3{ font-size:15px; margin-bottom:16px; }
+  .bar-row{ display:grid; grid-template-columns:150px 1fr 100px; gap:10px; align-items:center; margin-bottom:12px; font-size:13.5px; }
+  @media (max-width:520px){ .bar-row{ grid-template-columns:1fr; } .bar-val{ text-align:left; } }
+  .bar-row .label{ color:var(--ink-2); }
+  .bar-track{ background:var(--card-2); border-radius:4px; height:18px; overflow:hidden; min-width:0; }
+  .bar-fill{ height:100%; }
+  .bar-fill.steady{ background:var(--accent); }
+  .bar-fill.foundation{ background:#A9631A; }
+  .bar-fill.federal{ background:#8a4a2a; }
+  .bar-val{ text-align:right; font-variant-numeric:tabular-nums; font-weight:700; }
+  .breakeven .foot{ font-size:12.5px; color:var(--ink-2); margin-top:8px; margin-bottom:0; }
+
+  
+  .demo-panel{ margin-top:20px; background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; min-width:0; }
+  .demo-panel .demo-head{ background:var(--card-2); padding:13px 18px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; border-bottom:1px solid var(--line); }
+  .demo-panel .demo-head b{ font-size:13.5px; }
+  .sim-tag{ font-size:10.5px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; background:var(--warn-bg); color:var(--warn-ink); border:1px solid var(--warn-line); padding:3px 9px; border-radius:4px; }
+  .demo-panel .demo-body{ padding:18px; min-width:0; }
+  .demo-panel iframe{ width:100%; height:560px; border:0; display:block; background:var(--card); }
+  .demo-links{ display:flex; gap:12px; flex-wrap:wrap; margin-top:14px; }
+
+  
+  .faq details{ background:var(--card); border:1px solid var(--line); border-radius:6px; padding:2px 16px; margin-bottom:10px; }
+  .faq summary{ cursor:pointer; font-weight:700; padding:14px 0; list-style:none; display:flex; justify-content:space-between; gap:12px; align-items:center; font-size:15px; }
+  .faq summary::-webkit-details-marker{ display:none; }
+  .faq summary::after{ content:"+"; font-size:19px; color:var(--accent); flex:none; }
+  .faq details[open] summary::after{ content:"\2212"; }
+  .faq .a{ padding:0 0 16px; color:var(--ink-2); font-size:14.5px; }
+  .faq .cite{ font-size:12px; color:var(--ink-2); opacity:.85; }
+
+  
+  .kill-grid{ display:grid; gap:10px; margin-top:20px; }
+  .kill-grid .row{ display:flex; gap:14px; background:var(--card); border:1px solid var(--line); border-radius:6px; padding:13px 15px; font-size:14.5px; }
+  .kill-grid .n{ font-weight:800; color:var(--accent); flex:none; }
+
+  
+  .interest-box{ background:var(--card); border:1.5px solid var(--accent); border-radius:var(--radius); padding:26px 24px; }
+  .interest-box h2{ margin-bottom:10px; }
+  .interest-box p{ color:var(--ink-2); }
+  .cta-note{ margin-top:14px; font-size:13px; color:var(--ink-2); }
+
+  footer.site-footer{ padding:30px 0 50px; font-size:13px; color:var(--ink-2); border-top:1px solid var(--line); }
+  .sources{ margin-top:10px; font-size:12.5px; color:var(--ink-2); }
+  .sources ol{ padding-left:18px; margin:8px 0 0; }
+  .sources li{ margin-bottom:4px; }
+
+  
+  #internal{ background:var(--band-bg); color:var(--band-ink); border-top:none; }
+  #internal .internal-flag{ background:var(--band-bg); color:var(--band-ink); border-top:3px solid var(--band-line); border-bottom:3px solid var(--band-line); text-align:center; padding:10px 14px; font-weight:700; font-size:13.5px; letter-spacing:.01em; margin:0 0 34px; }
+  #internal .wrap &gt; h2{ color:var(--band-ink); }
+  #internal .lede{ color:var(--band-ink); opacity:.85; }
+  #internal h3{ color:var(--band-ink); margin-top:32px; }
+  #internal .ip-card{ background:rgba(160,150,110,0.12); border:1px solid var(--band-line); border-radius:8px; padding:16px 18px; margin-top:12px; }
+  #internal .ip-card p, #internal .ip-card li{ color:var(--band-ink); opacity:.92; font-size:14px; }
+  #internal .ip-card strong{ color:var(--band-ink); opacity:1; }
+  #internal table{ font-size:13px; }
+  #internal th, #internal td{ border-color:var(--band-line); color:var(--band-ink); opacity:.92; }
+  #internal thead th{ background:rgba(160,150,110,0.14); color:var(--band-ink); opacity:.85; }
+  #internal .table-scroll{ border-color:var(--band-line); box-shadow:none; }
+  #internal .flag-item{ display:flex; gap:10px; margin-bottom:10px; }
+  #internal .flag-item .dot{ flex:none; color:var(--band-line); font-weight:800; }
+  #internal .taglist span{ display:inline-block; font-size:11px; font-weight:700; padding:2px 8px; border-radius:99px; border:1px solid var(--band-line); margin:2px 4px 2px 0; }
+</style>
+</head>
+<body><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+
+<header class="program-header">
+  <div class="wrap program-id">
+    <span class="agency">Program page</span>
+    <span class="name">Steady Grants</span>
+  </div>
+  <div class="wrap program-tag">Grant copilot for small nonprofits — San Diego County</div>
+</header>
+
+<div class="wrap page">
+  <nav class="toc" aria-label="On this page">
+    <div class="toc-label">On this page</div>
+    <ol>
+      <li><a href="#summary">Summary</a></li>
+      <li><a href="#who">Eligibility</a></li>
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#pricing">Fees</a></li>
+      <li><a href="#demo">Simulated demo</a></li>
+      <li><a href="#faq">Questions</a></li>
+      <li><a href="#kill">What would change our mind</a></li>
+      <li><a href="#cta">Express interest</a></li>
+    </ol>
+  </nav>
+
+  <main class="doc-col" id="main">
+
+    <section class="first" id="summary" aria-labelledby="summary-h">
+      <h1 id="summary-h" class="sr-only" style="position:absolute;left:-9999px;">Steady Grants program summary</h1>
+      <div class="summary-box">
+        <div class="sb-head">Plain-language summary</div>
+        <dl>
+          <div>
+            <dt>What this is</dt>
+            <dd>Steady Grants scans your organization's real mission statements, budgets, program reports, and past proposals — then finds matching grants and assembles a first draft in your voice, ready for you to review and submit.</dd>
+          </div>
+          <div>
+            <dt>Who it's for</dt>
+            <dd>A small San Diego-County nonprofit where one person does everything, including the grant application — see the eligibility checklist below.</dd>
+          </div>
+          <div>
+            <dt>What it costs</dt>
+            <dd>Flat setup fee, flat monthly price. No commission, ever — not a percentage of your award, under any tier.</dd>
+          </div>
+        </dl>
+        <div class="summary-actions">
+          <a class="btn btn-primary" href="#demo">See the simulated demo</a>
+          <a class="btn btn-ghost" href="#cta">Request a pilot slot</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="who" aria-labelledby="who-h">
+      <div class="eyebrow">Eligibility</div>
+      <h2 id="who-h">Built for the org where one person does everything, including the grant application.</h2>
+      <p class="lede">Steady Grants is built for a specific buyer, not "every nonprofit" — that specificity is deliberate.</p>
+      <ul class="icp-list">
+        <li><span class="mark">✓</span><div>A San Diego-County 501(c)(3) with an annual operating budget roughly <strong>$100K–$500K</strong> and no dedicated grant-writing staff — the executive director, a program manager, or an outside contractor writes the proposals today.<sup><a href="#src-4">4</a></sup></div></li>
+        <li><span class="mark">✓</span><div>Applies to <strong>2–4 foundation or local/regional grants a year</strong> and already has some digitized paperwork — a mission statement, a past annual report, budgets, even a rejected prior application, scattered across email or a shared drive.</div></li>
+        <li><span class="mark">✓</span><div>Wants a professionally drafted first pass without paying $1,500–$5,000 for a single foundation proposal, or $5,000–$15,000+ for a federal one.<sup><a href="#src-1">1</a></sup></div></li>
+        <li class="not"><span class="mark">✗</span><div>Not a fit yet: orgs applying primarily for <strong>federal</strong> grants (AI-disclosure rules there are still an open compliance question — see Program file below), or orgs with essentially no digitized documents to ground a draft in.</div></li>
+      </ul>
+    </section>
+
+    <section id="how" aria-labelledby="how-h">
+      <div class="eyebrow">How it works</div>
+      <h2 id="how-h">Three steps, one grounded org profile.</h2>
+      <div class="process">
+        <div class="step">
+          <span class="num">1</span>
+          <div>
+            <h3>Discovery scan</h3>
+            <p>Matches your mission, program area, and geography against open foundation and local/regional grant opportunities, ranked by fit — not a generic RFP firehose.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="num">2</span>
+          <div>
+            <h3>Document grounding</h3>
+            <p>Ingests your actual mission statements, budgets, program reports, and past proposals at setup, so drafts sound like your org, not a template. If a fact is missing, it asks you — it doesn't invent one.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="num">3</span>
+          <div>
+            <h3>First-draft assembly</h3>
+            <p>Produces a submission-ready first draft of narrative sections for you to review, edit, and submit yourself. Human finalizes and submits, always — never an autonomous auto-submit.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="pricing" aria-labelledby="pricing-h">
+      <div class="eyebrow">Fees</div>
+      <h2 id="pricing-h">Flat fee. Flat subscription. No percentage of your award — ever.</h2>
+      <p class="lede">$299 one-time setup covers document ingestion and building your org profile. Then a flat monthly price, no per-seat fees.</p>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Tier</th><th>Setup</th><th>Monthly</th><th>Includes</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Starter</td>
+              <td class="num">$299 one-time</td>
+              <td class="num">$49/mo</td>
+              <td>Grant opportunity discovery scan; 1 assisted draft/month; core document grounding. Built for orgs at the lower end of the budget band.</td>
+            </tr>
+            <tr>
+              <td>Growth <span style="font-weight:700; color:var(--accent); font-size:12px;">— most orgs choose this</span></td>
+              <td class="num">$299 one-time</td>
+              <td class="num">$99/mo</td>
+              <td>Everything in Starter, plus up to 3 assisted drafts/month and deeper document ingestion, including org "voice" tuning.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="setup-note">Both tiers share the same $299 one-time setup fee, which covers document ingestion and building your org profile.</p>
+
+      <div class="fee-band">
+        <div class="breakeven">
+          <h3>Where Steady Grants pays for itself</h3>
+          <div class="bar-row"><div class="label">Steady Grants, 1 year</div><div class="bar-track"><div class="bar-fill steady" style="width:9.9%"></div></div><div class="bar-val">$887–$1,487</div></div>
+          <div class="bar-row"><div class="label">1 foundation proposal</div><div class="bar-track"><div class="bar-fill foundation" style="width:32%"></div></div><div class="bar-val">$1,500–$5,000</div></div>
+          <div class="bar-row"><div class="label">1 federal proposal</div><div class="bar-track"><div class="bar-fill federal" style="width:100%"></div></div><div class="bar-val">$5,000–$15,000+</div></div>
+          <p class="foot">Bars scaled to the $15,000 federal-proposal ceiling. Steady Grants' full first-year cost (setup + 12 months) is less than one typical foundation proposal fee — it pays for itself the first time it produces one usable draft, or covers roughly 12–20 hours of an ED's own drafting time at a $75/hr market rate.<sup><a href="#src-1">1</a></sup></p>
+        </div>
+        <div class="ethics-note">
+          <span class="glyph">Why flat-fee, always</span>
+          <strong>No percentage-of-award tier — not as an add-on, not as an option.</strong>
+          <p>The AFP Code of Ethical Standards and the Grant Professionals Association's own Code of Ethics both name percentage-of-funds-raised compensation as a violation members must never accept.<sup><a href="#src-2">2</a></sup> A tool priced any other way would ask your board's grant committee to work with a vendor they'd have to flag. We don't build that tier — not as an add-on, not as an option.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="demo" aria-labelledby="demo-h">
+      <div class="eyebrow">Simulated demo</div>
+      <h2 id="demo-h">What using it actually looks like.</h2>
+      <p class="lede">Three scripted, click-through scenarios — a discovery scan, a document-grounded draft interview, and a pipeline dashboard. Every screen is simulated with synthetic, illustrative data; nothing shown was generated by a real system.</p>
+      <div class="demo-panel">
+        <div class="demo-head"><b>Steady Grants — simulated product walkthrough</b><span class="sim-tag">Simulated · not a live product</span></div>
+        <div class="demo-body">
+          <iframe src="./media/demo-walkthrough.html" title="Steady Grants simulated product demo" loading="lazy"></iframe>
+          <div class="demo-links">
+            <a class="btn btn-ghost" href="./media/demo-walkthrough.html" target="_blank" rel="noopener">Open demo in a new tab</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq" aria-labelledby="faq-h">
+      <div class="eyebrow">Questions a board or ED should ask first</div>
+      <h2 id="faq-h">The five questions every ED asks first.</h2>
+      <div class="faq" style="margin-top:24px;">
+        <details>
+          <summary>Isn't this just AI writing our grant applications — will funders penalize us?</summary>
+          <div class="a">No. Steady Grants assembles a first draft grounded in your org's own real documents, for you to review, edit, and submit in your own voice — it never auto-submits anything. In Candid's own funder survey, 67% of funders are still undecided about AI-assisted applications and only 23% currently reject them outright; one funder in that survey specifically described AI assistance as helping under-resourced and non-native-English-speaking organizations "level the playing field." Steady Grants is built for the human-finalizes-and-submits side of that line. <span class="cite">Source: Candid funder survey, published 2024-08-14 — see Program file below for the full figure and its staleness flag.</span></div>
+        </details>
+        <details>
+          <summary>Grantable already does this and has a nonprofit discount at our size — why switch?</summary>
+          <div class="a">Grantable is real and we don't pretend otherwise. The difference is depth and posture: Steady Grants is built around deep ingestion of your organization's actual historical documents, not just chat-based drafting, plus San Diego-local service and an ethics-first pricing stance — not a longer feature list, a different relationship.</div>
+        </details>
+        <details>
+          <summary>Will you take a percentage of what we win, like some consultants push for?</summary>
+          <div class="a">No, and we never will. Flat setup fee plus flat monthly subscription, full stop. The AFP Code of Ethical Standards and the Grant Professionals Association's Code of Ethics both name percentage-of-funds compensation as the specific practice their members must refuse. A tool priced any other way would ask your organization to work with a vendor your own fundraising staff or board should distrust.</div>
+        </details>
+        <details>
+          <summary>Our documents aren't organized — scattered PDFs, old emails, a messy Drive folder. Can this even work?</summary>
+          <div class="a">Partially organized is fine — the setup fee specifically covers organizing scattered documents into a usable org profile. Essentially zero digital paper trail (no past proposals, no written program descriptions, no budget documents) is a genuinely poor fit today, and we'll tell you that honestly rather than take the setup fee anyway.</div>
+        </details>
+        <details>
+          <summary>Is there legal or compliance risk using AI for federal grant applications specifically?</summary>
+          <div class="a">Honestly: unresolved. Federal agencies appear to have diverging AI-disclosure policies that we have not independently verified against primary sources. That's exactly why Steady Grants is scoped to foundation and local/regional grants first — we won't make a federal-compliance claim we haven't checked. If your org applies primarily for federal funding, we're not positioned to serve you yet.</div>
+        </details>
+      </div>
+    </section>
+
+    <section id="kill" aria-labelledby="kill-h">
+      <div class="eyebrow">What would change our mind</div>
+      <h2 id="kill-h">We're stating our own conditions that would change our mind up front.</h2>
+      <p class="lede">A pitch that can't say what would falsify it isn't a serious one.</p>
+      <div class="kill-grid">
+        <div class="row"><span class="n">1</span><span>Fewer than 3 real SD-County EDs agree to a free pilot within a 4–6 week outreach window.</span></div>
+        <div class="row"><span class="n">2</span><span>Pilot drafts require more ED rewriting than starting from scratch — net negative time savings.</span></div>
+        <div class="row"><span class="n">3</span><span>A named competitor ships equivalent document-grounding and local positioning before our first pilot cohort finishes.</span></div>
+        <div class="row"><span class="n">4</span><span>The specific foundations our ICP relies on skew disproportionately toward the AI-rejecting funder cohort.</span></div>
+        <div class="row"><span class="n">5</span><span>No workable low/no-cost distribution channel materializes within the stated test budgets.</span></div>
+      </div>
+    </section>
+
+    <section id="cta" aria-labelledby="cta-h">
+      <div class="eyebrow">Express interest</div>
+      <div class="interest-box">
+        <h2 id="cta-h">One ask: a 15-minute pilot conversation.</h2>
+        <p>Not a purchase, not a signature — a short call with your ED or the person who currently writes your grant applications, to see if a free discovery scan and one draft is worth trying against a real upcoming deadline.</p>
+        <a class="btn btn-primary" href="mailto:hello@PLACEHOLDER-steadygrants.example">hello@PLACEHOLDER-steadygrants.example</a>
+        <div class="cta-note">Placeholder contact — Steady Grants has not launched and this address is not monitored.</div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="site-footer wrap">
+  <p>Steady Grants is a pitch concept prepared for evaluation purposes. No product exists yet; nothing here can be purchased or signed up for.</p>
+  <div class="sources">
+    <strong>Sources cited on this page</strong> (full detail in the Program file section below):
+    <ol>
+      <li id="src-1">Grant-writer market rate convergence across ~5 industry pages (goLance, Funding for Good, Instrumentl blog, freelancerates.net, Giddings Consulting) — unverified/convergent, fetched 2026-07-29.</li>
+      <li id="src-2">AFP Code of Ethical Standards §23–24, afpglobal.org/ethics/code-ethical-standards — sourced, quote-matched, fetched 2026-07-29. GPA Ethics FAQs Q32–33, grantprofessionals.org/page/ethicsfaqs — sourced, quote-matched, fetched 2026-07-29.</li>
+      <li id="src-3">Grantable pricing, grantable.co/pricing; Instrumentl pricing, instrumentl.com/pricing — sourced, quote-matched, fetched 2026-07-29.</li>
+      <li id="src-4">Candid, "very small nonprofits make up the majority," candid.org, published 2025-05-01 — sourced. USD Nonprofit Institute 2024 State of Nonprofits &amp; Philanthropy, via timesofsandiego.com, published 2025-01-28 — sourced (secondary coverage), STALE per rubric 1 (&gt;21 days old) — a newer 2025 State of Nonprofits and Philanthropy report exists and has not yet been reconciled against these figures.</li>
+    </ol>
+  </div>
+</footer>
+
+
+
+
+
+
+</body>
+</html>

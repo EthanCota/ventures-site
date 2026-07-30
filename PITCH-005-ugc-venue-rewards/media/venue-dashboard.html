@@ -1,0 +1,152 @@
+<meta charset="utf-8">
+<title>Fareloop — simulated venue dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --bg:#faf6f0; --ink:#241a12; --ink-soft:#5a4a3a; --card:#fff; --line:#e6d9c4;
+    --amber:#c2540f; --amber-ink:#7a3208; --teal:#0e5c56; --teal-ink:#0a3f3b; --gold:#c9932b;
+  }
+  :root[data-theme="dark"]{
+    --bg:#171310; --ink:#f3ead9; --ink-soft:#cbb99e; --card:#231d17; --line:#3a2f22;
+    --amber:#e07a34; --amber-ink:#ffcfa8; --teal:#3fb8ac; --teal-ink:#bdf0e8; --gold:#e0b354;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#171310; --ink:#f3ead9; --ink-soft:#cbb99e; --card:#231d17; --line:#3a2f22;
+      --amber:#e07a34; --amber-ink:#ffcfa8; --teal:#3fb8ac; --teal-ink:#bdf0e8; --gold:#e0b354;
+    }
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--ink); font-family:'Avenir Next',Helvetica,Arial,sans-serif;}
+  .wrap{max-width:820px; margin:0 auto; padding:0 18px 60px;}
+  .concept-banner{
+    position:sticky; top:0; z-index:10;
+    background:repeating-linear-gradient(135deg,var(--amber),var(--amber) 12px,var(--amber-ink) 12px,var(--amber-ink) 24px);
+    color:#fff; text-align:center; font-weight:700; letter-spacing:.04em; font-size:.8rem; padding:8px;
+  }
+  .sim-banner{
+    background:var(--gold); color:#2a1d00; text-align:center; font-weight:800; letter-spacing:.05em;
+    padding:9px; font-size:.82rem;
+  }
+  h1{font-size:1.3rem; margin:22px 0 4px;}
+  .sub{color:var(--ink-soft); font-size:.9rem; margin-bottom:20px;}
+  .stepper{display:flex; gap:6px; margin-bottom:22px;}
+  .dot{flex:1; height:6px; border-radius:3px; background:var(--line);}
+  .dot.active{background:var(--teal);}
+  .screen{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:22px; min-height:360px; box-shadow:0 2px 10px rgba(0,0,0,.08);}
+  .kicker{font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--gold); font-weight:700; margin-bottom:6px;}
+  .kpis{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:14px 0;}
+  .kpi{background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:12px; text-align:center;}
+  .kpi .num{font-size:1.3rem; font-weight:800; color:var(--teal-ink);}
+  .kpi .lbl{font-size:.7rem; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.04em;}
+  table{width:100%; border-collapse:collapse; font-size:.85rem; margin-top:10px;}
+  th,td{padding:8px 10px; text-align:left; border-bottom:1px solid var(--line);}
+  th{color:var(--ink-soft); font-size:.72rem; text-transform:uppercase;}
+  .bar-row{display:flex; align-items:center; gap:10px; margin:8px 0;}
+  .bar-label{width:110px; font-size:.8rem; flex-shrink:0;}
+  .bar-track{flex:1; background:var(--bg); border-radius:6px; height:14px; overflow:hidden; border:1px solid var(--line);}
+  .bar-fill{height:100%; background:var(--teal);}
+  .nav{display:flex; justify-content:space-between; margin-top:18px;}
+  button{
+    font-family:inherit; font-weight:700; border:none; border-radius:8px; padding:10px 18px;
+    background:var(--teal); color:#fff; cursor:pointer; font-size:.88rem;
+  }
+  button:disabled{opacity:.35; cursor:default;}
+  button.secondary{background:transparent; color:var(--teal-ink); border:1px solid var(--teal);}
+  .illustrative{font-size:.72rem; color:var(--ink-soft); text-align:center; margin-top:20px;}
+  .badge-illustrative{background:#fff4d6; border:1px solid var(--gold); border-radius:6px; padding:1px 6px; font-size:.68rem; font-weight:700; color:#5a3d00;}
+  .flagline{font-size:.78rem; color:var(--ink-soft); margin-top:12px; border-top:1px dashed var(--line); padding-top:10px;}
+</style><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
+
+
+<div class="sim-banner">SIMULATED PRODUCT DEMO — scripted, not a working app</div>
+
+<div class="wrap">
+  <h1>Venue dashboard walkthrough</h1>
+  <p class="sub">A scripted walkthrough for <b>Salt &amp; Sail</b> (illustrative venue) showing
+    what a Fareloop dashboard is intended to surface. All numbers are
+    <span class="badge-illustrative">ILLUSTRATIVE EXAMPLE</span> — plausibility-bounded against
+    RESEARCH.md's real ranges, not real activity.</p>
+
+  <div class="stepper" id="stepper"></div>
+  <div class="screen" id="screen"></div>
+  <div class="nav">
+    <button class="secondary" id="prevBtn">Back</button>
+    <button id="nextBtn">Next</button>
+  </div>
+  <p class="illustrative">Fraud-review outcomes and traffic numbers below are illustrative demo
+    data, not a benchmarked model — the actual fraud/verification classifier is unbuilt.</p>
+</div>
+
+<script>
+const steps = [
+  {
+    kicker: "Overview — this week",
+    body: `
+      &lt;div class="kpis"&gt;
+        &lt;div class="kpi"&gt;&lt;div class="num"&gt;14&lt;/div&gt;&lt;div class="lbl"&gt;posts submitted&lt;/div&gt;&lt;/div&gt;
+        &lt;div class="kpi"&gt;&lt;div class="num"&gt;11&lt;/div&gt;&lt;div class="lbl"&gt;verified &amp;amp; rewarded&lt;/div&gt;&lt;/div&gt;
+        &lt;div class="kpi"&gt;&lt;div class="num"&gt;3&lt;/div&gt;&lt;div class="lbl"&gt;held for manual review&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;p style="font-size:.85rem; color:var(--ink-soft);"&gt;Illustrative week for a single-location
+      Starter-tier venue — bounded to a plausible few-dozen-posts/month range for a venue (14/wk shown ≈ 60/mo)
+      with an active but not viral social presence, not a real measured figure.&lt;/p&gt;
+    `
+  },
+  {
+    kicker: "Review queue",
+    body: `
+      &lt;table&gt;
+        &lt;tr&gt;&lt;th&gt;Patron (illustrative)&lt;/th&gt;&lt;th&gt;Post&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;@j.torres_sd&lt;/td&gt;&lt;td&gt;Rooftop story, 8:42pm Sat&lt;/td&gt;&lt;td style="color:#2c5e1a;"&gt;✅ Verified&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;@sd_foodie_mo&lt;/td&gt;&lt;td&gt;Signature cocktail reel&lt;/td&gt;&lt;td style="color:#2c5e1a;"&gt;✅ Verified&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;@newacct_2913&lt;/td&gt;&lt;td&gt;Rooftop photo, no location match&lt;/td&gt;&lt;td style="color:var(--amber-ink);"&gt;⏸ Manual review&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;@repeat_claim_x&lt;/td&gt;&lt;td&gt;3rd submission this week&lt;/td&gt;&lt;td style="color:var(--amber-ink);"&gt;⏸ Weekly cap reached&lt;/td&gt;&lt;/tr&gt;
+      &lt;/table&gt;
+      &lt;p class="flagline"&gt;Manual review queue is the honest MVP mitigation for fraud — small
+      enough volume to review by hand while automated verification tooling is still unbuilt.&lt;/p&gt;
+    `
+  },
+  {
+    kicker: "Cross-venue traffic (network partners)",
+    body: `
+      &lt;div class="bar-row"&gt;&lt;div class="bar-label"&gt;Rico's Taqueria&lt;/div&gt;&lt;div class="bar-track"&gt;&lt;div class="bar-fill" style="width:70%"&gt;&lt;/div&gt;&lt;/div&gt;&lt;span style="font-size:.8rem;"&gt;7 redemptions&lt;/span&gt;&lt;/div&gt;
+      &lt;div class="bar-row"&gt;&lt;div class="bar-label"&gt;North Park Yards&lt;/div&gt;&lt;div class="bar-track"&gt;&lt;div class="bar-fill" style="width:40%"&gt;&lt;/div&gt;&lt;/div&gt;&lt;span style="font-size:.8rem;"&gt;4 redemptions&lt;/span&gt;&lt;/div&gt;
+      &lt;div class="bar-row"&gt;&lt;div class="bar-label"&gt;Salt &amp;amp; Sail (you)&lt;/div&gt;&lt;div class="bar-track"&gt;&lt;div class="bar-fill" style="width:90%"&gt;&lt;/div&gt;&lt;/div&gt;&lt;span style="font-size:.8rem;"&gt;9 redemptions&lt;/span&gt;&lt;/div&gt;
+      &lt;p style="font-size:.85rem; color:var(--ink-soft); margin-top:10px;"&gt;This view only becomes
+      meaningful once your venue is networked with partner venues (Growth tier) — a single
+      unnetworked venue sees only its own column.&lt;/p&gt;
+    `
+  },
+  {
+    kicker: "Monthly cost vs. reward spend",
+    body: `
+      &lt;div class="kpis"&gt;
+        &lt;div class="kpi"&gt;&lt;div class="num"&gt;$79&lt;/div&gt;&lt;div class="lbl"&gt;platform fee&lt;/div&gt;&lt;/div&gt;
+        &lt;div class="kpi"&gt;&lt;div class="num"&gt;~$96&lt;/div&gt;&lt;div class="lbl"&gt;comped-item cost (est.)&lt;/div&gt;&lt;/div&gt;
+        &lt;div class="kpi"&gt;&lt;div class="num"&gt;$25-110&lt;/div&gt;&lt;div class="lbl"&gt;per-video market floor&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;p style="font-size:.85rem; color:var(--ink-soft);"&gt;Comped-item cost is an illustrative
+      estimate at ~47 redemptions/mo (the ~11/wk verified rate shown above) × a $4 assumed marginal cost — &lt;b&gt;the actual per-venue COGS
+      number has not been sourced&lt;/b&gt; (RESEARCH.md §4); a real venue owner should substitute their
+      own cost before trusting this line.&lt;/p&gt;
+    `
+  }
+];
+
+let i = 0;
+const screen = document.getElementById('screen');
+const stepper = document.getElementById('stepper');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+
+function render(){
+  screen.innerHTML = `&lt;div class="kicker"&gt;${steps[i].kicker}&lt;/div&gt;` + steps[i].body;
+  stepper.innerHTML = steps.map((_,idx)=&gt;`&lt;div class="dot ${idx&lt;=i?'active':''}"&gt;&lt;/div&gt;`).join('');
+  prevBtn.disabled = i===0;
+  nextBtn.textContent = i===steps.length-1 ? 'Restart' : 'Next';
+}
+prevBtn.onclick = ()=&gt;{ if(i&gt;0){ i--; render(); } };
+nextBtn.onclick = ()=&gt;{ if(i===steps.length-1){ i=0; } else { i++; } render(); };
+render();
+</script>

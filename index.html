@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ventures — Alpha Preview</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Alpha preview of early-stage venture concepts — branding, problem/solution summaries, and pricing. Some cards link through to a live alpha product page; others are coming soon.">
+<style>
+:root{
+  --bg:#f6f4ef; --card-bg:#ffffff; --ink:#1c1b19; --ink-2:#4a463f;
+  --muted:#77726a; --border:#e3ddd0; --accent:#0a5a52; --accent-ink:#ffffff;
+  --pill-bg:#fff4d6; --pill-fg:#5a3d00; --pill-border:#e0b354;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#15130f; --card-bg:#211e19; --ink:#f2efe7; --ink-2:#cfc9bb;
+    --muted:#a39c8c; --border:#38332a; --accent:#3fb8a8; --accent-ink:#0b1210;
+    --pill-bg:#3a2f0f; --pill-fg:#f5e6b8; --pill-border:#7a5f1f;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15130f; --card-bg:#211e19; --ink:#f2efe7; --ink-2:#cfc9bb;
+  --muted:#a39c8c; --border:#38332a; --accent:#3fb8a8; --accent-ink:#0b1210;
+  --pill-bg:#3a2f0f; --pill-fg:#f5e6b8; --pill-border:#7a5f1f;
+}
+:root[data-theme="light"]{
+  --bg:#f6f4ef; --card-bg:#ffffff; --ink:#1c1b19; --ink-2:#4a463f;
+  --muted:#77726a; --border:#e3ddd0; --accent:#0a5a52; --accent-ink:#ffffff;
+  --pill-bg:#fff4d6; --pill-fg:#5a3d00; --pill-border:#e0b354;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+#alpha-banner{background:var(--pill-bg);color:var(--pill-fg);border-bottom:1px solid var(--pill-border);
+  text-align:center;font-weight:600;font-size:13px;padding:10px 12px;}
+header.hero{max-width:920px;margin:0 auto;padding:40px 20px 20px;}
+header.hero h1{font-size:clamp(28px,5vw,40px);margin:0 0 10px;}
+header.hero p{color:var(--ink-2);max-width:65ch;margin:0;}
+main{max-width:1100px;margin:0 auto;padding:10px 20px 60px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;}
+.card{background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:22px;
+  display:flex;flex-direction:column;gap:12px;}
+.card .accent-bar{height:4px;border-radius:2px;margin:-22px -22px 6px;}
+.card h2{margin:0;font-size:20px;}
+.card .one-liner{color:var(--ink-2);font-size:14.5px;margin:0;}
+.card .desc{font-size:14px;color:var(--ink-2);margin:0;}
+.card .desc strong{color:var(--ink);}
+.card .pricing{font-size:13.5px;color:var(--muted);border-top:1px solid var(--border);padding-top:10px;margin-top:auto;}
+.card a.visit{display:inline-block;margin-top:6px;padding:9px 16px;border-radius:8px;
+  background:var(--accent);color:var(--accent-ink);text-decoration:none;font-weight:600;font-size:14px;text-align:center;}
+.card a.visit:hover{opacity:0.9;}
+.card .coming-soon{display:inline-block;margin-top:6px;padding:9px 16px;border-radius:8px;
+  background:transparent;border:1px dashed var(--border);color:var(--muted);font-weight:500;
+  font-size:13px;text-align:center;}
+footer.site-footer{max-width:1100px;margin:0 auto;padding:20px;color:var(--muted);font-size:12.5px;
+  border-top:1px solid var(--border);}
+@media (max-width:480px){
+  header.hero{padding:28px 16px 16px;}
+  main{padding:6px 16px 40px;}
+  .grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div id="alpha-banner">Alpha &mdash; early access. These are early-stage products in active development, not finished, generally-available offers.</div>
+<header class="hero">
+  <h1>Ventures — Alpha Preview</h1>
+  <p>A collection of early-stage product concepts. Pricing shown is planned/target pricing for the
+    alpha stage, not a live checkout — contact channels on linked pages are placeholders pending
+    live setup. Cards marked "Site coming soon" don't have a live page yet.</p>
+</header>
+<main>
+  <div class="grid">
+  <div class="card">
+    <div class="accent-bar" style="background:#08786D"></div>
+    <h2>Harborcite</h2>
+    <p class="one-liner">SEO + AEO visibility for single-location local service businesses in San Diego.</p>
+    <p class="desc"><strong>Solves:</strong> Single-location service businesses (dental, PT, trades) are invisible where buyers now look—Google Maps, page-1 organic, and AI-generated answers. 68% of Google searches end without a click, yet AEO today costs $1,500+/mo as enterprise SaaS or bundles into $750-$3K retainers.</p>
+    <p class="desc"><strong>How:</strong> Audit plus tiered retainers combining Google Business Profile optimization, schema markup, on-page SEO, and monthly AI-citation monitoring—priced to pay for itself at roughly one additional booked job per month.</p>
+    <p class="pricing">$250–$400 audit (one-time), $300–$450/mo foundational retainer, $750–$1,000/mo growth retainer</p>
+    <a class="visit" href="./PITCH-001-seo-aeo-visibility/index.html">View Harborcite (alpha) &rarr;</a>
+  </div>
+
+  <div class="card">
+    <div class="accent-bar" style="background:#9d431a"></div>
+    <h2>PraxisKB</h2>
+    <p class="one-liner">AI-searchable knowledge bases built and curated from practice documents—done-for-you setup, cited answers, HIPAA-aware.</p>
+    <p class="desc"><strong>Solves:</strong> Independent healthcare practices run on institutional knowledge living in one person&#x27;s head or scattered PDFs. Onboarding takes weeks, edge cases are answered from memory, and departing staff create crises when their knowledge leaves.</p>
+    <p class="desc"><strong>How:</strong> We build and curate an AI-searchable knowledge base from your practice&#x27;s own documents. Setup covers intake, vision-LLM extraction, KB structuring, and BAA execution. Ongoing retainer handles document ingestion, KB pruning, and quarterly compliance review.</p>
+    <p class="pricing">$1,500–$3,500 setup (one-time, scoped to document volume), $250–$500/mo ongoing curation retainer</p>
+    <a class="visit" href="./PITCH-002-professional-knowledge-bases/index.html">View PraxisKB (alpha) &rarr;</a>
+  </div>
+
+  <div class="card">
+    <div class="accent-bar" style="background:#D4804F"></div>
+    <h2>GuestWaypoint</h2>
+    <p class="one-liner">White-label day-plan and spend-calibrated food/bar map for San Diego hosts and boutique hotels.</p>
+    <p class="desc"><strong>Solves:</strong> Hosts field repeated guest questions about activities, dining, and local spots by text and email. Guests leave bad reviews when they cannot find good nearby recommendations. No product serves this need specifically for the host&#x27;s property in San Diego.</p>
+    <p class="desc"><strong>How:</strong> A white-label guide generator that takes guest profile (party type, spend level, stay length) and produces a curated day-plan and targeted food/bar map branded as the property&#x27;s own guide, scoped to actual walking and driving distance from the listing.</p>
+    <p class="pricing">$79/mo per property, add-on pricing for multi-listing portfolios</p>
+    <a class="visit" href="./PITCH-004-sd-travel-curator/index.html">View GuestWaypoint (alpha) &rarr;</a>
+  </div>
+
+  <div class="card">
+    <div class="accent-bar" style="background:#c2540f"></div>
+    <h2>Fareloop</h2>
+    <p class="one-liner">Platform that turns patron social posts into food/merch rewards redeemable across partnered venues</p>
+    <p class="desc"><strong>Solves:</strong> Independent San Diego bars and restaurants capture no cross-venue value from the organic patron content they already get unprompted. Meanwhile, brands pay $25–110 per video for produced UGC through marketplaces.</p>
+    <p class="desc"><strong>How:</strong> Patrons post content tagging a venue; Fareloop verifies it (location, timestamp, authenticity); patron earns a food/merchandise token redeemable at that venue and partner venues. FTC-required disclosure auto-appended to every rewarded post.</p>
+    <p class="pricing">Starter $79/mo · Growth $199/mo · Network founder $0/mo + rev-share TBD</p>
+    <a class="visit" href="./PITCH-005-ugc-venue-rewards/index.html">View Fareloop (alpha) &rarr;</a>
+  </div>
+
+  <div class="card">
+    <div class="accent-bar" style="background:#2A9C8B"></div>
+    <h2>Loadout</h2>
+    <p class="one-liner">Setup and curation service that configures a Claude Pro/Max subscription for actual productivity</p>
+    <p class="desc"><strong>Solves:</strong> Solo professionals and small-team operators buy Claude Pro/Max subscriptions but never configure them—no CLAUDE.md, no skills, no persistent memory. Every session starts from zero and context gets re-explained.</p>
+    <p class="desc"><strong>How:</strong> Loadout delivers a complete Claude Code environment configuration into the buyer&#x27;s own account: CLAUDE.md, curated 3–5 core skills, custom subagents fit to their workflow, memory/data-layer scaffolding, and setup/upkeep labor. The buyer runs everything on their own subscription; nothing is hosted or operated by Loadout.</p>
+    <p class="pricing">Starter $250 setup + $25/mo · Growth $600 setup + $60/mo · Pro/Team $1,500 setup + $150/mo</p>
+    <a class="visit" href="./PITCH-006-agentic-env-upsell/index.html">View Loadout (alpha) &rarr;</a>
+  </div>
+
+  <div class="card">
+    <div class="accent-bar" style="background:#2A9D7E"></div>
+    <h2>Beachhead Intel</h2>
+    <p class="one-liner">City-by-city capability-tagged business intelligence for territory sellers and dealer networks</p>
+    <p class="desc"><strong>Solves:</strong> Manufacturer&#x27;s reps, franchise-territory buyers, and dealer-network sales managers need to know who&#x27;s actually in a city×vertical and what equipment they already run before prospecting. Existing tools (ZoomInfo, Apollo, D&amp;B, Regrid, Infofree) sell only contact and firmographic data, not capability or equipment data.</p>
+    <p class="desc"><strong>How:</strong> Builds a capability-tagged roster of every reachable business in a city×vertical—business names, addresses, and what equipment or service lines each actually runs—pulled from state business registries, OpenStreetMap, and business websites. Proven on Portland metro: 1,463 businesses, $0 tool cost, completed in one day.</p>
+    <p class="pricing">Territory Snapshot Report $750–$1,500 one-time · Standing Territory Subscription $299–$499/mo · Dealer-Channel Engagement $2,500–$5,000 setup + $750–$1,500/mo</p>
+    <a class="visit" href="./PITCH-007-city-scan-network/index.html">View Beachhead Intel (alpha) &rarr;</a>
+  </div>
+
+  <div class="card">
+    <div class="accent-bar" style="background:#3fa89d"></div>
+    <h2>Cuspid</h2>
+    <p class="one-liner">Three add-on modules for dental practices: ambient charting, patient recall SMS, and PMS integration on top of Vornix voice.</p>
+    <p class="desc"><strong>Solves:</strong> Dental practices manually handle clinical documentation after calls, patient recall communications, and PMS chart entry across disconnected tools. No integrated layer connects the voice reception Vornix provides to what happens next.</p>
+    <p class="desc"><strong>How:</strong> Cuspid extends the existing Vornix partnership with three modules: ambient charting that transcribes visit audio into dental-shaped chart notes, recall/confirmation SMS tied to the existing relationship, and PMS-assist bridging to Kolla-supported platforms for direct chart writes.</p>
+    <p class="pricing">$79-119/mo per clinician for ambient charting; $79-149/mo for recall/confirmation SMS; $19-29/location pass-through + markup for PMS-assist</p>
+    <a class="visit" href="./PITCH-008-healthcare-platform/index.html">View Cuspid (alpha) &rarr;</a>
+  </div>
+
+  <div class="card">
+    <div class="accent-bar" style="background:#1f4e61"></div>
+    <h2>TallyHelm</h2>
+    <p class="one-liner">KPI dashboard, contact cadence queue, form autofill, and client data entry unified for solo CFP® advisors.</p>
+    <p class="desc"><strong>Solves:</strong> Solo and small-team CFP advisors manually track KPI goals, which clients are due for contact, intake form data, and client information across disconnected CRM and forms tools. No single vendor covers more than one of these needs.</p>
+    <p class="desc"><strong>How:</strong> TallyHelm provides four functions in one tool: a KPI-goal dashboard (new AUM, households, reviews, referrals), a contact-cadence queue showing who&#x27;s actually due based on household rules, form organize + autofill reusing data already entered, and low-friction client data entry underneath all three.</p>
+    <p class="pricing">$149/mo Solo tier (1 seat: dashboard, cadence, data entry); $299/mo Practice tier (up to 5 seats, adds form autofill)</p>
+    <a class="visit" href="./PITCH-009-cfp-advisor-copilot/index.html">View TallyHelm (alpha) &rarr;</a>
+  </div>
+
+  <div class="card">
+    <div class="accent-bar" style="background:#c97a1a"></div>
+    <h2>Hackerlantern</h2>
+    <p class="one-liner">A weekly digest and live directory aggregating all 150+ tech/AI meetups, hackathons, and community events in San Diego.</p>
+    <p class="desc"><strong>Solves:</strong> SD tech/AI meetup organizers have no single channel to reach potential attendees beyond their own followers. Residents must manually check Meetup, Luma, sdtechscene.org, and scattered social accounts to discover what&#x27;s happening each week.</p>
+    <p class="desc"><strong>How:</strong> Hackerlantern ingests events, venues, and organizers from across San Diego&#x27;s tech/AI community into one weekly digest (free for residents) and a searchable live directory. Organizers sponsor featured event slots; residents get unified discovery.</p>
+    <p class="pricing">$99/mo standard sponsor slot for featured/pinned placement; $49/mo founding-cohort rate (first 10 sponsors, locked for 6 months)</p>
+    <a class="visit" href="./PITCH-011-niche-source/index.html">View Hackerlantern (alpha) &rarr;</a>
+  </div>
+
+  <div class="card">
+    <div class="accent-bar" style="background:#b5541e"></div>
+    <h2>OneGoodIntro</h2>
+    <p class="one-liner">Concierge-scale, one-time human-vetted introductions for pre-threshold San Diego founders seeking investors and advisors.</p>
+    <p class="desc"><strong>Solves:</strong> Founders below the EO ($1M+ revenue) and YPO ($16M+ revenue) membership thresholds are structurally excluded from existing peer-network intro channels and not served by free mentor tools like ADPList or SCORE, which are general-purpose rather than curated.</p>
+    <p class="desc"><strong>How:</strong> OneGoodIntro is a $150 flat-fee, one-time, human-curated introduction between an opted-in investor/advisor and an opted-in pre-seed/bootstrapped founder, sourced through real San Diego networks (co-working hubs, builder circles, direct referral) rather than scraped databases or self-serve directories.</p>
+    <p class="pricing">$150 flat per introduction; $300–500/mo white-label retainer for community hubs offering the service to their members.</p>
+    <a class="visit" href="./PITCH-012-blind-date-networks/index.html">View OneGoodIntro (alpha) &rarr;</a>
+  </div>
+
+  <div class="card">
+    <div class="accent-bar" style="background:#D9622B"></div>
+    <h2>IronLine</h2>
+    <p class="one-liner">24/7 voice agent answering emergency calls for plumbing, electrical, and HVAC shops—triages safety, quotes the call-out window, and books dispatch before the customer hangs up.</p>
+    <p class="desc"><strong>Solves:</strong> Solo-to-5-truck independent trades operators personally field after-hours emergency calls and miss capture-able jobs worth $100–300+ in after-hours premium on top of the base service fee, losing thousands in potential revenue yearly.</p>
+    <p class="desc"><strong>How:</strong> IronLine is a hosted voice agent that answers every after-hours call, asks safety triage questions, quotes the after-hours rate upfront, books the job directly into Housecall Pro or Jobber, and texts the on-call tech—all before the caller hangs up. Priced at $349/mo (Starter, ~1-truck) and $549/mo (Growth, 2–5 trucks), undercutting Sameday AI&#x27;s public prices ($449–789/mo).</p>
+    <p class="pricing">$349/mo (Starter tier, solo/1-truck, up to ~150 emergency-triage minutes/mo); $549/mo (Growth tier, 2–5 trucks, higher minute allotment, dispatch-sync contingent on integration access).</p>
+    <a class="visit" href="./PITCH-013-emergency-trades-voice/index.html">View IronLine (alpha) &rarr;</a>
+  </div>
+
+  <div class="card">
+    <div class="accent-bar" style="background:#4f9cff"></div>
+    <h2>Governframe</h2>
+    <p class="one-liner">Hosted MCP/tooling layer for small teams already on Claude—shared memory, curated tool roster per role, admin isolation view; BYO-subscription, credentials never shared.</p>
+    <p class="desc"><strong>Solves:</strong> Small teams (3–15 people) running multiple paid Claude seats have no shared memory across the team, no way to curate tool access per role, and no visibility into who&#x27;s using AI agents and how—creating governance gaps and duplicated context work per person.</p>
+    <p class="desc"><strong>How:</strong> Governframe is a hosted MCP layer a team&#x27;s own Claude sessions connect to: a hosted memory/KB layer over team docs, a curated tool roster the admin sets per role, and an admin isolation/audit view showing seats, tool access, and activity. BYO-subscription architecture means Governframe never touches or holds client credentials.</p>
+    <p class="pricing">$149/mo (Starter, 5 connected seats, hosted memory/KB MCP, read-only tool roster admin view); $299/mo (Team, 15 seats, full orchestration/skills layer, admin isolation view, audit log); Custom for 15+ seats or white-label resale.</p>
+    <a class="visit" href="./PITCH-014-ai-infra-layer/index.html">View Governframe (alpha) &rarr;</a>
+  </div>
+
+  <div class="card">
+    <div class="accent-bar" style="background:#a13d2d"></div>
+    <h2>Quillecho</h2>
+    <p class="one-liner">Drafts new newsletter pieces in an independent writer&#x27;s own voice by learning from their published back-catalog.</p>
+    <p class="desc"><strong>Solves:</strong> Independent newsletter and blog writers spend significant time on first drafts from a blank page, despite having published archives that demonstrate their distinctive voice, cadence, and word choices.</p>
+    <p class="desc"><strong>How:</strong> Quillecho ingests a writer&#x27;s published back-catalog, builds a private voice model from it, and generates first drafts in their own tone and style. Writers review, revise, and publish themselves—no ghostwriting, full AI-disclosure transparency built in.</p>
+    <p class="pricing">$24/mo (Starter) or $49/mo (Pro)</p>
+    <a class="visit" href="./PITCH-016-writer-voice-draft/index.html">View Quillecho (alpha) &rarr;</a>
+  </div>
+
+  <div class="card">
+    <div class="accent-bar" style="background:#2F5233"></div>
+    <h2>Steady Grants</h2>
+    <p class="one-liner">Grant copilot for small nonprofits that drafts proposals grounded in their real documents and mission voice.</p>
+    <p class="desc"><strong>Solves:</strong> Small nonprofits under $500K budget pay $1,500–$5,000 per foundation grant proposal, draining resources that should fund programs. Most lack dedicated grant-writing staff, forcing already-stretched EDs and program managers to write proposals from scratch.</p>
+    <p class="desc"><strong>How:</strong> Steady Grants scans a nonprofit&#x27;s mission statements, budgets, program reports, and past proposals, matches them to foundation and local grant opportunities, and assembles submission-ready draft narratives for staff to review and finalize. Priced flat-fee only, never percentage-of-funds, aligned with AFP and GPA ethics standards.</p>
+    <p class="pricing">$299 one-time setup + $49/mo (Starter) or $99/mo (Growth)</p>
+    <a class="visit" href="./PITCH-017-nonprofit-grant-copilot/index.html">View Steady Grants (alpha) &rarr;</a>
+  </div>
+
+  <div class="card">
+    <div class="accent-bar" style="background:#c8622e"></div>
+    <h2>Chairside</h2>
+    <p class="one-liner">SMS appointment confirmations and reminders from shops&#x27; own numbers with STOP-handling built in</p>
+    <p class="desc"><strong>Solves:</strong> Shop owners manually handle appointment confirmations, reminders, and reschedule requests by phone and text.</p>
+    <p class="desc"><strong>How:</strong> Automated SMS appointment communications from the shop&#x27;s registered number with built-in consent and STOP-request handling.</p>
+    <p class="pricing">$299 setup + $79/mo (Starter) or $149/mo (Pro)</p>
+    <a class="visit" href="./PITCH-018-appointment-comms/index.html">View Chairside (alpha) &rarr;</a>
+  </div>
+  </div>
+</main>
+<footer class="site-footer">
+  Alpha preview dashboard. Nothing here represents a shipped, generally-available product;
+  pricing and availability are subject to change. No testimonials, user counts, or customer
+  logos are shown because none exist yet.
+</footer>
+</body>
+</html>

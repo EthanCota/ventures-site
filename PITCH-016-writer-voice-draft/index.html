@@ -1,0 +1,398 @@
+
+<meta charset="utf-8">
+<title>Quillecho — draft in your own voice</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --paper:#f6f1e2;
+    --paper-2:#efe6d0;
+    --card:#fbf8ee;
+    --card-border:#d9c9a0;
+    --ink:#1e1811;
+    --ink-soft:#4b4130;
+    --rust:#93321f;
+    --rule:#cebb8c;
+    --shadow:0 6px 20px rgba(30,24,17,0.08);
+    --internal-bg:#3a2c14;
+    --internal-bg-2:#2c2110;
+    --internal-fg:#f6ecd2;
+    --internal-heading:#e9d99c;
+  }
+  :root[data-theme="dark"]{
+    --paper:#14100c;
+    --paper-2:#1f1912;
+    --card:#1c1610;
+    --card-border:#3a2f1e;
+    --ink:#efe4c8;
+    --ink-soft:#c7b98f;
+    --rust:#e2695a;
+    --rule:#4a3d28;
+    --shadow:0 6px 20px rgba(0,0,0,0.45);
+    --internal-bg:#0f0d09;
+    --internal-bg-2:#0a0806;
+    --internal-fg:#e9dcb6;
+    --internal-heading:#e9d99c;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#14100c;
+      --paper-2:#1f1912;
+      --card:#1c1610;
+      --card-border:#3a2f1e;
+      --ink:#efe4c8;
+      --ink-soft:#c7b98f;
+      --rust:#e2695a;
+      --rule:#4a3d28;
+      --shadow:0 6px 20px rgba(0,0,0,0.45);
+      --internal-bg:#0f0d09;
+      --internal-bg-2:#0a0806;
+      --internal-fg:#e9dcb6;
+      --internal-heading:#e9d99c;
+    }
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Iowan Old Style','Palatino Linotype','Book Antiqua',Palatino,Georgia,serif;
+    line-height:1.62;
+    overflow-x:hidden;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important;}
+  }
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} }
+  a{color:var(--rust);}
+  a:focus-visible, button:focus-visible, .btn:focus-visible{
+    outline:2px solid var(--rust); outline-offset:3px;
+  }
+
+  
+  .galley{
+    position:sticky; top:0; z-index:1000;
+    background:var(--paper-2);
+    color:var(--ink);
+    text-align:center;
+    padding:.55rem 1rem;
+    font-size:.82rem;
+    letter-spacing:.05em;
+    font-variant:small-caps;
+    border-top:1px solid var(--rust);
+    border-bottom:1px solid var(--rust);
+  }
+
+  .wrap{max-width:840px; margin:0 auto; padding:0 1.5rem;}
+
+  
+  .masthead{
+    max-width:840px; margin:0 auto; padding:3.2rem 1.5rem 1.6rem; text-align:center;
+    border-bottom:3px double var(--rule);
+  }
+  .folio{
+    font-size:.78rem; letter-spacing:.08em; color:var(--ink-soft); font-variant:small-caps;
+    margin-bottom:.6rem;
+  }
+  .nameplate{
+    font-size:3rem; letter-spacing:.02em; margin:0; color:var(--ink);
+    text-wrap:balance;
+  }
+  .dek{
+    font-size:1.2rem; color:var(--ink-soft); max-width:52ch; margin:1rem auto 0; font-style:italic;
+  }
+
+  section{max-width:840px; margin:0 auto; padding:3rem 1.5rem;}
+  section + section{border-top:1px solid var(--rule);}
+  h2{
+    font-size:1rem; font-variant:small-caps; letter-spacing:.08em; color:var(--rust);
+    margin:0 0 1.4rem; font-weight:normal;
+  }
+  h3{font-size:1.15rem; color:var(--ink); margin:0 0 .4rem; font-weight:normal; font-style:italic;}
+  p{max-width:65ch;}
+  .essay p{font-size:1.08rem;}
+  .essay p:first-of-type::first-letter{
+    float:left; font-size:3.6rem; line-height:.85; padding:.05em .08em 0 0; color:var(--rust);
+  }
+
+  .aside{
+    background:var(--card); border:1px solid var(--card-border); border-left:3px solid var(--rust);
+    border-radius:2px; padding:1.3rem 1.5rem; margin-top:1.6rem; max-width:65ch;
+  }
+  .aside p{font-size:.98rem; color:var(--ink-soft); margin:.4rem 0;}
+  .aside p:first-child{margin-top:0;}
+  .fence-label{font-variant:small-caps; letter-spacing:.04em; color:var(--ink); font-style:italic;}
+
+  
+  .spread{
+    display:grid; grid-template-columns:1fr 1fr; gap:0; border:1px solid var(--card-border);
+    background:var(--card); box-shadow:var(--shadow); border-radius:2px; overflow:hidden;
+  }
+  .spread .page{padding:1.6rem; min-width:0;}
+  .spread .page.recto{border-left:1px solid var(--rule);}
+  @media (max-width:720px){
+    .spread{grid-template-columns:1fr;}
+    .spread .page.recto{border-left:none; border-top:1px solid var(--rule);}
+  }
+  .demo-frame{
+    border:1px solid var(--card-border); border-radius:2px; overflow:hidden; min-width:0;
+  }
+  .demo-frame iframe{width:100%; height:640px; border:0; display:block; background:var(--card);}
+  .spread-caption{font-size:.95rem; color:var(--ink-soft); font-style:italic; margin-top:1rem;}
+
+  
+  .entries{max-width:65ch;}
+  .entry{padding:1.1rem 0; border-top:1px solid var(--rule);}
+  .entry:first-child{border-top:none;}
+  .entry h3{display:inline; margin-right:.5rem;}
+  .entry p{display:inline; margin:0;}
+  .entry-block{display:block;}
+  .entry p.body{display:block; margin-top:.35rem; color:var(--ink-soft);}
+
+  .tag{
+    display:inline-block; font-family:inherit;
+    font-size:.72rem; font-variant:small-caps; letter-spacing:.04em; font-style:normal;
+    padding:.1rem .55rem; border-radius:3px; margin-left:.4rem; vertical-align:middle;
+    border:1px solid currentColor;
+  }
+  .tag-derived{background:#e7dcc0; color:#4a3a10;}
+  .tag-unverified{background:#f0d6ce; color:#6a2415;}
+  .tag-sourced{background:#d3e6d0; color:#1f4a1e;}
+  :root[data-theme="dark"] .tag-derived, :root:not([data-theme="light"]) .tag-derived{background:#4a3c1c; color:#f0e0ac;}
+  :root[data-theme="dark"] .tag-unverified, :root:not([data-theme="light"]) .tag-unverified{background:#5c2416; color:#f3c8b8;}
+  :root[data-theme="dark"] .tag-sourced, :root:not([data-theme="light"]) .tag-sourced{background:#204020; color:#c8e6c2;}
+  @media (prefers-color-scheme: light){
+    :root:not([data-theme="dark"]) .tag-derived{background:#e7dcc0; color:#4a3a10;}
+    :root:not([data-theme="dark"]) .tag-unverified{background:#f0d6ce; color:#6a2415;}
+    :root:not([data-theme="dark"]) .tag-sourced{background:#d3e6d0; color:#1f4a1e;}
+  }
+
+  
+  .price-note{
+    background:var(--card); border:1px solid var(--card-border); border-radius:2px;
+    padding:1.4rem 1.6rem; max-width:65ch;
+  }
+  .price-note dl{margin:0;}
+  .price-note dt{font-style:italic; color:var(--ink); margin-top:.9rem;}
+  .price-note dt:first-child{margin-top:0;}
+  .price-note dd{margin:.25rem 0 0; color:var(--ink-soft);}
+  .price-tag{color:var(--rust); font-size:1.15rem;}
+  .breakeven-box{
+    margin-top:1.4rem; padding-top:1.2rem; border-top:1px solid var(--rule); max-width:65ch;
+    font-size:.98rem; color:var(--ink-soft);
+  }
+
+  .walkthrough-links{margin-top:1rem; font-size:.98rem;}
+
+  .letters .letter{margin-bottom:1.7rem; max-width:65ch;}
+  .letters .letter h3{color:var(--rust); font-style:normal;}
+  .letters .letter h3::before{content:"— "; color:var(--ink-soft);}
+
+  .subscribe{
+    max-width:840px; margin:0 auto; padding:3.5rem 1.5rem 4rem; text-align:center;
+    border-top:3px double var(--rule);
+  }
+  .subscribe h2{font-size:1.6rem; font-variant:normal; letter-spacing:normal; color:var(--ink); font-style:italic;}
+  .btn{
+    font-family:inherit; display:inline-block; padding:.75rem 1.6rem; border-radius:2px;
+    text-decoration:none; font-size:1rem; border:1px solid var(--rust); font-style:italic;
+    margin-top:1rem;
+  }
+  .btn-primary{background:var(--rust); color:var(--paper);}
+  .placeholder-contact{
+    display:inline-block; margin-top:1.2rem; padding:.6rem 1.1rem; border-radius:2px;
+    border:1px dashed var(--rust); color:var(--ink-soft); font-size:.92rem; font-style:italic;
+  }
+
+  
+  .internal-section{background:var(--internal-bg); color:var(--internal-fg);}
+  .internal-banner{
+    position:sticky; top:calc(2.6rem); z-index:900;
+    background:var(--internal-bg-2); color:var(--internal-fg);
+    text-align:center; padding:.5rem 1rem; font-size:.8rem; font-variant:small-caps;
+    letter-spacing:.05em; border-top:1px solid var(--rust); border-bottom:1px solid var(--rust);
+  }
+  .internal-inner{max-width:900px; margin:0 auto; padding:2.6rem 1.5rem 4rem;}
+  .internal-inner h2{color:var(--internal-heading); font-variant:small-caps; letter-spacing:.06em; border-bottom:1px solid #5c4a2a; padding-bottom:.5rem; font-size:1.5rem;}
+  .internal-inner h3{color:var(--internal-heading); font-style:italic;}
+  .internal-card{
+    border-top:1px solid rgba(233,217,156,0.25); padding:1.3rem 0; margin-bottom:0;
+  }
+  .internal-card:first-of-type{border-top:none;}
+  .internal-inner .tag-derived{background:#5a4718; color:#f0e0ac;}
+  .internal-inner .tag-unverified{background:#5c2416; color:#f3c8b8;}
+  .internal-inner .tag-sourced{background:#204020; color:#c8e6c2;}
+  .internal-inner table{width:100%; border-collapse:collapse; font-size:.92rem; font-family:inherit;}
+  .internal-inner th, .internal-inner td{text-align:left; padding:.55rem .7rem; border-bottom:1px solid rgba(233,217,156,0.2);}
+  .internal-inner .overflow{overflow-x:auto;}
+  ul.tight{padding-left:1.2rem;}
+  ul.tight li{margin-bottom:.5rem;}
+  .small-note{font-size:.88rem; color:var(--ink-soft); margin-top:.5rem;}
+  .footer-fine{text-align:center; padding:1.6rem; font-size:.82rem; color:var(--ink-soft); font-style:italic;}
+
+  @media (max-width:600px){
+    .nameplate{font-size:2.1rem;}
+    .essay p:first-of-type::first-letter{font-size:2.8rem;}
+  }
+</style><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
+
+
+
+<div class="masthead">
+  <div class="folio">Vol. I · A drafting instrument for independent writers</div>
+  <h1 class="nameplate">Quillecho</h1>
+  <p class="dek">Your archive already sounds like you.<br>Now your drafts can too.</p>
+</div>
+
+<section id="what" class="essay">
+  <h2>The lead</h2>
+  <p>Quillecho reads your published back-catalog and drafts new pieces in your own voice —
+    so the blank page starts closer to finished, in the cadence and word choices that are actually yours.</p>
+  <p>Quillecho ingests your existing published work — a Substack or beehiiv archive, a personal
+    blog, or a folder of freelance bylines — and builds a private voice model from it. From then on,
+    you give it a topic or a rough outline and it produces a first draft written the way <em>you</em>
+    already write: your sentence rhythm, your typical structure, your recurring phrases and tics.
+    You edit from there. It doesn't publish for you, and it doesn't pretend to be a person —
+    it's a drafting tool meant to get you further than a blank page — we're not publishing a
+    specific accuracy or completion percentage because no voice-match benchmark exists to back one.</p>
+
+  <div class="aside">
+    <p><span class="fence-label">Who it's for.</span> Independent, single-author newsletter and blog writers who publish under their own byline
+      (not as staff under an employer's editorial policy), have a back-catalog of at least ~20
+      published pieces in one place, and write on a recurring weekly-or-biweekly cadence.</p>
+    <p class="small-note">Think: Substack and beehiiv writers, Ghost(Pro) bloggers, freelance
+      columnists and trade-press contributors with a consistent byline, LinkedIn native-newsletter
+      creators, and ghostwriters who maintain their own newsletter as a portfolio piece.</p>
+    <p><span class="fence-label">Explicitly not for:</span> staff journalists writing under an employer's editorial
+      and AI-disclosure policy. Individual newsrooms increasingly set their own AI-disclosure rules,
+      and a staff writer doesn't own that call the way an independent one does — so we build for
+      the writer who owns their own byline and their own disclosure decision. This is a deliberate
+      ethics fence, not a market-size accident, and it stays even though it narrows who we can sell to.</p>
+  </div>
+</section>
+
+<section id="demo">
+  <h2>The specimen</h2>
+  <p>A simulated walkthrough of the three moments that matter: connecting an archive, generating a
+    voice-matched draft with a side-by-side comparison, and running a revision loop. Every scenario
+    is clearly labeled SIMULATED — this is a mockup of the product experience, not a live tool.</p>
+  <div class="spread">
+    <div class="page verso">
+      <h3>Recto &amp; verso</h3>
+      <p class="small-note">The demo below is set as a facing spread — your archive on one page,
+        the drafted piece on the other. Open it full-page for the actual side-by-side comparison.</p>
+    </div>
+    <div class="page recto">
+      <div class="demo-frame">
+        <iframe src="./media/demo-interface.html" title="Quillecho simulated product demo" loading="lazy"></iframe>
+      </div>
+    </div>
+  </div>
+  <p class="spread-caption walkthrough-links"><a href="./media/demo-interface.html" target="_blank" rel="noopener">Open the demo in its own tab →</a>
+     ·  <a href="./media/breakeven-illustrative.html" target="_blank" rel="noopener">See the illustrative payback comparison →</a></p>
+</section>
+
+<section id="tools">
+  <h2>How it works</h2>
+  <div class="entries">
+    <div class="entry entry-block">
+      <h3>Archive ingest</h3>
+      <p class="body">Connect one source at launch — paste in a Substack/beehiiv export, an RSS feed, or a
+        batch of URLs. Your voice model builds from the pieces you actually published.</p>
+    </div>
+    <div class="entry entry-block">
+      <h3>Voice-matched drafts</h3>
+      <p class="body">Give it a topic or outline; get a full first draft back in your cadence, not a generic
+        "helpful assistant" tone. Unlimited drafts on every tier.</p>
+    </div>
+    <div class="entry entry-block">
+      <h3>Revision loop</h3>
+      <p class="body">"Make it punchier," "more like my March piece," "cut the throat-clearing intro" —
+        a plain-language revision pass that nudges the draft closer without starting over.</p>
+    </div>
+    <div class="entry entry-block">
+      <h3>Style-drift alerts </h3>
+      <p class="body">Flags when a draft is reading generic or off-voice before you spend time editing it —
+        a heads-up, not an automated "voice-match score" (see the demo for why we don't claim one).</p>
+    </div>
+    <div class="entry entry-block">
+      <h3>Multiple sources </h3>
+      <p class="body">Blend a Substack archive with freelance bylines published elsewhere into one voice model,
+        for writers whose work lives in more than one place.</p>
+    </div>
+    <div class="entry entry-block">
+      <h3>Your read is the judge</h3>
+      <p class="body">No invented accuracy score. The evaluation is you, reading the draft side-by-side with your
+        own archive — the demo shows exactly what that comparison looks like.</p>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <h2>The price</h2>
+  <div class="price-note">
+    <dl>
+      <dt>Starter — <span class="price-tag">$24</span>/mo </dt>
+      <dd>One archive connection, voice-model build, unlimited drafts, 1 revision loop per draft.</dd>
+      <dt>Pro — <span class="price-tag">$49</span>/mo </dt>
+      <dd>Multiple archive sources, priority draft turnaround, style-drift alerts.</dd>
+    </dl>
+    <p class="small-note">Anchored to HyperWrite's Custom Personas pricing ($16–45/mo across
+      annual/monthly plans)  — the closest functional
+      comparable found. No team/enterprise tier at launch; this is built for one author, one voice.</p>
+    <div class="breakeven-box">
+      <strong>Rough payback, illustrative:</strong> at $24/mo, Quillecho pays for itself if it saves
+      you roughly 20–30 minutes per issue, valuing your own writing time conservatively.
+      For a weekly newsletter that's under 2 hours a month of recovered time.
+       (unverified)
+    </div>
+  </div>
+</section>
+
+<section id="objections" class="letters">
+  <h2>Letters &amp; hard questions, answered honestly</h2>
+  <div class="letter">
+    <h3>Isn't this just AI slop with my name on it?</h3>
+    <p>The whole point is that it isn't generic — it drafts from your own archive, not a
+      general internet-average voice. We don't hide AI involvement either; we recommend you decide
+      your own disclosure practice rather than pretending nothing happened.</p>
+  </div>
+  <div class="letter">
+    <h3>How do you actually know it sounds like me?</h3>
+    <p>Honestly: there's no benchmarked "voice-match score," and we won't invent one. The demo shows
+      a side-by-side of your archive excerpt against the drafted piece — you're the judge. The
+      revision loop exists because a first pass won't always land; the job is to get closer with
+      your feedback, not claim perfection on try one.</p>
+  </div>
+  <div class="letter">
+    <h3>What happens to my archive — do you train a model on me, and who owns that?</h3>
+    <p>Your archive is used only to build your own draft generation — it is not pooled or shared
+      across other users' models, and it's deletable on request. This is a plain policy commitment,
+      not a technical claim we haven't built yet.</p>
+  </div>
+  <div class="letter">
+    <h3>Will my publication or employer fire me for using this?</h3>
+    <p>This is exactly why Quillecho is built for independent writers who own their own byline and
+      disclosure decision — not staff journalists bound by an employer's AI policy. That group
+      is explicitly out of scope for us.</p>
+  </div>
+  <div class="letter">
+    <h3>Why pay $24–49/mo instead of just pasting my archive into ChatGPT or Claude myself?</h3>
+    <p>You can, and some writers will. The honest edge isn't a smarter model — it's not
+      re-pasting 20 pieces every session, a revision loop built for this exact task, and drift alerts
+      that flag when a draft is going generic. It's a workflow wrapped around a general model, the
+      same way HyperWrite, Jasper, and Copy.ai compete against "just use the base model."</p>
+  </div>
+</section>
+
+<div class="subscribe" id="cta">
+  <h2>Want in early?</h2>
+  <p>We're looking for a small number of independent writers to try Quillecho against their real
+    archive before anything is publicly available.</p>
+  <a class="btn btn-primary" href="#cta">Request an early-access slot</a>
+  <div class="placeholder-contact">contact: [placeholder — add real inbox before this page goes anywhere real]</div>
+</div>
+
+
+
+<div class="footer-fine">Quillecho is a pitch concept, not a live product.</div>

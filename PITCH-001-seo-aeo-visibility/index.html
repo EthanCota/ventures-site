@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Harborcite — SEO &amp; AEO visibility for local service businesses</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Harborcite: SEO and AI-answer visibility for owner-operated local service businesses in San Diego. Alpha — early access.">
+<style>
+:root{
+  --display-font: Rockwell, 'Rockwell Nova', 'Roboto Slab', 'DejaVu Serif', 'Sitka Small', serif;
+  --body-font: system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  --paper:#F7F1E3;
+  --paper-2:#EEE1C2;
+  --card:#FFFFFF;
+  --ink:#17262A;
+  --ink-2:#3A4F53;
+  --muted:#53656A;
+  --border:#D9CBA6;
+  --accent:#08786D;
+  --accent-dark:#055B53;
+  --accent-ink:#FFFFFF;
+  --good:#08786D;
+  --warn:#7A4E10;
+  --danger:#A8431F;
+  --danger-ink:#FFFFFF;
+  --band-bg:#17262A;
+  --band-fg:#F7F1E3;
+  --warn-on-band:#E7B15C;
+  --tag-sourced-bg:#DCEFEC; --tag-sourced-fg:#0A5A52;
+  --tag-derived-bg:#EFE1BE; --tag-derived-fg:#5C4B1E;
+}
+:root[data-theme="dark"]{
+  --paper:#101B19;
+  --paper-2:#172723;
+  --card:#1B2C29;
+  --ink:#EEF4F1;
+  --ink-2:#C4D3CE;
+  --muted:#9DB1AC;
+  --border:#33473F;
+  --accent:#57DFCB;
+  --accent-dark:#3BBFAC;
+  --accent-ink:#08201C;
+  --good:#57DFCB;
+  --warn:#E7AC63;
+  --danger:#F0916D;
+  --danger-ink:#2B1208;
+  --band-bg:#0A1614;
+  --band-fg:#EEF4F1;
+  --warn-on-band:#F0C179;
+  --tag-sourced-bg:#123832; --tag-sourced-fg:#8CEBDA;
+  --tag-derived-bg:#3B331B; --tag-derived-fg:#E9D8A6;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#101B19; --paper-2:#172723; --card:#1B2C29;
+    --ink:#EEF4F1; --ink-2:#C4D3CE; --muted:#9DB1AC; --border:#33473F;
+    --accent:#57DFCB; --accent-dark:#3BBFAC; --accent-ink:#08201C;
+    --good:#57DFCB; --warn:#E7AC63; --danger:#F0916D; --danger-ink:#2B1208;
+    --band-bg:#0A1614; --band-fg:#EEF4F1; --warn-on-band:#F0C179;
+    --tag-sourced-bg:#123832; --tag-sourced-fg:#8CEBDA;
+    --tag-derived-bg:#3B331B; --tag-derived-fg:#E9D8A6;
+  }
+}
+:root[data-theme="light"]{
+  --paper:#F7F1E3; --paper-2:#EEE1C2; --card:#FFFFFF;
+  --ink:#17262A; --ink-2:#3A4F53; --muted:#53656A; --border:#D9CBA6;
+  --accent:#08786D; --accent-dark:#055B53; --accent-ink:#FFFFFF;
+  --good:#08786D; --warn:#7A4E10; --danger:#A8431F; --danger-ink:#FFFFFF;
+  --band-bg:#17262A; --band-fg:#F7F1E3; --warn-on-band:#E7B15C;
+  --tag-sourced-bg:#DCEFEC; --tag-sourced-fg:#0A5A52;
+  --tag-derived-bg:#EFE1BE; --tag-derived-fg:#5C4B1E;
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:var(--body-font); background:var(--paper); color:var(--ink);
+  line-height:1.55; overflow-x:hidden; font-variant-numeric:tabular-nums;
+}
+a{color:var(--accent-dark);}
+:focus-visible{outline:3px solid var(--accent-dark); outline-offset:2px;}
+img,svg{max-width:100%;}
+
+.skip-link{
+  position:absolute; left:8px; top:-60px; background:var(--ink); color:var(--paper);
+  padding:10px 16px; z-index:2000; border-radius:0 0 6px 6px; transition:top .15s ease;
+}
+.skip-link:focus{top:0;}
+
+
+.stripe-trim{
+  height:9px;
+  background:repeating-linear-gradient(45deg, var(--accent) 0 12px, transparent 12px 24px);
+  background-color:var(--paper-2);
+}
+
+
+#concept-banner{
+  background:var(--paper-2); border-bottom:2px solid var(--border);
+}
+.signage-inner{
+  max-width:1180px; margin:0 auto; padding:11px 24px;
+  font:700 14px/1.45 var(--body-font); color:var(--ink); text-align:center;
+}
+.signage-inner strong{color:var(--warn); font-weight:800;}
+
+
+.site-header{background:var(--paper); border-bottom:1px solid var(--border);}
+.site-header-inner{
+  max-width:1180px; margin:0 auto; padding:14px 24px; display:flex; align-items:center; gap:28px;
+}
+.wordmark{display:flex; align-items:center; gap:9px; text-decoration:none; color:var(--ink);
+  font-family:var(--display-font); font-weight:700; font-size:21px; letter-spacing:-.01em;}
+.wordmark-mark{color:var(--accent);}
+.wordmark-dot{color:var(--danger);}
+.site-nav{display:flex; gap:22px; margin-left:auto; font:700 14px/1 var(--body-font);}
+.site-nav a{color:var(--ink-2); text-decoration:none; padding:6px 0;}
+.site-nav a:hover{color:var(--accent-dark);}
+.nav-cta{white-space:nowrap;}
+@media (max-width:700px){ .site-header-inner .site-nav{display:none;} .site-header-inner .nav-cta{display:none;} }
+
+
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:.4em;
+  min-height:48px; padding:12px 24px; border-radius:7px;
+  font:800 15px/1 var(--body-font); text-decoration:none; border:2px solid transparent;
+  cursor:pointer; transition:background-color .15s ease,border-color .15s ease,color .15s ease;
+}
+.btn-primary{background:var(--accent); color:var(--accent-ink);}
+.btn-primary:hover{background:var(--accent-dark);}
+.btn-ghost{border-color:var(--ink); color:var(--ink); background:transparent;}
+.btn-ghost:hover{border-color:var(--accent-dark); color:var(--accent-dark);}
+
+
+.hero{max-width:none; padding:0; background:linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 130%);}
+.hero-inner{
+  max-width:1180px; margin:0 auto; padding:44px 24px 40px; display:grid;
+  grid-template-columns:1.15fr .85fr; gap:44px; align-items:end;
+}
+@media (max-width:900px){ .hero-inner{grid-template-columns:1fr;} }
+.eyebrow{
+  display:inline-block; font:800 12px/1 var(--body-font); letter-spacing:.08em; text-transform:uppercase;
+  color:var(--accent-dark); background:var(--card); border:1px solid var(--border);
+  border-radius:999px; padding:6px 14px; margin-bottom:18px;
+}
+h1{
+  font-family:var(--display-font); font-size:clamp(32px,4.6vw,52px); line-height:1.04;
+  letter-spacing:-.01em; margin:0 0 18px; text-wrap:balance; font-weight:700;
+}
+h1 em{font-style:normal; color:var(--accent-dark);}
+.lede{font-size:19px; color:var(--ink-2); max-width:58ch; margin:0 0 26px;}
+.cta-row{display:flex; gap:14px; flex-wrap:wrap;}
+
+.stat-block-h2{font-family:var(--display-font); font-weight:700; font-size:1.32rem; margin:0 0 6px; letter-spacing:-.01em;}
+.stat-block-sub{font-size:14px; color:var(--ink-2); margin:0;}
+.stat-strip{display:flex; border-top:2px solid var(--ink); margin-top:14px;}
+.stat{flex:1 1 0; padding:16px 20px 0 0; border-left:1px solid var(--border);}
+.stat:first-child{border-left:none; padding-left:0;}
+.stat:not(:first-child){padding-left:20px;}
+.stat-h{font-family:var(--display-font); font-weight:700; font-size:1.08rem; margin:0 0 6px; line-height:1.25;}
+.stat-p{font-size:12.5px; color:var(--ink-2); margin:0; line-height:1.5;}
+@media (max-width:820px){
+  .stat-strip{flex-direction:column;}
+  .stat{border-left:none; border-top:1px solid var(--border); padding:14px 0 0 !important;}
+  .stat:first-child{border-top:none;}
+}
+
+
+.find-panel{max-width:1180px; margin:0 auto; padding:8px 24px 56px;}
+.find-panel-label{
+  font-size:12px; text-transform:uppercase; letter-spacing:.06em; font-weight:800;
+  color:var(--muted); margin:0 0 12px;
+}
+.find-grid{
+  display:grid; grid-template-columns:1fr auto 1fr; gap:0; align-items:stretch;
+  background:var(--card); border:1px solid var(--border); border-radius:10px; overflow:hidden;
+}
+.find-state{padding:22px;}
+.find-before{background:var(--paper-2);}
+.find-after{background:var(--card); border-left:1px solid var(--border);}
+.find-arrow{display:flex; align-items:center; justify-content:center; padding:0 14px; color:var(--accent-dark); background:var(--card);}
+.find-tag{
+  display:inline-block; font:800 11px/1 var(--display-font); letter-spacing:.08em;
+  padding:5px 10px; border-radius:4px; background:var(--muted); color:var(--card); margin:0 0 14px;
+}
+.find-tag-after{background:var(--accent); color:var(--accent-ink);}
+.find-search-bar{
+  font:600 13px/1 var(--body-font); color:var(--ink-2); border:1px solid var(--border);
+  border-radius:999px; padding:9px 16px; margin-bottom:14px; background:var(--paper);
+}
+.find-results{list-style:none; margin:0 0 16px; padding:0; font-size:14px;}
+.find-row{padding:9px 10px; border-bottom:1px solid var(--border); color:var(--ink-2);}
+.find-row-ghost{
+  border:1.5px dashed var(--border); border-bottom:1.5px dashed var(--border);
+  border-radius:6px; color:var(--muted); font-style:italic; margin-top:4px;
+}
+.find-row-you{
+  background:var(--accent); color:var(--accent-ink); border-radius:6px; border-bottom:none;
+  font-weight:800; display:flex; justify-content:space-between; align-items:center; gap:8px;
+}
+.find-badge{
+  font-size:10px; text-transform:uppercase; letter-spacing:.04em; background:var(--accent-ink);
+  color:var(--accent-dark); padding:2px 7px; border-radius:4px; font-weight:800;
+}
+.find-map{position:relative; height:84px; background:var(--paper); border-radius:6px; border:1px solid var(--border);}
+.pin{position:absolute; width:14px; height:14px; border-radius:50% 50% 50% 0; transform:translate(-50%,-100%) rotate(-45deg);}
+.pin-solid{background:var(--muted);}
+.pin-ghost{border:2px dashed var(--muted); background:var(--paper);}
+.pin-you{background:var(--accent); width:17px; height:17px; box-shadow:0 0 0 4px rgba(8,120,109,.18);}
+:root[data-theme="dark"] .pin-you, @media (prefers-color-scheme:dark){.pin-you{box-shadow:0 0 0 4px rgba(87,223,203,.22);}}
+.find-caption{margin:16px 2px 0; font-size:13.5px; color:var(--ink-2); max-width:70ch;}
+@media (max-width:820px){
+  .find-grid{grid-template-columns:1fr;}
+  .find-arrow{padding:10px; transform:none;}
+  .find-arrow svg{transform:rotate(90deg);}
+  .find-after{border-left:none; border-top:1px solid var(--border);}
+}
+
+
+section{max-width:1180px; margin:0 auto; padding:60px 24px;}
+section.band{max-width:none; background:var(--paper-2);}
+section.band &gt; .inner{max-width:1180px; margin:0 auto; padding:0 24px;}
+h2{font-family:var(--display-font); font-size:clamp(25px,3.2vw,32px); margin:0 0 10px; letter-spacing:-.01em; font-weight:700;}
+.section-sub{color:var(--ink-2); margin:0 0 30px; max-width:64ch; font-size:16px;}
+
+
+.icp-grid{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+@media (max-width:760px){ .icp-grid{grid-template-columns:1fr;} }
+.icp-box{border:1px solid var(--border); border-radius:10px; padding:24px; background:var(--card); border-top:4px solid var(--border);}
+.icp-yes{border-top-color:var(--accent);}
+.icp-no{border-top-color:var(--danger);}
+.icp-box h3{
+  font-family:var(--display-font); font-weight:700; text-transform:uppercase; letter-spacing:.04em;
+  font-size:14px; margin:0 0 12px;
+}
+.icp-yes h3{color:var(--accent-dark);}
+.icp-no h3{color:var(--danger);}
+ul.tight{margin:0; padding-left:20px; color:var(--ink-2); font-size:15px; line-height:1.6;}
+ul.tight li{margin-bottom:8px;}
+ul.tight li:last-child{margin-bottom:0;}
+
+
+.get-list{list-style:none; margin:0; padding:0; border-top:1px solid var(--border);}
+.get-item{display:grid; grid-template-columns:14px 1fr; gap:18px; padding:22px 0; border-bottom:1px solid var(--border);}
+.get-item .dot{width:11px; height:11px; border-radius:50%; background:var(--accent); margin-top:7px;}
+.get-item h3{font:800 17px/1.3 var(--body-font); margin:0 0 6px; color:var(--ink);}
+.get-item p{margin:0; color:var(--ink-2); font-size:15px; line-height:1.55;}
+
+
+.price-card{
+  border:1px solid var(--border); border-radius:12px; background:var(--card);
+  overflow:hidden; position:relative;
+}
+.table-scroll{overflow-x:auto; padding:0 24px;}
+table.pricing{width:100%; border-collapse:collapse; min-width:520px;}
+table.pricing th,table.pricing td{
+  text-align:left; padding:16px 12px; border-bottom:1px solid var(--border); vertical-align:top; font-size:15px;
+}
+table.pricing th{font:800 12px/1 var(--body-font); text-transform:uppercase; letter-spacing:.05em; color:var(--muted);}
+table.pricing td.price{
+  font-family:var(--display-font); font-weight:700; font-size:19px; color:var(--accent-dark); white-space:nowrap;
+}
+table.pricing tr:last-child td{border-bottom:none;}
+.tier-name{font-weight:800;}
+.breakeven{
+  margin:22px; padding:18px 20px; border-radius:8px; background:var(--paper-2);
+  border:1px dashed var(--border); font-size:15px; color:var(--ink-2); line-height:1.6;
+}
+.breakeven strong{color:var(--ink);}
+
+
+.credential-list{border-top:2px solid var(--ink);}
+.credential-item{
+  padding:22px 0; border-bottom:1px solid var(--border); display:grid;
+  grid-template-columns:190px 1fr; gap:22px;
+}
+@media (max-width:700px){ .credential-item{grid-template-columns:1fr; gap:8px;} }
+.credential-tag{
+  font-family:var(--display-font); font-weight:700; font-size:13px; text-transform:uppercase;
+  letter-spacing:.05em; color:var(--accent-dark); margin:0;
+}
+.credential-item p:last-child{margin:0; color:var(--ink-2); font-size:15px; line-height:1.6;}
+.credential-item strong{color:var(--ink);}
+
+
+.proof-grid{display:grid; grid-template-columns:1.05fr .95fr; gap:28px; align-items:start;}
+@media (max-width:860px){ .proof-grid{grid-template-columns:1fr;} }
+.chart-wrap{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:24px;}
+.legend{display:flex; gap:20px; font-size:13px; color:var(--ink-2); margin-bottom:16px; flex-wrap:wrap;}
+.legend span{display:inline-flex; align-items:center; gap:7px;}
+.swatch{width:12px; height:12px; border-radius:3px; display:inline-block;}
+.bar-row{display:grid; grid-template-columns:170px 1fr; align-items:center; gap:12px; margin-bottom:22px;}
+.bar-row:last-child{margin-bottom:0;}
+.bar-label{font-size:13px; color:var(--ink-2); line-height:1.3;}
+.bar-track{position:relative; height:28px; background:var(--paper-2); border-radius:5px;}
+.bar-fill{position:absolute; top:2px; bottom:2px; border-radius:4px; cursor:default;}
+.bar-fill.market{background:var(--danger);}
+.bar-fill.us{background:var(--accent);}
+.bar-fill:hover{outline:2px solid var(--ink); outline-offset:1px;}
+.bar-val{position:absolute; top:-20px; font-size:11.5px; font-weight:700; color:var(--ink-2); white-space:nowrap;}
+figure{margin:0;}
+figcaption{font-size:12.5px; color:var(--muted); margin-top:14px; line-height:1.6;}
+.card{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:24px;}
+.card h3{margin-top:0;}
+.card p{color:var(--ink-2); font-size:14.5px;}
+
+
+.faq-list{border-top:1px solid var(--border);}
+.faq-item{padding:22px 0; border-bottom:1px solid var(--border);}
+.faq-item h3{margin:0 0 8px; font:800 16px/1.3 var(--body-font);}
+.faq-item p{margin:0; color:var(--ink-2); font-size:15px; line-height:1.6;}
+
+
+.cta-bar{max-width:none; padding:0; background:var(--band-bg); color:var(--band-fg); position:relative;}
+.cta-bar-inner{max-width:760px; margin:0 auto; padding:48px 24px 60px; text-align:center;}
+.cta-bar h2{color:var(--band-fg);}
+.cta-bar &gt; .cta-bar-inner &gt; p{color:var(--band-fg); opacity:.86; max-width:56ch; margin:0 auto 24px; font-size:16.5px;}
+.cta-bar .btn-primary{background:var(--accent); color:var(--accent-ink);}
+.cta-bar .btn-primary:hover{background:var(--accent-dark);}
+.contact-line{margin-top:20px; font-size:13px; color:var(--warn-on-band); opacity:1;}
+
+
+.mobile-cta-bar{display:none;}
+@media (max-width:700px){
+  .mobile-cta-bar{
+    display:block; position:fixed; left:0; right:0; bottom:0; z-index:900;
+    background:var(--card); border-top:1px solid var(--border);
+    padding:10px 16px calc(10px + env(safe-area-inset-bottom));
+  }
+  .mobile-cta-bar .btn{display:flex; width:100%;}
+  body{padding-bottom:78px;}
+}
+
+
+.tag{
+  display:inline-block; font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.04em;
+  padding:2px 7px; border-radius:5px; margin-left:6px; vertical-align:middle;
+}
+.tag-derived{background:var(--tag-derived-bg); color:var(--tag-derived-fg);}
+.tag-sourced{background:var(--tag-sourced-bg); color:var(--tag-sourced-fg);}
+
+footer{text-align:center; padding:30px 24px 40px; color:var(--muted); font-size:12.5px;}
+
+@media (prefers-reduced-motion: reduce){
+  *{transition:none !important; animation:none !important;}
+  html{scroll-behavior:auto !important;}
+}
+</style>
+</head>
+<body><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
+<a class="skip-link" href="#main">Skip to content</a>
+
+
+<div class="stripe-trim" aria-hidden="true"></div>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <a class="wordmark" href="#main">
+      <svg class="wordmark-mark" width="26" height="22" viewbox="0 0 28 24" aria-hidden="true" focusable="false">
+        <path d="M1 8 L4 1 H24 L27 8 Z" fill="currentColor"></path>
+        <rect x="3" y="8" width="22" height="15" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"></rect>
+        <rect x="11" y="14" width="6" height="9" fill="currentColor"></rect>
+      </svg>
+      Harborcite<span class="wordmark-dot">.</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="#pricing">Pricing</a>
+      <a href="#proof">Sample audit</a>
+    </nav>
+    <a class="btn btn-primary nav-cta" href="#pricing">See pricing</a>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero" aria-labelledby="hero-heading">
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <p class="eyebrow">SEO + AEO for local service businesses</p>
+      <h1 id="hero-heading">Get found where San Diego <em>actually</em> looks now.</h1>
+      <p class="lede">Google search, Google Maps, and AI answers like ChatGPT and AI Overviews — Harborcite gets your practice or shop showing up in all three, without a marketing hire or a $1,500/mo agency contract.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#pricing">See pricing</a>
+        <a class="btn btn-ghost" href="#proof">See a sample audit</a>
+      </div>
+    </div>
+    <div class="stat-block">
+      <h2 class="stat-block-h2">Why this matters right now</h2>
+      <p class="stat-block-sub">Fewer buyers are ever reaching a page of blue links to click.</p>
+      <div class="stat-strip" role="group" aria-label="Why this is happening now">
+        <div class="stat"><p class="stat-h">68% zero-click </p><p class="stat-p">68.01% of US Google searches in early 2026 ended with no click at all, up from 60.45% in 2024 (SparkToro / Search Engine Land analysis of Similarweb clickstream data, fetched 2026-07-29).</p></div>
+        <div class="stat"><p class="stat-h">83% on AI answers </p><p class="stat-p">Searches that trigger an AI Overview run about 83% zero-click, and only ~1% of AI Overview views produce a click to a cited source (Pew Research Center, "Do people click on links in Google AI summaries?", March 2025 browsing-panel data, published 2025-07-22, fetched 2026-07-29).</p></div>
+        <div class="stat"><p class="stat-h">A real pricing gap </p><p class="stat-p">Local SEO for a true single-location small business runs $100–$800/mo. AI-answer visibility is currently sold either as $1,500+/mo enterprise SaaS or bundled into $750–$3,000/mo retainers. There's no clean, cheap option built for a one-location shop.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="find-panel">
+    <p class="find-panel-label">Illustrative diagram — not real search results</p>
+    <div class="find-grid">
+      <div class="find-state find-before">
+        <p class="find-tag">Before</p>
+        <div class="find-search-bar">best [service] near me</div>
+        <ol class="find-results">
+          <li class="find-row">Local competitor</li>
+          <li class="find-row">Local competitor</li>
+          <li class="find-row find-row-ghost">— your business isn’t here —</li>
+        </ol>
+        <div class="find-map" aria-hidden="true">
+          <span class="pin pin-solid" style="left:28%; top:70%;"></span>
+          <span class="pin pin-solid" style="left:64%; top:55%;"></span>
+          <span class="pin pin-ghost" style="left:46%; top:32%;"></span>
+        </div>
+      </div>
+      <div class="find-arrow" aria-hidden="true">
+        <svg width="26" height="26" viewbox="0 0 24 24"><path d="M4 12h14m0 0l-5-5m5 5l-5 5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+      </div>
+      <div class="find-state find-after">
+        <p class="find-tag find-tag-after">After</p>
+        <div class="find-search-bar">best [service] near me</div>
+        <ol class="find-results">
+          <li class="find-row find-row-you">Your business <span class="find-badge">found</span></li>
+          <li class="find-row">Local competitor</li>
+          <li class="find-row">Local competitor</li>
+        </ol>
+        <div class="find-map" aria-hidden="true">
+          <span class="pin pin-you" style="left:46%; top:32%;"></span>
+          <span class="pin pin-solid" style="left:28%; top:70%;"></span>
+          <span class="pin pin-solid" style="left:64%; top:55%;"></span>
+        </div>
+      </div>
+    </div>
+    <p class="find-caption">A business that never gets named in the answer stays invisible — even with a perfectly good website. That’s the gap the numbers above are describing.</p>
+  </div>
+</section>
+
+<section id="who" aria-labelledby="who-heading">
+  <h2 id="who-heading">Who this is for</h2>
+  <p class="section-sub">Built around one specific owner, not a generic small-business pitch.</p>
+  <div class="icp-grid">
+    <div class="icp-box icp-yes">
+      <h3>You're a fit if</h3>
+      <ul class="tight">
+      <li>You run a <strong>single-location</strong>, owner-operated service business — dental, physical therapy, or a trade (plumbing, HVAC, electrical) to start.</li>
+      <li>Roughly <strong>$500K–$5M</strong> in annual revenue, no in-house marketing person.</li>
+      <li>You already have a website, but your Google Business Profile is thin or unclaimed, you rank page 2+ for your own core service in your own city, and you don't show up when someone asks ChatGPT or Google's AI answers "best [service] near me."</li>
+    </ul>
+    </div>
+    <div class="icp-box icp-no">
+      <h3>Not a fit (yet)</h3>
+      <ul class="tight">
+      <li>Multi-location chains and businesses that already have marketing staff.</li>
+      <li>Businesses already running paid Google Ads with a working advisor — you've already solved the visibility problem a different way.</li>
+    </ul>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="features" aria-labelledby="features-heading">
+  <div class="inner">
+    <h2 id="features-heading">What you actually get</h2>
+    <p class="section-sub">No dashboards you have to log into and figure out yourself — Harborcite does the work, you get a report.</p>
+    <ul class="get-list">
+      <li class="get-item"><span class="dot" aria-hidden="true"></span><div><h3>GBP + site + AI-citation audit</h3><p>A written, itemized audit of your Google Business Profile, your site's on-page SEO, and whether AI answer engines cite you at all — with a prioritized fix list, not a scare pitch.</p></div></li>
+      <li class="get-item"><span class="dot" aria-hidden="true"></span><div><h3>Google Business Profile buildout</h3><p>Category completion, service listings, photo and post cadence, and ongoing maintenance so your profile stops being the weakest link.</p></div></li>
+      <li class="get-item"><span class="dot" aria-hidden="true"></span><div><h3>Schema markup</h3><p>The structured-data layer that helps search engines and AI answer models understand and cite your business correctly.</p></div></li>
+      <li class="get-item"><span class="dot" aria-hidden="true"></span><div><h3>AI-citation monitoring</h3><p>Monthly or quarterly checks on whether ChatGPT, Google AI Overviews, and Perplexity are naming you for your core service + city queries.</p></div></li>
+      <li class="get-item"><span class="dot" aria-hidden="true"></span><div><h3>Content production</h3><p>Growth-tier only: on-page content built to be citeable by AI answer engines, not just ranked by classic SEO.</p></div></li>
+      <li class="get-item"><span class="dot" aria-hidden="true"></span><div><h3>Review-safe by policy</h3><p>We never buy, gate, or incentivize reviews — full stance below. Your listing's standing is not something we'll risk for a faster result.</p></div></li>
+    </ul>
+  </div>
+</section>
+
+<section id="pricing" aria-labelledby="pricing-heading">
+  <h2 id="pricing-heading">Pricing</h2>
+  <p class="section-sub">Anchored below the small-business-specific market range on purpose — this is built to undercut, not match, agency pricing.  from sourced market data, see demo section.</p>
+  <div class="price-card">
+    <div class="stripe-trim" aria-hidden="true"></div>
+    <div class="table-scroll">
+      <table class="pricing">
+        <thead>
+          <tr><th>Tier</th><th>Price</th><th>What's included</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="tier-name">Audit<br><span style="font-weight:400;color:var(--muted);font-size:12.5px;">one-time, entry offer</span></td>
+            <td class="price">$250–$400</td>
+            <td>GBP + site + AI-citation audit, written report, prioritized fix list.</td>
+          </tr>
+          <tr>
+            <td class="tier-name">Foundational<br><span style="font-weight:400;color:var(--muted);font-size:12.5px;">monthly retainer</span></td>
+            <td class="price">$300–$450<span style="font-size:12px;font-weight:600;">/mo</span></td>
+            <td>GBP optimization + maintenance, basic on-page SEO, monthly AI-citation check.</td>
+          </tr>
+          <tr>
+            <td class="tier-name">Growth<br><span style="font-weight:400;color:var(--muted);font-size:12.5px;">monthly retainer</span></td>
+            <td class="price">$750–$1,000<span style="font-size:12px;font-weight:600;">/mo</span></td>
+            <td>Everything in Foundational, plus content production, expanded schema markup, quarterly AI-answer citation push.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="breakeven">
+      <strong>Does this pay for itself?</strong> For a typical single-location service business with a $150–$400 average job (a cleaning, a session package, a service call), the Foundational retainer pays for itself at roughly <strong>one additional booked job per month</strong> attributable to improved visibility.  — not a guarantee, not a measured study. There is no per-business study quantifying lost jobs from poor visibility; this is bottom-up reasoning from typical ticket sizes, stated as such.
+    </div>
+  </div>
+</section>
+
+<section class="band" id="credentials" aria-labelledby="credentials-heading">
+  <div class="inner">
+    <h2 id="credentials-heading">Where we draw the line</h2>
+    <p class="section-sub">The compliance surface for this business is narrow, and we'd rather over-explain it than smooth it over.</p>
+    <div class="credential-list">
+      <div class="credential-item">
+        <p class="credential-tag">FTC review rule</p>
+        <p><strong>Reviews: we don't touch them the risky way.</strong> The FTC's Consumer Reviews and Testimonials Rule (16 CFR Part 465, finalized August 2024, effective October 21, 2024) carries civil penalties up to $51,744 per violation for fake or incentivized reviews, review-gating, or undisclosed insider reviews.  — corroborated via FTC's own press release, the Federal Register listing, and a law-firm summary; the underlying regulatory text itself has not yet been directly quote-matched, so treat the citation as high-confidence secondary, not primary-verified, until that pass is done.</p>
+      </div>
+      <div class="credential-item">
+        <p class="credential-tag">Google GBP policy</p>
+        <p><strong>Google's own Fake Engagement policy</strong> (support.google.com/business/answer/14114287, directly fetched and quoted 2026-07-29) is the day-to-day operating constraint: a profile found in violation can have new reviews blocked, existing reviews unpublished, and a warning label applied — that's the client's listing at risk, not just ours. </p>
+      </div>
+      <div class="credential-item">
+        <p class="credential-tag">Licensing</p>
+        <p>No professional-licensing regime applies to this business itself — it's a marketing service, not a regulated profession. The compliance surface is entirely the review/advertising side above.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="proof" aria-labelledby="proof-heading">
+  <h2 id="proof-heading">See it, don't just take our word for it</h2>
+  <p class="section-sub">Two things: how the market actually prices this today, and what a sample audit looks like.</p>
+  <div class="proof-grid">
+    <figure class="chart-wrap">
+      <div class="legend">
+        <span><span class="swatch" style="background:#D9714E"></span>Market pricing today</span>
+        <span><span class="swatch" style="background:#0A9C8F"></span>Harborcite tiers</span>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Local SEO,<br>small-biz specific</div>
+        <div class="bar-track">
+          <div class="bar-fill market" style="left:5%; width:26%;" title="$100–$800/mo">
+            <span class="bar-val" style="left:0;">$100–$800/mo</span>
+          </div>
+        </div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">AEO tools &amp; agencies,<br>small-biz range</div>
+        <div class="bar-track">
+          <div class="bar-fill market" style="left:5%; width:48%;" title="$99–$1,500+/mo">
+            <span class="bar-val" style="left:0;">$99–$1,500+/mo</span>
+          </div>
+        </div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Harborcite<br>Foundational</div>
+        <div class="bar-track">
+          <div class="bar-fill us" style="left:9%; width:11%;" title="$300–$450/mo">
+            <span class="bar-val" style="left:9%;">$300–$450/mo</span>
+          </div>
+        </div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Harborcite<br>Growth</div>
+        <div class="bar-track">
+          <div class="bar-fill us" style="left:23%; width:8%;" title="$750–$1,000/mo">
+            <span class="bar-val" style="left:23%;">$750–$1,000/mo</span>
+          </div>
+        </div>
+      </div>
+      <figcaption>
+        Scale: $0–$3,000/mo, left-anchored. Market ranges: seo.com/blog/local-seo-pricing (small-business-specific tier), fetched 2026-07-29;
+        AEO range cross-checked across StackMatix, SemNexus, DoodleWeb, RevvGrowth, OutreachBloom pricing pages, fetched 2026-07-29 — see RESEARCH.md §2.
+        Harborcite tiers are this pitch's proposed pricing,  from the market data, not yet sold.
+      </figcaption>
+    </figure>
+    <div class="card">
+      
+      <h3 style="margin-top:0;">Sample audit report</h3>
+      <p style="color:var(--ink-2); font-size:14.5px;">A one-page mockup of what a client gets back from the $250–$400 audit — Google Business Profile score, on-page findings, and an AI-citation check across three assistants.</p>
+      <p style="color:var(--ink-2); font-size:14.5px;">Every number on it is <strong>illustrative</strong>, built for a fictional business, not a real client.</p>
+      <p style="margin-top:16px;"><a class="btn btn-ghost" href="./media/sample-audit-report.html" style="font-size:14px; padding:10px 16px;">Open sample audit →</a></p>
+      <p style="margin-top:14px;"><a class="btn btn-ghost" href="./media/ai-citation-before-after.html" style="font-size:14px; padding:10px 16px;">Open AI-answer before/after →</a></p>
+    
+    </div>
+  </div>
+</section>
+
+<section class="band" id="faq" aria-labelledby="faq-heading">
+  <div class="inner">
+    <h2 id="faq-heading">The questions people actually ask</h2>
+    <div class="faq-list">
+      <div class="faq-item"><h3>How is this different from the spam "your website needs work" emails I get every week?</h3><p>Transparency and scope. You get a paid, itemized audit ($250–$400, one-time, no retainer commitment) with the underlying findings shown, not a vague scare pitch. And a public compliance stance — see below — that the mass-email pattern doesn't have.</p></div>
+      <div class="faq-item"><h3>What is AEO, actually — is this a real thing or a buzzword?</h3><p>68% of Google searches now end without a click (SparkToro/Search Engine Land), and searches that trigger an AI Overview run around 83% zero-click, with only ~1% of AI Overview views producing a click to a cited source (Pew Research Center, March 2025 panel data, published 2025-07-22).  AEO is the response to that shift: getting cited inside an AI-generated answer matters because fewer buyers ever reach a page of results to click a link at all.</p></div>
+      <div class="faq-item"><h3>How much does this cost and what do I actually get?</h3><p>Three tiers, shown above, anchored below the small-business-specific market range on purpose. The one-time audit is a low-commitment way to see the findings before you commit to a retainer.</p></div>
+      <div class="faq-item"><h3>Will you buy or manipulate my Google reviews?</h3><p>No. We will never solicit, incentivize, gate, or filter your reviews. That's not a disclaimer, it's the point — a vendor that manipulates your GBP risks getting YOUR listing suspended, not just their own reputation.</p></div>
+      <div class="faq-item"><h3>How do I know this pays for itself?</h3><p>The breakeven line above: roughly one additional booked job a month at a typical local-service ticket size covers the Foundational tier. Stated plainly as modeled reasoning, not a guarantee.</p></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<section class="cta-bar" id="contact" aria-labelledby="cta-heading">
+  <div class="stripe-trim" aria-hidden="true"></div>
+  <div class="cta-bar-inner">
+    <h2 id="cta-heading">Let's see if there's a fit</h2>
+    <p>Harborcite is early-access — this is a pitch, not a live signup. The ask is small: 15 minutes to look at your own Google Business Profile and AI-answer visibility together, no commitment.</p>
+    <a class="btn btn-primary" href="#">Request a 15-minute look</a>
+    <p class="contact-line">PLACEHOLDER CONTACT — no live inbox yet. Real contact channel to be set up before this goes anywhere near a real prospect.</p>
+  </div>
+</section>
+
+<footer>
+  Harborcite is a alpha product prepared for internal review. Not a registered business. No client relationships exist. Pricing, figures, and mockups on this page are preview material, not live offers.
+</footer>
+
+<div class="mobile-cta-bar">
+  <a class="btn btn-primary" href="#pricing">See pricing</a>
+</div>
+</body>
+</html>

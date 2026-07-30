@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TallyHelm — Simulated Product Walkthrough</title>
+<style>
+  :root{
+    --ink:#16232b; --ink-2:#48606c; --ink-muted:#7c8f98;
+    --surface:#f7f5f0; --surface-2:#ffffff; --line:#dcd6c8;
+    --navy:#16303d; --navy-2:#1f4a5c; --gold:#b9863a; --gold-2:#e0b06a;
+    --good:#3f7d5c; --warn:#b9863a; --focus:#1f4a5c;
+    --banner-bg:#7a1f1f; --banner-ink:#fff5ee;
+    --sim-bg:#3a2f6b; --sim-ink:#f3efff;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --ink:#eef2f4; --ink-2:#b9c6cc; --ink-muted:#8fa0a8; --surface:#101a1f; --surface-2:#16232b; --line:#2b3a42; --navy:#9fd0e6; --navy-2:#7fb8d1; --gold:#e0b06a; --gold-2:#f0c988; --good:#7fc7a2; }
+  }
+  :root[data-theme="dark"]{ --ink:#eef2f4; --ink-2:#b9c6cc; --ink-muted:#8fa0a8; --surface:#101a1f; --surface-2:#16232b; --line:#2b3a42; --navy:#9fd0e6; --navy-2:#7fb8d1; --gold:#e0b06a; --gold-2:#f0c988; --good:#7fc7a2; }
+  :root[data-theme="light"]{ --ink:#16232b; --ink-2:#48606c; --ink-muted:#7c8f98; --surface:#f7f5f0; --surface-2:#ffffff; --line:#dcd6c8; --navy:#16303d; --gold:#b9863a; --good:#3f7d5c; }
+
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--surface); color:var(--ink); line-height:1.5;}
+  .concept-banner{
+    position:sticky; top:0; z-index:50; background:var(--banner-bg); color:var(--banner-ink);
+    text-align:center; padding:.55rem 1rem; font-weight:700; letter-spacing:.03em;
+    font-size:.85rem; text-transform:uppercase;
+  }
+  .sim-banner{
+    background:var(--sim-bg); color:var(--sim-ink); text-align:center; padding:.45rem 1rem;
+    font-weight:600; font-size:.8rem; letter-spacing:.04em; text-transform:uppercase;
+  }
+  header.hero{ padding:1.75rem 1.25rem 1.25rem; max-width:900px; margin:0 auto; }
+  header.hero h1{ margin:0 0 .35rem; font-size:1.5rem; color:var(--navy-2, var(--navy)); }
+  header.hero p{ margin:0; color:var(--ink-2); max-width:60ch; }
+  main{ max-width:900px; margin:0 auto; padding:0 1.25rem 3rem; }
+
+  .tabs{ display:flex; gap:.5rem; flex-wrap:wrap; margin:1.25rem 0 1rem; }
+  .tab-btn{
+    border:1px solid var(--line); background:var(--surface-2); color:var(--ink);
+    padding:.55rem .9rem; border-radius:999px; font-size:.85rem; cursor:pointer;
+    font-weight:600;
+  }
+  .tab-btn[aria-selected="true"]{ background:var(--navy); color:#fff; border-color:var(--navy); }
+  :root[data-theme="dark"] .tab-btn[aria-selected="true"], @media (prefers-color-scheme:dark){ .tab-btn[aria-selected="true"]{ color:#0d161a; } }
+
+  .panel{ display:none; background:var(--surface-2); border:1px solid var(--line); border-radius:14px; padding:1.25rem; }
+  .panel.active{ display:block; }
+  .panel h2{ margin-top:0; font-size:1.15rem; }
+  .illustrative-tag{
+    display:inline-block; background:var(--gold); color:#241a08; font-size:.7rem; font-weight:800;
+    letter-spacing:.04em; text-transform:uppercase; padding:.2rem .5rem; border-radius:5px; margin-bottom:.75rem;
+  }
+
+  .stepper{ display:flex; align-items:center; gap:.5rem; margin:1rem 0; }
+  .stepper button{
+    border:1px solid var(--line); background:var(--surface); color:var(--ink);
+    border-radius:8px; padding:.45rem .8rem; cursor:pointer; font-weight:600;
+  }
+  .stepper button:disabled{ opacity:.4; cursor:not-allowed; }
+  .step-dots{ display:flex; gap:.35rem; margin:0 .5rem; }
+  .step-dots span{ width:8px; height:8px; border-radius:50%; background:var(--line); display:inline-block; }
+  .step-dots span.on{ background:var(--gold); }
+
+  
+  .kpi-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:.75rem; margin:1rem 0; }
+  .kpi-card{ border:1px solid var(--line); border-radius:10px; padding:.85rem; background:var(--surface); }
+  .kpi-card .label{ font-size:.72rem; text-transform:uppercase; letter-spacing:.03em; color:var(--ink-muted); }
+  .kpi-card .value{ font-size:1.4rem; font-weight:800; color:var(--navy-2,var(--navy)); margin:.15rem 0; }
+  .kpi-card .sub{ font-size:.78rem; color:var(--ink-2); }
+  .bar-track{ background:var(--line); height:8px; border-radius:4px; overflow:hidden; margin-top:.4rem; }
+  .bar-fill{ height:100%; background:var(--good); border-radius:4px; }
+
+  
+  .thread{ display:flex; flex-direction:column; gap:.6rem; margin-top:1rem; }
+  .msg{ max-width:80%; padding:.6rem .8rem; border-radius:12px; font-size:.9rem; }
+  .msg.system{ align-self:center; background:transparent; color:var(--ink-muted); font-size:.75rem; text-transform:uppercase; letter-spacing:.03em; }
+  .msg.app{ align-self:flex-start; background:var(--surface); border:1px solid var(--line); }
+  .msg.advisor{ align-self:flex-end; background:var(--navy); color:#fff; }
+  :root[data-theme="dark"] .msg.advisor{ color:#0d161a; }
+  .queue-row{ display:flex; justify-content:space-between; align-items:center; border:1px solid var(--line); border-radius:10px; padding:.6rem .8rem; margin-top:.5rem; background:var(--surface); }
+  .queue-row .name{ font-weight:700; }
+  .queue-row .why{ font-size:.78rem; color:var(--ink-2); }
+  .pill{ font-size:.7rem; padding:.15rem .5rem; border-radius:999px; font-weight:700; }
+  .pill.due{ background:#fde3c8; color:#7a3c00; }
+  .pill.done{ background:#d6ecdd; color:#1f5c39; }
+  :root[data-theme="dark"] .pill.due{ background:#5c3a12; color:#ffd39a; }
+  :root[data-theme="dark"] .pill.done{ background:#1f4230; color:#a8e6c1; }
+
+  
+  .form-mock{ margin-top:1rem; display:grid; gap:.6rem; }
+  .field{ display:grid; gap:.2rem; }
+  .field label{ font-size:.78rem; color:var(--ink-muted); }
+  .field .input{ border:1px solid var(--line); border-radius:8px; padding:.55rem .7rem; background:var(--surface); font-size:.9rem; }
+  .field .input.filled{ background:#eaf3ea; border-color:var(--good); position:relative; }
+  :root[data-theme="dark"] .field .input.filled{ background:#123322; }
+  .autofill-tag{ font-size:.68rem; color:var(--good); font-weight:700; margin-left:.4rem; }
+
+  footer{ text-align:center; padding:1.5rem 1rem 2.5rem; color:var(--ink-muted); font-size:.8rem; }
+</style>
+</head>
+<body><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
+  
+  <div class="sim-banner">Simulated product walkthrough — every screen below is a scripted mockup, not a working app</div>
+
+  <header class="hero">
+    <h1>What using TallyHelm actually looks like</h1>
+    <p>Three scripted scenarios covering the four things Carsten's own hand-built dashboard already does for him:
+      KPI targets, contact cadence, form autofill, and low-friction client data entry. All names, numbers, and
+      client details on this page are invented for illustration and bounded against real comparable figures in
+      RESEARCH.md — none of it is a real client or a real result.</p>
+  </header>
+
+  <main>
+    <div class="tabs" role="tablist">
+      <button class="tab-btn" role="tab" aria-selected="true" data-panel="p1">1 · KPI Dashboard</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-panel="p2">2 · Contact Cadence Queue</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-panel="p3">3 · Form Autofill</button>
+    </div>
+
+    
+    <section class="panel active" id="p1">
+      <span class="illustrative-tag">Illustrative example — synthetic data</span>
+      <h2>Monday morning login: this quarter's KPI dashboard</h2>
+      <p style="color:var(--ink-2)">A solo advisor (illustrative: "Jordan, CFP®, 61 households") opens TallyHelm and sees
+        where they stand against the goals they set themselves — the same kind of tracking Carsten built by hand in a
+        spreadsheet.</p>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="label">New AUM — YTD goal</div>
+          <div class="value">$1.6M / $2.4M</div>
+          <div class="bar-track"><div class="bar-fill" style="width:67%"></div></div>
+          <div class="sub">67% of annual target, month 8 of 12</div>
+        </div>
+        <div class="kpi-card">
+          <div class="label">New households — YTD goal</div>
+          <div class="value">7 / 10</div>
+          <div class="bar-track"><div class="bar-fill" style="width:70%"></div></div>
+          <div class="sub">70% of annual target</div>
+        </div>
+        <div class="kpi-card">
+          <div class="label">Annual reviews completed</div>
+          <div class="value">38 / 61</div>
+          <div class="bar-track"><div class="bar-fill" style="width:62%"></div></div>
+          <div class="sub">23 households not yet reviewed this cycle</div>
+        </div>
+        <div class="kpi-card">
+          <div class="label">Referrals this quarter</div>
+          <div class="value">4</div>
+          <div class="sub">3 from existing clients, 1 CFP peer referral</div>
+        </div>
+      </div>
+      <p style="font-size:.82rem;color:var(--ink-muted); margin-top:1rem;">Illustrative example — the 61-household
+        count and $2.4M target are invented figures bounded to a solo-advisor scale (PreciseFP's own plan tiers,
+        RESEARCH.md §2, are priced around 100-profile increments, so a book in the tens-to-low-hundreds of households
+        is a realistic solo-practice size).</p>
+    </section>
+
+    
+    <section class="panel" id="p2">
+      <span class="illustrative-tag">Illustrative example — synthetic data</span>
+      <h2>The contact-cadence queue: who needs a touch this week</h2>
+      <p style="color:var(--ink-2)">Instead of a birthday-card default (the ad hoc pattern Kitces.com describes,
+        RESEARCH.md §3), TallyHelm surfaces who's actually due and why — pulled from each household's own
+        cadence rule (quarterly, semiannual, annual), not a generic blast.</p>
+      <div class="queue-row">
+        <div><div class="name">Diane &amp; Robert M.</div><div class="why">Quarterly check-in — 97 days since last contact</div></div>
+        <span class="pill due">Due</span>
+      </div>
+      <div class="queue-row">
+        <div><div class="name">Priya K.</div><div class="why">Annual review — market volatility flagged in her portfolio</div></div>
+        <span class="pill due">Due</span>
+      </div>
+      <div class="queue-row">
+        <div><div class="name">The Alvarez Trust</div><div class="why">Semiannual — contacted 6 days ago</div></div>
+        <span class="pill done">Logged</span>
+      </div>
+      <div class="thread">
+        <div class="msg system">Jordan opens Priya K.'s queue card</div>
+        <div class="msg app">Priya K. — annual review due. Last note (Feb): "Wants to discuss Roth conversion before
+          year-end." Suggested opener drafted below — edit before sending.</div>
+        <div class="msg advisor">"Hi Priya — flagging your annual review is due, and I want to revisit the Roth
+          conversion question before year-end deadlines. Do you have 30 min next week?"</div>
+        <div class="msg app">Logged to Priya K.'s contact record — retained per your firm's recordkeeping settings.</div>
+      </div>
+    </section>
+
+    
+    <section class="panel" id="p3">
+      <span class="illustrative-tag">Illustrative example — synthetic data</span>
+      <h2>Form autofill: reusing data you already entered once</h2>
+      <p style="color:var(--ink-2)">Not a second questionnaire builder (that's what PreciseFP already does,
+        RESEARCH.md §2/§7) — this pulls fields already sitting in the household record into a new form so nobody
+        retypes an address or a beneficiary name for the third time this year.</p>
+      <div class="form-mock">
+        <div class="field">
+          <label>Household name</label>
+          <div class="input filled">Diane &amp; Robert M. <span class="autofill-tag">auto-filled from record</span></div>
+        </div>
+        <div class="field">
+          <label>Mailing address</label>
+          <div class="input filled">1442 Larkspur Ln, San Diego, CA <span class="autofill-tag">auto-filled</span></div>
+        </div>
+        <div class="field">
+          <label>Primary custodian account #</label>
+          <div class="input filled">••••4471 <span class="autofill-tag">auto-filled, masked</span></div>
+        </div>
+        <div class="field">
+          <label>Reason for update (new field — needs input)</label>
+          <div class="input">Type here…</div>
+        </div>
+      </div>
+      <p style="font-size:.82rem;color:var(--ink-muted); margin-top:1rem;">Illustrative example — account numbers
+        shown masked by design; no real client data appears anywhere on this page.</p>
+    </section>
+
+    <div class="stepper">
+      <button id="prevBtn">← Previous</button>
+      <div class="step-dots"><span class="on"></span><span></span><span></span></div>
+      <button id="nextBtn">Next →</button>
+    </div>
+  </main>
+
+  <footer>TallyHelm — CONCEPT, early-access. This walkthrough is a scripted illustration built from Carsten Glass's
+    described workflow, not a live application.</footer>
+
+<script>
+  const tabs = Array.from(document.querySelectorAll('.tab-btn'));
+  const panels = Array.from(document.querySelectorAll('.panel'));
+  const dots = Array.from(document.querySelectorAll('.step-dots span'));
+  let idx = 0;
+  function show(i){
+    idx = (i + panels.length) % panels.length;
+    panels.forEach((p,n)=&gt;p.classList.toggle('active', n===idx));
+    tabs.forEach((t,n)=&gt;t.setAttribute('aria-selected', n===idx ? 'true':'false'));
+    dots.forEach((d,n)=&gt;d.classList.toggle('on', n===idx));
+  }
+  tabs.forEach((t,n)=&gt;t.addEventListener('click', ()=&gt;show(n)));
+  document.getElementById('nextBtn').addEventListener('click', ()=&gt;show(idx+1));
+  document.getElementById('prevBtn').addEventListener('click', ()=&gt;show(idx-1));
+</script>
+</body>
+</html>

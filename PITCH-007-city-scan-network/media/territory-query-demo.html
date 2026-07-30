@@ -1,0 +1,103 @@
+<meta charset="utf-8">
+<title>Beachhead Intel — territory query demo (simulated)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    color-scheme: light;
+    --surface-0: #f7f4ea; --surface-1: #fffdf6; --surface-2: #eee8d6;
+    --ink-primary: #211f16; --ink-secondary: #55503e; --ink-muted: #837c64;
+    --line: #ddd4b8; --brass: #9c6a1d; --olive: #4b5a2c; --rust: #8f3220; --rust-strong: #6f2618;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --surface-0: #18170f; --surface-1: #211f16; --surface-2: #2b281b;
+      --ink-primary: #f3efe0; --ink-secondary: #cbc3a4; --ink-muted: #948c6d;
+      --line: #40402c; --brass: #d9a13e; --olive: #8fae4e; --rust: #d97a5f; --rust-strong: #e8917a;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface-0: #18170f; --surface-1: #211f16; --surface-2: #2b281b;
+    --ink-primary: #f3efe0; --ink-secondary: #cbc3a4; --ink-muted: #948c6d;
+    --line: #40402c; --brass: #d9a13e; --olive: #8fae4e; --rust: #d97a5f; --rust-strong: #e8917a;
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background: var(--surface-0); color: var(--ink-primary); font-family: -apple-system, "Segoe UI", sans-serif; line-height:1.5; }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 0 20px 60px; }
+  .concept-banner, .sim-banner {
+    position: sticky; top: 0; z-index: 10; text-align: center; font-weight: 800; font-size: 0.8rem;
+    letter-spacing: 0.05em; text-transform: uppercase; padding: 9px 14px; color: #fff8ef;
+  }
+  .concept-banner { background: var(--rust); border-bottom: 2px solid var(--rust-strong); }
+  .sim-banner { top: 38px; background: var(--brass); color: #241a06; border-bottom: 2px solid #7c5316; }
+  h1 { font-size: 1.4rem; margin: 30px 0 4px; }
+  .sub { color: var(--ink-muted); margin-bottom: 26px; font-size: 0.9rem; }
+  .query-bar {
+    display: flex; gap: 8px; background: var(--surface-1); border: 1px solid var(--line);
+    border-radius: 8px; padding: 12px 14px; margin-bottom: 22px; font-family: monospace;
+  }
+  .query-bar input { flex:1; border:none; background:transparent; color: var(--ink-primary); font-family: monospace; font-size: 0.95rem; }
+  .query-bar button { background: var(--olive); color: #fbf9ef; border:none; border-radius: 6px; padding: 6px 14px; font-weight:700; cursor:pointer; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.86rem; background: var(--surface-1); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  th, td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; }
+  th { background: var(--surface-2); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--ink-muted); }
+  tr:last-child td { border-bottom: none; }
+  .badge { display:inline-block; font-size:0.68rem; font-weight:700; padding:2px 7px; border-radius: 4px; background: var(--surface-2); color: var(--ink-secondary); margin: 1px 2px 1px 0; }
+  .badge.rank1 { background: rgba(75,90,44,0.2); color: var(--olive); }
+  .illus-note { margin-top: 22px; font-size: 0.82rem; color: var(--ink-muted); border-top: 1px dashed var(--line); padding-top: 14px; }
+</style><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
+
+
+<div class="sim-banner">SIMULATED PRODUCT WALKTHROUGH — scripted, not a live system</div>
+
+<div class="wrap">
+  <h1>Territory query → ranked prospect list</h1>
+  <p class="sub">Scenario: a territory seller types a plain-language query for a city &amp; vertical and gets back a
+    ranked, capability-tagged roster. All rows below are an <strong>illustrative example</strong> — not a real
+    query result.</p>
+
+  <div class="query-bar">
+    <span style="color:var(--ink-muted)">&gt;</span>
+    <input value="espresso-machine service companies, Portland OR — rank by likely-to-buy" readonly>
+    <button>Scan</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>Business</th><th>Capability tags</th><th>Signal</th><th>Buyer-intel note</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Willamette Coffee Equip. Co.<br><span style="color:var(--ink-muted);font-size:0.78rem;">SE Portland</span></td>
+        <td><span class="badge rank1">espresso repair</span><span class="badge">commercial kitchen</span></td>
+        <td>Website mentions service on 3 named brands</td>
+        <td>Runs a competitor brand primarily — displacement candidate</td>
+      </tr>
+      <tr>
+        <td>Cascade Cafe Supply<br><span style="color:var(--ink-muted);font-size:0.78rem;">NE Portland</span></td>
+        <td><span class="badge rank1">espresso repair</span><span class="badge">wholesale</span></td>
+        <td>State registry: active, registered 2019</td>
+        <td>No equipment-brand mention found — addressable, unqualified on brand</td>
+      </tr>
+      <tr>
+        <td>Rose City Roasters Service<br><span style="color:var(--ink-muted);font-size:0.78rem;">Beaverton</span></td>
+        <td><span class="badge">espresso repair</span><span class="badge">roasting equip</span></td>
+        <td>Site down / unreachable — registry-only match</td>
+        <td>Capability inferred from registry SIC code, not website-confirmed</td>
+      </tr>
+      <tr>
+        <td>McMinnville Cafe Tech<br><span style="color:var(--ink-muted);font-size:0.78rem;">McMinnville — edge of metro</span></td>
+        <td><span class="badge rank1">espresso repair</span></td>
+        <td>City-by-city registry sweep catch (missed by 30-mile radius sweep)</td>
+        <td>Blind-spot catch — the kind of row a manual radius search misses</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="illus-note"><strong>Illustrative example.</strong> Business names, addresses, and signal notes above are
+    synthetic and constructed to demonstrate the output shape — not real businesses. Row count, tag vocabulary,
+    and the “edge of metro” catch pattern are plausibility-bounded against the real Portland proof build
+    (1,463 businesses, 4.9% measured brand-detection yield, and the documented radius-sweep blind spot) but this
+    specific query and its results were never run.</p>
+</div>

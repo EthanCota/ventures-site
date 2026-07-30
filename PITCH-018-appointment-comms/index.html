@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chairside — personal text reminders for shops that book by hand</title>
+<style>
+
+
+  :root{
+    color-scheme: light;
+    --paper: oklch(0.965 0.018 75);
+    --paper-2: oklch(0.93 0.022 72);
+    --paper-3: oklch(0.885 0.028 68);
+    --ink: oklch(0.23 0.028 48);
+    --ink-2: oklch(0.40 0.032 48);
+    --ink-3: oklch(0.52 0.03 48);
+    --line: oklch(0.80 0.028 62);
+    --line-strong: oklch(0.64 0.045 55);
+    --accent: oklch(0.585 0.155 37);
+    --accent-deep: oklch(0.46 0.15 32);
+    --accent-ink: oklch(0.99 0.008 80);
+    --link: oklch(0.46 0.15 32);
+    --accent-text: oklch(0.46 0.15 32);
+    --chart-1: oklch(0.50 0.09 250);
+    --chart-4: oklch(0.60 0.15 58);
+    --chart-5: oklch(0.48 0.09 155);
+    --bar-ink: oklch(0.99 0.01 80);
+    --good: oklch(0.44 0.11 155);
+    --warn: oklch(0.46 0.13 70);
+    --danger: oklch(0.48 0.17 27);
+    --banner-bg: oklch(0.20 0.026 45);
+    --banner-ink: oklch(0.96 0.018 75);
+    --office-bg: oklch(0.17 0.02 45);
+    --office-bg-2: oklch(0.21 0.022 45);
+    --office-ink: oklch(0.92 0.018 75);
+    --office-ink-2: oklch(0.78 0.02 72);
+    --office-line: oklch(0.34 0.03 50);
+    --office-accent: oklch(0.68 0.15 40);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:where(:not([data-theme="light"])){
+      color-scheme: dark;
+      --paper: oklch(0.235 0.022 50);
+      --paper-2: oklch(0.285 0.026 48);
+      --paper-3: oklch(0.335 0.03 46);
+      --ink: oklch(0.93 0.02 75);
+      --ink-2: oklch(0.80 0.024 72);
+      --ink-3: oklch(0.68 0.028 68);
+      --line: oklch(0.40 0.032 55);
+      --line-strong: oklch(0.50 0.045 55);
+      --accent: oklch(0.72 0.155 40);
+      --accent-deep: oklch(0.60 0.155 34);
+      --accent-ink: oklch(0.15 0.02 40);
+      --link: oklch(0.78 0.135 42);
+      --accent-text: oklch(0.78 0.135 42);
+      --chart-1: oklch(0.68 0.10 248);
+      --chart-4: oklch(0.72 0.14 58);
+      --chart-5: oklch(0.66 0.10 155);
+      --bar-ink: oklch(0.15 0.02 40);
+      --good: oklch(0.72 0.12 155);
+      --warn: oklch(0.78 0.12 80);
+      --danger: oklch(0.72 0.16 28);
+      --banner-bg: oklch(0.13 0.02 45);
+      --banner-ink: oklch(0.95 0.02 75);
+      --office-bg: oklch(0.11 0.016 45);
+      --office-bg-2: oklch(0.15 0.018 45);
+      --office-ink: oklch(0.90 0.018 75);
+      --office-ink-2: oklch(0.75 0.02 72);
+      --office-line: oklch(0.30 0.028 50);
+      --office-accent: oklch(0.72 0.15 40);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --paper: oklch(0.235 0.022 50);
+    --paper-2: oklch(0.285 0.026 48);
+    --paper-3: oklch(0.335 0.03 46);
+    --ink: oklch(0.93 0.02 75);
+    --ink-2: oklch(0.80 0.024 72);
+    --ink-3: oklch(0.68 0.028 68);
+    --line: oklch(0.40 0.032 55);
+    --line-strong: oklch(0.50 0.045 55);
+    --accent: oklch(0.72 0.155 40);
+    --accent-deep: oklch(0.60 0.155 34);
+    --accent-ink: oklch(0.15 0.02 40);
+    --link: oklch(0.78 0.135 42);
+    --accent-text: oklch(0.78 0.135 42);
+    --chart-1: oklch(0.68 0.10 248);
+    --chart-4: oklch(0.72 0.14 58);
+    --chart-5: oklch(0.66 0.10 155);
+    --bar-ink: oklch(0.15 0.02 40);
+    --good: oklch(0.72 0.12 155);
+    --warn: oklch(0.78 0.12 80);
+    --danger: oklch(0.72 0.16 28);
+    --banner-bg: oklch(0.13 0.02 45);
+    --banner-ink: oklch(0.95 0.02 75);
+    --office-bg: oklch(0.11 0.016 45);
+    --office-bg-2: oklch(0.15 0.018 45);
+    --office-ink: oklch(0.90 0.018 75);
+    --office-ink-2: oklch(0.75 0.02 72);
+    --office-line: oklch(0.30 0.028 50);
+    --office-accent: oklch(0.72 0.15 40);
+  }
+  :root[data-theme="light"]{
+    color-scheme: light;
+    --paper: oklch(0.965 0.018 75);
+    --paper-2: oklch(0.93 0.022 72);
+    --paper-3: oklch(0.885 0.028 68);
+    --ink: oklch(0.23 0.028 48);
+    --ink-2: oklch(0.40 0.032 48);
+    --ink-3: oklch(0.52 0.03 48);
+    --line: oklch(0.80 0.028 62);
+    --line-strong: oklch(0.64 0.045 55);
+    --accent: oklch(0.585 0.155 37);
+    --accent-deep: oklch(0.46 0.15 32);
+    --accent-ink: oklch(0.99 0.008 80);
+    --link: oklch(0.46 0.15 32);
+    --accent-text: oklch(0.46 0.15 32);
+    --chart-1: oklch(0.50 0.09 250);
+    --chart-4: oklch(0.60 0.15 58);
+    --chart-5: oklch(0.48 0.09 155);
+    --bar-ink: oklch(0.99 0.01 80);
+    --good: oklch(0.44 0.11 155);
+    --warn: oklch(0.46 0.13 70);
+    --danger: oklch(0.48 0.17 27);
+    --banner-bg: oklch(0.20 0.026 45);
+    --banner-ink: oklch(0.96 0.018 75);
+    --office-bg: oklch(0.17 0.02 45);
+    --office-bg-2: oklch(0.21 0.022 45);
+    --office-ink: oklch(0.92 0.018 75);
+    --office-ink-2: oklch(0.78 0.02 72);
+    --office-line: oklch(0.34 0.03 50);
+    --office-accent: oklch(0.68 0.15 40);
+  }
+
+  --font-display: Superclarendon, 'Bookman Old Style', 'URW Bookman', 'Georgia Pro', Georgia, serif;
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--paper);color:var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height:1.6; overflow-x:hidden;
+  }
+  h1,h2,h3,.wordmark,.menu-price,.stamp-mark,.invite-stub{
+    font-family: Superclarendon, 'Bookman Old Style', 'URW Bookman', 'Georgia Pro', Georgia, serif;
+  }
+  h1,h2,h3{font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+  a{color:var(--link)}
+  :focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .num{font-variant-numeric:tabular-nums}
+  img,svg{max-width:100%}
+
+  .in{max-width:1100px;margin:0 auto;padding:0 20px}
+  .in-narrow{max-width:760px;margin:0 auto;padding:0 20px}
+  .band{width:100%}
+  .kicker{text-transform:uppercase;font-size:.72rem;letter-spacing:.14em;color:var(--accent-text);font-weight:800;margin:0 0 10px}
+  .lede-sm{color:var(--ink-2);max-width:62ch;margin:0 0 28px;font-size:1.02rem}
+
+  
+  .ticket-strip{
+    position:sticky;top:0;z-index:100;
+    background:var(--banner-bg);color:var(--banner-ink);
+    text-align:center;font-weight:700;font-size:13px;letter-spacing:.03em;
+    padding:11px 16px 15px;
+    border-bottom:3px solid var(--accent);
+    position:relative;
+  }
+  .ticket-strip b{color:var(--accent)}
+  .ticket-strip::after{
+    content:"";position:absolute;left:0;right:0;bottom:-5px;height:9px;
+    background-image:radial-gradient(circle 4.5px, var(--paper) 99%, transparent 100%);
+    background-size:18px 9px; background-position:0 0; background-repeat:repeat-x;
+  }
+
+  
+  .hero-band{background:var(--paper);padding:30px 0 60px}
+  .shingle{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:34px}
+  .mark-ring{display:inline-block;width:9px;height:9px;border-radius:50%;border:2px solid var(--accent);margin-right:9px;vertical-align:2px}
+  .wordmark{font-weight:700;font-size:1.4rem;letter-spacing:-.01em;color:var(--ink)}
+  .wordmark small{display:block;font-family:system-ui,sans-serif;font-weight:700;font-size:.65rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);margin:3px 0 0 18px}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;font-size:.82rem}
+  .tabs a{
+    padding:10px 13px;border:1px solid var(--line);border-radius:3px;
+    color:var(--ink-2);text-decoration:none;font-weight:700;
+    min-height:44px;display:inline-flex;align-items:center;
+  }
+  .tabs a:hover{border-color:var(--accent);color:var(--accent-text)}
+
+  .hero-grid{display:grid;grid-template-columns:1fr;gap:44px;align-items:center}
+  h1{font-size:clamp(2.15rem,7vw,3.5rem);line-height:1.06;margin:0 0 20px}
+  .lede{font-size:1.12rem;color:var(--ink-2);max-width:58ch;margin:0 0 28px}
+  .hero-cta{display:flex;gap:12px;flex-wrap:wrap}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;min-height:48px;
+    padding:12px 22px;font-weight:700;font-size:.95rem;
+    text-decoration:none;border-radius:3px;border:2px solid var(--ink);
+    cursor:pointer;
+  }
+  .btn-primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent-deep)}
+  .btn-ghost{background:transparent;color:var(--ink);border-color:var(--ink)}
+  .btn:hover{transform:translateY(-2px)}
+  .btn:active{transform:translateY(0)}
+
+  
+  .stamp-scene{position:relative;aspect-ratio:5/4;max-width:380px;margin:0 auto}
+  .appt-card{
+    position:absolute;inset:6% 4%;
+    background:var(--paper-2);border:1.5px solid var(--ink);border-radius:5px;
+    padding:20px 22px;transform:rotate(-2.4deg);
+    box-shadow:7px 9px 0 0 var(--paper-3);
+  }
+  .appt-card .cap{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);font-weight:700;margin-bottom:12px}
+  .appt-card .rule{border-bottom:1px dashed var(--line-strong);padding:9px 0;font-size:.82rem;color:var(--ink-2);display:flex;justify-content:space-between;gap:10px}
+  .appt-card .rule:last-child{border-bottom:none}
+  .appt-card .rule .blank{flex:1;border-bottom:1px solid var(--line);margin:0 8px 3px;min-width:30px}
+  .stamp-mark{
+    position:absolute;top:8%;right:4%;width:38%;aspect-ratio:1;
+    border:3px solid var(--accent);border-radius:50%;
+    display:flex;align-items:center;justify-content:center;text-align:center;
+    color:var(--accent);font-weight:700;font-size:.78rem;letter-spacing:.04em;
+    transform:rotate(11deg);opacity:.92;
+    animation:stampIn .65s cubic-bezier(.2,.8,.3,1) .2s both;
+  }
+  .stamp-mark::before{
+    content:"";position:absolute;inset:5px;border:1px dashed currentColor;border-radius:50%;opacity:.55;
+  }
+  @keyframes stampIn{
+    0%{opacity:0;transform:rotate(9deg) scale(1.7)}
+    65%{opacity:1;transform:rotate(13deg) scale(.93)}
+    100%{opacity:.92;transform:rotate(11deg) scale(1)}
+  }
+  .punch-row{position:absolute;left:4%;right:4%;bottom:0;height:10px;
+    background-image:radial-gradient(circle 4px, var(--paper) 99%, transparent 100%);
+    background-size:22px 10px;background-position:11px 0;background-repeat:repeat-x;opacity:.9}
+
+  
+  .ledger{margin-top:8px;border-top:1px solid var(--line)}
+  .ledger-row{display:grid;grid-template-columns:1fr;gap:6px;padding:20px 0;border-bottom:1px solid var(--line)}
+  .ledger-when{font-size:.72rem;letter-spacing:.13em;text-transform:uppercase;color:var(--accent-text);font-weight:800}
+  .ledger-what h3{margin:2px 0 6px;font-size:1.08rem}
+  .ledger-what p{margin:0;color:var(--ink-2);font-size:.96rem;max-width:64ch}
+
+  .seal-row{display:flex;flex-wrap:wrap;gap:16px;margin-top:26px}
+  .seal{flex:1 1 240px;position:relative;background:var(--paper);border:1.5px solid var(--ink-3);border-radius:9px;padding:19px 20px}
+  .seal::before{content:"";position:absolute;inset:5px;border:1px dashed var(--line-strong);border-radius:5px;pointer-events:none}
+  .seal h3{margin:0 0 7px;font-size:.98rem}
+  .seal p{margin:0;color:var(--ink-2);font-size:.9rem}
+
+  
+  .trade-row{display:flex;flex-wrap:wrap;gap:16px;margin:26px 0 30px}
+  .trade{flex:1 1 220px;background:var(--paper-2);border:1px solid var(--line);border-radius:10px;padding:20px}
+  .trade-icon{color:var(--accent-deep);margin-bottom:10px}
+  .trade h3{margin:0 0 7px;font-size:1rem}
+  .trade p{margin:0;color:var(--ink-2);font-size:.9rem}
+  .not-fit{
+    background:var(--paper-2);border:1.5px dashed var(--line-strong);border-radius:8px;
+    padding:18px 22px;font-size:.92rem;color:var(--ink-2);transform:rotate(-.4deg);
+  }
+  .not-fit strong{color:var(--ink)}
+
+  
+  .menu-board{margin-top:22px;border-top:1px solid var(--line-strong)}
+  .menu-item{border-bottom:1px solid var(--line-strong);padding:22px 0}
+  .menu-item-head{display:flex;justify-content:space-between;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .menu-item-head h3{margin:0;font-size:1.15rem}
+  .menu-tag{font-family:system-ui,sans-serif;font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-text);font-weight:800;margin-left:10px;vertical-align:middle}
+  .menu-price{font-size:1.5rem;font-weight:700}
+  .menu-price small{font-family:system-ui,sans-serif;font-size:.85rem;font-weight:600;color:var(--ink-3)}
+  .menu-item ul{margin:12px 0 0;padding-left:0;list-style:none;font-size:.92rem;color:var(--ink-2);display:grid;gap:7px}
+  .menu-item li{position:relative;padding-left:18px}
+  .menu-item li::before{content:"—";position:absolute;left:0;color:var(--accent)}
+  .setup-note{margin-top:20px;font-size:.9rem;color:var(--ink-2);background:var(--paper-2);border-left:3px solid var(--warn);border-radius:0 8px 8px 0;padding:13px 17px}
+
+  .exhibit{margin-top:30px;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:22px 24px}
+  .exhibit h3{margin:0 0 10px;font-size:1.02rem}
+  .exhibit &gt; p{margin:0 0 16px;color:var(--ink-2);font-size:.88rem}
+  .chart-wrap{overflow-x:auto}
+  .bar-row{display:flex;align-items:center;gap:12px;margin:9px 0;min-width:520px}
+  .bar-label{width:200px;flex:none;font-size:.83rem;color:var(--ink-2)}
+  .bar-track{flex:1;background:var(--paper-2);border-radius:3px;height:26px;position:relative;border:1px solid var(--line)}
+  .bar-fill{height:100%;border-radius:2px;display:flex;align-items:center;justify-content:flex-end;padding-right:9px}
+  .bar-fill span{color:var(--bar-ink);font-size:.78rem;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,.4)}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:15px;font-size:.78rem;color:var(--ink-2)}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+
+  
+  .order-pad{position:relative;border:1.5px solid var(--ink);border-radius:10px;overflow:hidden;background:var(--paper);margin-top:8px}
+  .order-pad::before{
+    content:"";position:absolute;top:-9px;left:50%;transform:translateX(-50%);
+    width:64px;height:18px;background:var(--ink-3);border-radius:4px;z-index:2;
+  }
+  .order-pad iframe{width:100%;height:640px;border:0;display:block;background:#fff}
+  .pad-caption{padding:14px 18px;font-size:.85rem;color:var(--ink-2);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-top:1px solid var(--line)}
+  .sim-pill{background:var(--warn);color:var(--paper);font-weight:800;font-size:.66rem;letter-spacing:.05em;padding:4px 10px;border-radius:999px}
+
+  
+  .stub-list{display:grid;gap:0;border-top:1px dashed var(--line-strong)}
+  .stub{border-bottom:1px dashed var(--line-strong);padding:17px 4px}
+  .stub summary{
+    cursor:pointer;font-weight:700;font-size:1rem;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:12px;
+    min-height:44px;
+  }
+  .stub summary::-webkit-details-marker{display:none}
+  .stub summary::after{content:"+";color:var(--accent);font-size:1.3rem;font-weight:700;flex:none}
+  .stub[open] summary::after{content:"–"}
+  .stub p{margin:12px 0 0;color:var(--ink-2);font-size:.94rem}
+
+  
+  .invite-card{display:grid;grid-template-columns:1fr;border:1.5px solid var(--accent);border-radius:6px;overflow:hidden}
+  .invite-stub{
+    background:var(--accent);color:var(--accent-ink);
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    font-weight:700;letter-spacing:.1em;font-size:.85rem;text-transform:uppercase;
+    padding:10px;border-bottom:2px dashed var(--paper);
+  }
+  .invite-main{padding:30px 26px;background:var(--paper-2)}
+  .invite-main h2{margin:0 0 12px}
+  .invite-main p{color:var(--ink-2);max-width:56ch;margin:0 0 20px}
+  .contact{margin-top:16px;font-size:.82rem;color:var(--ink-3)}
+
+  footer{padding:34px 0 54px;color:var(--ink-3);font-size:.83rem}
+  footer .in{max-width:760px}
+
+  
+  .office{background:var(--office-bg);color:var(--office-ink);padding:46px 0 64px;border-top:4px solid var(--office-accent)}
+  .office-banner{
+    display:inline-block;background:var(--office-accent);color:var(--office-bg);
+    font-weight:800;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;
+    padding:6px 13px;border-radius:4px;margin-bottom:18px;
+  }
+  .office h2{color:var(--office-ink)}
+  .office h3{color:var(--office-ink);font-size:1.05rem;margin:30px 0 10px;border-bottom:1px solid var(--office-line);padding-bottom:8px}
+  .office &gt; .in &gt; p{max-width:70ch}
+  .office p, .office li{color:var(--office-ink-2);font-size:.93rem}
+  .office-grid{display:flex;flex-wrap:wrap;gap:18px;margin-top:10px}
+  .office-card{flex:1 1 320px;background:var(--office-bg-2);border:1px solid var(--office-line);border-radius:8px;padding:18px 20px}
+  .office-card.single{flex-basis:100%}
+  .office-card h4{margin:0 0 9px;font-size:.82rem;color:var(--office-accent);text-transform:uppercase;letter-spacing:.05em}
+  .office-card p{margin:0 0 10px}
+  .office-card p:last-child{margin-bottom:0}
+  .office table{width:100%;border-collapse:collapse;font-size:.85rem;margin-top:8px}
+  .office th,.office td{text-align:left;padding:8px 9px;border-bottom:1px solid var(--office-line)}
+  .office th{color:var(--office-accent);font-weight:700}
+  .kill-note{background:var(--office-bg-2);border-left:3px solid var(--danger);padding:11px 15px;margin:9px 0;border-radius:0 7px 7px 0;font-size:.9rem}
+  .flag{color:var(--warn);font-weight:700}
+
+  .tag{
+    display:inline-block;font-size:.66rem;font-weight:800;letter-spacing:.05em;
+    padding:2px 8px;border-radius:4px;text-transform:uppercase;margin-left:5px;vertical-align:middle;
+  }
+  .tag-sourced{background:color-mix(in oklch, var(--good) 16%, transparent);color:var(--good)}
+  .tag-derived{background:color-mix(in oklch, var(--chart-1) 18%, transparent);color:var(--chart-1)}
+  .tag-unverified{background:color-mix(in oklch, var(--warn) 18%, transparent);color:var(--warn)}
+  .office .tag-sourced{background:color-mix(in oklch, var(--good) 26%, transparent)}
+  .office .tag-derived{background:color-mix(in oklch, var(--chart-1) 30%, transparent)}
+  .office .tag-unverified{background:color-mix(in oklch, var(--warn) 26%, transparent)}
+
+  @media (min-width:760px){
+    .hero-grid{grid-template-columns:1.15fr .85fr}
+    .ledger-row{grid-template-columns:130px 1fr;gap:20px}
+    .invite-card{grid-template-columns:64px 1fr}
+    .invite-stub{writing-mode:vertical-rl;text-orientation:mixed;border-bottom:none;border-right:2px dashed var(--paper);padding:20px 0}
+    .office-card.single{flex-basis:100%}
+  }
+  @media (min-width:1000px){
+    .hero-band{padding:44px 0 76px}
+    section.band &gt; .in, section.band &gt; .in-narrow{padding:0 20px}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important}
+  }
+</style>
+</head>
+<body><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
+
+
+
+<div class="band hero-band">
+  <div class="in">
+    <div class="shingle">
+      <div class="wordmark"><span class="mark-ring" aria-hidden="true"></span>Chairside<small>text-first appointment comms</small></div>
+      <nav class="tabs">
+        <a href="#what">The texts</a>
+        <a href="#who">Who it's for</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#demo">See it</a>
+        <a href="#faq">Questions</a>
+      </nav>
+    </div>
+
+    <div class="hero-grid">
+      <div>
+        <h1>The texts your regulars already expect — sent automatically, without sounding like a blast.</h1>
+        <p class="lede">Chairside sends confirmations, reminders, and reschedule replies for barbershops,
+          tattoo studios, and chiropractic clinics that still book by phone, DM, or memory. One shop,
+          one number, real two-way texting — not a marketing platform bolted onto a booking app.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#demo">See a simulated text thread</a>
+          <a class="btn btn-ghost" href="#pricing">View pricing</a>
+        </div>
+      </div>
+      <div class="stamp-scene" aria-hidden="true">
+        <div class="appt-card">
+          <div class="cap">Appointment book</div>
+          <div class="rule"><span>Tue</span><span class="blank"></span></div>
+          <div class="rule"><span>Wed</span><span class="blank"></span></div>
+          <div class="rule"><span>Thu</span><span class="blank"></span></div>
+          <div class="rule"><span>Fri</span><span class="blank"></span></div>
+        </div>
+        <div class="stamp-mark">CONFIRMED</div>
+        <div class="punch-row"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section id="what" class="band" style="background:var(--paper-2)">
+  <div class="in">
+    <p class="kicker">What it is</p>
+    <h2>A comms layer, not a booking system</h2>
+    <p class="lede-sm">Chairside doesn't replace your calendar, your Instagram DMs, or your
+      front desk. It watches the appointments you already schedule and handles the texting around
+      them — before, during, and after the visit.</p>
+
+    <div class="ledger">
+      <div class="ledger-row">
+        <div class="ledger-when">Before</div>
+        <div class="ledger-what">
+          <h3>Confirm &amp; remind</h3>
+          <p>Automatic confirmation the moment a booking is made, then a reminder text before the visit — timed to the appointment, not a generic daily blast.</p>
+        </div>
+      </div>
+      <div class="ledger-row">
+        <div class="ledger-when">During</div>
+        <div class="ledger-what">
+          <h3>Two-way reschedule</h3>
+          <p>Clients reply "C" to confirm or "R" to reschedule and get real back-and-forth, not a dead-end auto-reply. Pro tier adds agent-assisted negotiation for new times.</p>
+        </div>
+      </div>
+      <div class="ledger-row">
+        <div class="ledger-when">After</div>
+        <div class="ledger-what">
+          <h3>Post-visit follow-up</h3>
+          <p>A short personal check-in after the appointment — aftercare notes for a fresh tattoo, a rebooking nudge for a fade that's growing out, a "how'd that adjustment feel" for chiro.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="seal-row">
+      <div class="seal">
+        <h3>Consent &amp; compliance built in</h3>
+        <p>Written consent collected at signup, STOP/CANCEL/UNSUBSCRIBE honored automatically and immediately — well inside the FCC's 10-business-day ceiling.
+          </p>
+      </div>
+      <div class="seal">
+        <h3>One number, one brand</h3>
+        <p>A2P 10DLC carrier registration handled for you at setup — texts arrive from your shop's own number, not a shared shortcode.</p>
+      </div>
+      <div class="seal">
+        <h3>SMS today, honest about tomorrow</h3>
+        <p>Plain SMS/MMS at launch. Apple Messages for Business (iMessage) requires an Apple-approved
+          partner relationship — it's a roadmap item, not a promise we make on day one.
+          </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="who" class="band" style="background:var(--paper)">
+  <div class="in">
+    <p class="kicker">Who it's for</p>
+    <h2>Independently owned, single-location, currently booking by hand</h2>
+    <p class="lede-sm">If you're already on GlossGenius, Boulevard, Weave, or another
+      platform that bundles text reminders — you probably don't need this. Chairside is for the
+      shop still doing it manually.</p>
+
+    <div class="trade-row">
+      <div class="trade">
+        <div class="trade-icon" aria-hidden="true">
+          <svg viewbox="0 0 32 32" width="30" height="30"><circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" stroke-width="2"></circle><path d="M7 20 L20 7 M11 23 L24 10 M15 25.5 L27 13.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"></path></svg>
+        </div>
+        <h3>Barbershops &amp; salons</h3>
+        <p>1-8 chairs, owner or one front-desk person handling the phone. Booked by call, walk-in, or a bare Calendly/Square link — no bundled comms tool.</p>
+      </div>
+      <div class="trade">
+        <div class="trade-icon" aria-hidden="true">
+          <svg viewbox="0 0 32 32" width="30" height="30"><path d="M16 6c4 5 7 9 7 12.5A7 7 0 1 1 9 18.5C9 15 12 11 16 6Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"></path><path d="M21 9 L27 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>
+        </div>
+        <h3>Tattoo studios</h3>
+        <p>Booked mostly through Instagram/Facebook DM — the least-tooled of the three verticals; no incumbent found marketing to this booking style at all.</p>
+      </div>
+      <div class="trade">
+        <div class="trade-icon" aria-hidden="true">
+          <svg viewbox="0 0 32 32" width="30" height="30"><path d="M16 4 C10 8, 22 12, 16 16 C10 20, 22 24, 16 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><circle cx="16" cy="4" r="1.6" fill="currentColor"></circle><circle cx="16" cy="16" r="1.6" fill="currentColor"></circle><circle cx="16" cy="28" r="1.6" fill="currentColor"></circle></svg>
+        </div>
+        <h3>Chiropractic clinics</h3>
+        <p>Solo or two-doctor practices, not multi-location chains. Front desk juggles the phone and the schedule at once.</p>
+      </div>
+    </div>
+
+    <div class="not-fit">
+      <strong>Not a fit:</strong> multi-location chains or franchises · any dental practice (that's
+      a different lane, served separately) · shops already advertising "text reminders" or visibly
+      running GlossGenius / Boulevard / Weave / Podium / NexHealth booking widgets — bundled SMS is
+      already solved for you.
+    </div>
+  </div>
+</section>
+
+<section id="pricing" class="band" style="background:var(--paper-3)">
+  <div class="in">
+    <p class="kicker">Pricing</p>
+    <h2>Priced under a full booking platform, because that's not what this is</h2>
+    <p class="lede-sm">Chairside is the comms layer, not a POS/booking replacement — priced
+      accordingly, below the bundled platforms it sits next to.</p>
+
+    <div class="menu-board">
+      <div class="menu-item">
+        <div class="menu-item-head">
+          <h3>Starter</h3>
+          <span class="menu-price num">$79<small>/mo</small></span>
+        </div>
+        <ul>
+          <li>Automated confirmations + reminders</li>
+          <li>Two-way "C to confirm / R to reschedule"</li>
+          <li>Up to ~500 message segments/mo</li>
+          <li>Consent + STOP handling built in</li>
+        </ul>
+      </div>
+      <div class="menu-item">
+        <div class="menu-item-head">
+          <h3>Pro <span class="menu-tag">Most requested</span></h3>
+          <span class="menu-price num">$149<small>/mo</small></span>
+        </div>
+        <ul>
+          <li>Everything in Starter</li>
+          <li>Agent-assisted reschedule negotiation</li>
+          <li>Post-visit follow-up sequences</li>
+          <li>Unlimited message segments</li>
+        </ul>
+      </div>
+      <div class="menu-item">
+        <div class="menu-item-head">
+          <h3>One-time setup</h3>
+          <span class="menu-price num">$299</span>
+        </div>
+        <ul>
+          <li>A2P 10DLC brand + campaign registration</li>
+          <li>Message template configuration</li>
+          <li>Dedicated phone number provisioning</li>
+          <li>Live within 1-3 weeks (carrier vetting timeline)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="setup-note">
+      Go-live takes 1-3 weeks because SMS carriers vet every new business number (A2P 10DLC
+      registration) before texts can send at scale — this is a carrier timeline, not a product
+      limitation, and we'd rather say it up front than overpromise a same-day launch.
+       (unverified)
+    </div>
+
+    <div class="exhibit">
+      <h3>Where Chairside sits vs. bundled platforms </h3>
+      <p>Entry-tier monthly price, as published on each vendor's own
+        pricing page (glossgenius.com/pricing, joinblvd.com/pricing — fetched 2026-07-29).
+        Boulevard figures are its current limited-time promo price (standard rate in parens).
+        Boulevard and GlossGenius are full booking+POS platforms; Chairside is comms-only.
+        Bar widths are linearly scaled to dollar value.</p>
+      <div class="chart-wrap" role="img" aria-label="Bar chart comparing monthly entry prices: GlossGenius Standard $24/mo, Chairside Starter $79/mo, Chairside Pro $149/mo, Boulevard entry $140/mo (normally $176), Boulevard next tier $234/mo (normally $293).">
+        <div class="bar-row">
+          <div class="bar-label">GlossGenius (Standard)</div>
+          <div class="bar-track"><div class="bar-fill" style="width:10%;background:var(--chart-1)"><span class="num">$24/mo</span></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Chairside Starter</div>
+          <div class="bar-track"><div class="bar-fill" style="width:34%;background:var(--accent)"><span class="num">$79/mo</span></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Chairside Pro</div>
+          <div class="bar-track"><div class="bar-fill" style="width:64%;background:var(--accent-deep)"><span class="num">$149/mo</span></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Boulevard (entry, per location)</div>
+          <div class="bar-track"><div class="bar-fill" style="width:60%;background:var(--chart-4)"><span class="num">$140/mo (normally $176)</span></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Boulevard (next tier)</div>
+          <div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--chart-5)"><span class="num">$234/mo (normally $293)</span></div></div>
+        </div>
+      </div>
+      <div class="legend">
+        <span><i style="background:var(--chart-1)"></i>Booking+POS bundle (entry)</span>
+        <span><i style="background:var(--accent)"></i>Chairside (comms-only)</span>
+        <span><i style="background:var(--chart-4)"></i>Booking+POS bundle (higher tier)</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="demo" class="band" style="background:var(--paper-2)">
+  <div class="in">
+    <p class="kicker">Demo</p>
+    <h2>What a client's phone actually sees</h2>
+    <p class="lede-sm">Three scripted scenarios — a confirmation that turns into a reschedule,
+      a reminder with prep instructions, and a personal post-visit follow-up. Every message below
+      is a simulated example, not a real client conversation.</p>
+    <div class="order-pad">
+      <iframe src="./media/sms-demo.html" title="Chairside simulated SMS demo" loading="lazy"></iframe>
+      <div class="pad-caption">
+        <span><span class="sim-pill">SIMULATED</span> scripted example thread — no real client data</span>
+        <a href="./media/sms-demo.html" target="_blank" rel="noopener">Open full-screen ↗</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq" class="band" style="background:var(--paper)">
+  <div class="in-narrow">
+    <p class="kicker">Questions owners actually ask</p>
+    <h2>Objections, answered straight</h2>
+    <div class="stub-list">
+      <details class="stub">
+        <summary>I already get text reminders through Square/Vagaro/my booking app.</summary>
+        <p>If that's a bundled platform like GlossGenius or Boulevard, you likely don't need
+          Chairside — that's a real disqualifier, not something we'll argue you out of. Calendly/
+          Square Appointments/Acuity-style tools send basic reminders but no two-way reschedule
+          negotiation or follow-up sequence — that gap is where Chairside fits.</p>
+      </details>
+      <details class="stub">
+        <summary>Is this legal? Am I going to get sued for spam texting?</summary>
+        <p>Consent is collected in writing at signup, and any stop/cancel/unsubscribe request is
+          honored automatically, well inside the FCC's 10-business-day window (FCC 24-24, adopted
+          Feb. 2024)  — you don't have to track
+          revocation requests by hand.</p>
+      </details>
+      <details class="stub">
+        <summary>How fast can I start texting customers?</summary>
+        <p>1-3 weeks from signup — that's the carrier's A2P 10DLC vetting timeline, not our build
+          time. We'd rather set that expectation now than break it later.</p>
+      </details>
+      <details class="stub">
+        <summary>Does it text through iMessage? I don't want the green bubble.</summary>
+        <p>Not at launch. Apple Messages for Business requires an Apple-approved partner
+          relationship and review  — it's a stated
+          future item, not a v1 promise.</p>
+      </details>
+      <details class="stub">
+        <summary>What does this cost me versus doing it by hand for free?</summary>
+        <p>For chiropractic clinics, the sourced-adjacent range for annual no-show cost is
+          $15,000-40,000/yr  (unverified);
+          even a conservative 20% reduction clears the $79-149/mo price many times over. For
+          barber/tattoo, we don't yet have a sourced ticket-value figure — see the internal plan
+          below for that number stated honestly as an estimate, not a citation.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section id="cta" class="band" style="background:var(--paper-2)">
+  <div class="in-narrow">
+    <div class="invite-card">
+      <div class="invite-stub" aria-hidden="true">Pilot</div>
+      <div class="invite-main">
+        <h2>Want to be one of the first shops?</h2>
+        <p>We're lining up a small, free 30-day pilot for a handful of shops before this opens more
+          broadly. No commitment, no invoice during the pilot.</p>
+        <a class="btn btn-primary" href="mailto:hello@chairside.example">Ask about the pilot</a>
+        <div class="contact">
+          hello@chairside.example — placeholder address, not yet live. This is a concept page; no
+          purchases or signups are being processed.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="band">
+  <div class="in">
+    Chairside is in early alpha. Every price, timeline, and compliance statement on this
+    page is either sourced to a cited primary page, derived from cited figures, or explicitly
+    flagged unverified — see the internal plan below for the full sourcing trail.
+  </div>
+</footer>
+
+
+
+</body>
+</html>

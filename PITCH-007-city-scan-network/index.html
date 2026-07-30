@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Beachhead Intel — territory intelligence before you walk it</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Capability-tagged business intelligence for sales-territory prospecting, city by city.">
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+:root {
+  color-scheme: light;
+  --paper: oklch(96.8% 0.014 145);
+  --paper-strong: oklch(93.2% 0.02 145);
+  --card: oklch(99% 0.006 145);
+  --ink: oklch(23% 0.02 145);
+  --ink-2: oklch(40% 0.032 145);
+  --ink-muted: oklch(53% 0.028 145);
+  --line: oklch(83% 0.02 145);
+  --line-strong: oklch(70% 0.026 145);
+  --accent: oklch(45% 0.105 138);
+  --accent-strong: oklch(35% 0.11 138);
+  --accent-ink: oklch(98% 0.008 138);
+  --brass: oklch(56% 0.135 74);
+  --brass-strong: oklch(43% 0.135 71);
+  --rust: oklch(45% 0.16 33);
+  --rust-strong: oklch(36% 0.15 30);
+  --rust-ink: oklch(98% 0.008 33);
+  --shadow: 0 1px 2px oklch(20% 0.02 145 / 0.08), 0 10px 26px oklch(20% 0.02 145 / 0.07);
+  --font-ui: system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "SF Compact Display", "SF Compact Text", "Segoe UI Semibold", "Roboto Condensed", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Source Code Pro", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+  --wrap: 1140px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --paper: oklch(17.5% 0.016 145);
+    --paper-strong: oklch(14.5% 0.014 145);
+    --card: oklch(22.5% 0.02 145);
+    --ink: oklch(93% 0.012 145);
+    --ink-2: oklch(80% 0.02 145);
+    --ink-muted: oklch(68% 0.026 145);
+    --line: oklch(33% 0.022 145);
+    --line-strong: oklch(43% 0.026 145);
+    --accent: oklch(76% 0.135 138);
+    --accent-strong: oklch(84% 0.12 138);
+    --accent-ink: oklch(15% 0.02 138);
+    --brass: oklch(77% 0.13 74);
+    --brass-strong: oklch(85% 0.11 71);
+    --rust: oklch(71% 0.15 33);
+    --rust-strong: oklch(81% 0.13 30);
+    --rust-ink: oklch(14% 0.02 33);
+    --shadow: 0 1px 2px oklch(0% 0 0 / 0.4), 0 10px 26px oklch(0% 0 0 / 0.35);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: oklch(17.5% 0.016 145);
+  --paper-strong: oklch(14.5% 0.014 145);
+  --card: oklch(22.5% 0.02 145);
+  --ink: oklch(93% 0.012 145);
+  --ink-2: oklch(80% 0.02 145);
+  --ink-muted: oklch(68% 0.026 145);
+  --line: oklch(33% 0.022 145);
+  --line-strong: oklch(43% 0.026 145);
+  --accent: oklch(76% 0.135 138);
+  --accent-strong: oklch(84% 0.12 138);
+  --accent-ink: oklch(15% 0.02 138);
+  --brass: oklch(77% 0.13 74);
+  --brass-strong: oklch(85% 0.11 71);
+  --rust: oklch(71% 0.15 33);
+  --rust-strong: oklch(81% 0.13 30);
+  --rust-ink: oklch(14% 0.02 33);
+  --shadow: 0 1px 2px oklch(0% 0 0 / 0.4), 0 10px 26px oklch(0% 0 0 / 0.35);
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --paper: oklch(96.8% 0.014 145);
+  --paper-strong: oklch(93.2% 0.02 145);
+  --card: oklch(99% 0.006 145);
+  --ink: oklch(23% 0.02 145);
+  --ink-2: oklch(40% 0.032 145);
+  --ink-muted: oklch(53% 0.028 145);
+  --line: oklch(83% 0.02 145);
+  --line-strong: oklch(70% 0.026 145);
+  --accent: oklch(45% 0.105 138);
+  --accent-strong: oklch(35% 0.11 138);
+  --accent-ink: oklch(98% 0.008 138);
+  --brass: oklch(56% 0.135 74);
+  --brass-strong: oklch(43% 0.135 71);
+  --rust: oklch(45% 0.16 33);
+  --rust-strong: oklch(36% 0.15 30);
+  --rust-ink: oklch(98% 0.008 33);
+  --shadow: 0 1px 2px oklch(20% 0.02 145 / 0.08), 0 10px 26px oklch(20% 0.02 145 / 0.07);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important; animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important; scroll-behavior: auto !important;
+  }
+}
+
+body { background: var(--paper); color: var(--ink); font-family: var(--font-ui); line-height: 1.55; -webkit-font-smoothing: antialiased; }
+.wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 24px; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+h1, h2, h3 { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.005em; color: var(--ink); text-wrap: balance; }
+h1 { font-size: clamp(2.05rem, 5vw, 3.3rem); line-height: 1.06; margin: 0 0 16px; letter-spacing: -0.015em; }
+h2 { font-size: clamp(1.25rem, 2.4vw, 1.6rem); text-transform: uppercase; letter-spacing: 0.03em; margin: 0 0 22px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+h3 { font-size: 1.04rem; margin: 0 0 8px; }
+p { color: var(--ink-2); margin: 0 0 1em; }
+a { color: var(--accent-strong); }
+:focus-visible { outline: 2px solid var(--accent-strong); outline-offset: 2px; border-radius: 2px; }
+section { padding: 54px 0; border-bottom: 1px solid var(--line); }
+section:last-of-type { border-bottom: none; }
+
+
+.concept-banner {
+  position: sticky; top: 0; z-index: 200;
+  background: var(--rust); color: var(--rust-ink);
+  font-family: var(--font-ui); font-weight: 700; font-size: 0.82rem; letter-spacing: 0.02em;
+  padding: 10px 16px; text-align: center; border-bottom: 1px solid var(--line-strong);
+  display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+}
+.concept-banner::before { content: ""; width: 8px; height: 8px; flex: none; background: var(--rust-ink); border-radius: 1px; }
+.concept-banner strong { font-weight: 800; }
+
+
+.topbar { background: var(--paper); border-bottom: 1px solid var(--line); }
+.topbar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 14px 24px; flex-wrap: wrap; }
+.brand-mark { display: inline-flex; align-items: center; gap: 9px; font-family: var(--font-display); font-weight: 700; letter-spacing: 0.01em; font-size: 1.02rem; color: var(--ink); text-decoration: none; }
+.brand-mark .glyph { width: 22px; height: 22px; flex: none; }
+.topnav { display: flex; align-items: center; gap: 22px; list-style: none; margin: 0; padding: 0; }
+.topnav a { color: var(--ink-2); text-decoration: none; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; }
+.topnav a:hover { color: var(--accent-strong); }
+@media (max-width: 760px) { .topnav { display: none; } }
+
+
+.btn { display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: var(--accent-ink); text-decoration: none; font-family: var(--font-ui); font-weight: 700; font-size: 0.92rem; padding: 12px 20px; border-radius: 4px; border: 1px solid transparent; }
+.btn:hover { background: var(--accent-strong); }
+.btn.secondary { background: transparent; color: var(--ink); border-color: var(--line-strong); }
+.btn.secondary:hover { border-color: var(--accent-strong); color: var(--accent-strong); }
+.btn.small { padding: 9px 15px; font-size: 0.8rem; }
+
+
+.hero { padding: 46px 0 58px; border-bottom: 1px solid var(--line); }
+.hero .wrap { display: grid; grid-template-columns: 1.05fr 1fr; gap: 40px; align-items: start; }
+.hero-eyebrow { font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.09em; text-transform: uppercase; color: var(--accent-strong); margin: 0 0 14px; }
+.hero .tagline { font-size: 1.1rem; max-width: 54ch; margin-bottom: 26px; }
+.hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 28px; }
+.hero-stats { display: flex; gap: 12px; flex-wrap: wrap; }
+.stat-pill { background: var(--card); border: 1px solid var(--line); border-radius: 4px; padding: 10px 14px; min-width: 124px; }
+.stat-pill b { display: block; font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 1.2rem; font-weight: 700; color: var(--ink); }
+.stat-pill span { display: block; font-size: 0.72rem; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.02em; margin-top: 2px; }
+
+
+.map-panel { background: var(--card); border: 1px solid var(--line); border-radius: 6px; box-shadow: var(--shadow); overflow: hidden; }
+.map-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--paper-strong); }
+.map-panel-query { font-size: 0.72rem; color: var(--ink-2); }
+.sim-badge, .sim-tag {
+  display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 0.66rem; font-weight: 700;
+  letter-spacing: 0.05em; text-transform: uppercase; color: var(--rust-strong);
+  background: color-mix(in srgb, var(--rust) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--rust) 40%, transparent);
+  padding: 3px 8px; border-radius: 3px;
+}
+.map-svg { display: block; width: 100%; height: auto; background: var(--paper-strong); }
+.map-readout { border-top: 1px solid var(--line); padding: 12px 14px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.map-readout b { display: block; font-size: 1.02rem; color: var(--ink); }
+.map-readout span { font-size: 0.66rem; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.02em; }
+
+
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 20px 22px; box-shadow: var(--shadow); }
+.card .tag {
+  display: inline-block; font-family: var(--font-mono); font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+  color: var(--brass-strong); background: color-mix(in srgb, var(--brass) 16%, transparent); border-radius: 3px; padding: 3px 8px; margin-bottom: 10px;
+}
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.non-icp { margin-top: 18px; padding: 14px 18px; border-left: 3px solid var(--rust); background: var(--paper-strong); font-size: 0.92rem; border-radius: 0 4px 4px 0; }
+@media (max-width: 760px) { .grid-2 { grid-template-columns: 1fr; } }
+
+
+.features { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.feature.card {
+  background: none; border: none; box-shadow: none; border-radius: 0;
+  display: grid; grid-template-columns: 230px 1fr; gap: 22px; padding: 22px 24px; margin: 0;
+}
+.features .feature.card:nth-child(odd) { background: var(--card); }
+.features .feature.card:nth-child(even) { background: var(--paper-strong); }
+.features .feature.card + .feature.card { border-top: 1px solid var(--line); }
+.feature h3 { font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.01em; font-size: 1rem; }
+@media (max-width: 700px) { .feature.card { grid-template-columns: 1fr; gap: 8px; } }
+
+
+.data-table-wrap, .table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; }
+table.data-table, table.pricing { width: 100%; border-collapse: collapse; font-size: 0.87rem; }
+table.data-table { min-width: 480px; }
+table.data-table th, table.data-table td, table.pricing th, table.pricing td { padding: 11px 15px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+table.data-table th, table.pricing th { font-family: var(--font-ui); text-transform: uppercase; font-size: 0.66rem; letter-spacing: 0.04em; color: var(--ink-muted); background: var(--paper-strong); }
+table.data-table tr:last-child td, table.pricing tr:last-child td { border-bottom: none; }
+table.data-table td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-weight: 700; text-align: right; white-space: nowrap; }
+table.pricing td.price { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-weight: 800; color: var(--ink); white-space: nowrap; }
+.bar-cell { display: flex; align-items: center; gap: 8px; }
+.bar-cell .track { flex: 1; min-width: 60px; background: var(--paper-strong); border-radius: 2px; height: 10px; overflow: hidden; }
+.bar-cell .fill { background: var(--accent); height: 100%; }
+.bar-cell .pct { font-size: 0.78rem; color: var(--ink-muted); width: 34px; text-align: right; }
+.chart-note { font-size: 0.82rem; color: var(--ink-muted); margin-top: 14px; }
+
+
+.demo-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; margin-top: 20px; }
+.demo-card { border: 1px solid var(--line); border-radius: 6px; padding: 20px 22px; background: var(--card); }
+
+
+details.faq { border: 1px solid var(--line); border-radius: 6px; padding: 2px 18px; margin-bottom: 10px; background: var(--card); }
+details.faq summary { cursor: pointer; font-weight: 700; font-family: var(--font-ui); padding: 14px 26px 14px 0; list-style: none; position: relative; }
+details.faq summary::-webkit-details-marker { display: none; }
+details.faq summary::after { content: "+"; position: absolute; right: 2px; top: 12px; font-family: var(--font-mono); color: var(--accent-strong); font-size: 1.15rem; }
+details.faq[open] summary::after { content: "\2212"; }
+details.faq p { padding-bottom: 16px; margin: 0; }
+
+
+.cta-box { border: 1px solid var(--line-strong); border-radius: 6px; background: var(--card); padding: 32px 32px 32px 36px; position: relative; }
+.cta-box::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--accent); border-radius: 6px 0 0 6px; }
+.cta-box h2 { border: none; padding: 0; margin: 0 0 10px; }
+.placeholder-contact { font-family: var(--font-mono); background: var(--paper-strong); padding: 3px 8px; border-radius: 3px; font-size: 0.85rem; }
+
+
+.internal-section { background: var(--paper-strong); border-top: 3px solid var(--rust); padding-bottom: 70px; }
+.internal-banner { background: var(--rust); color: var(--rust-ink); text-align: left; font-family: var(--font-mono); font-weight: 700; font-size: 0.76rem; letter-spacing: 0.02em; padding: 12px 16px; margin: 0 0 30px; border-radius: 4px; }
+.internal-section h2 { border-bottom-color: var(--rust); }
+.internal-block { margin-bottom: 30px; padding-left: 16px; border-left: 2px solid var(--line-strong); }
+.internal-block h3 { color: var(--rust-strong); font-family: var(--font-mono); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.02em; border-bottom: 1px dashed var(--line); padding-bottom: 6px; }
+.claim-tag { font-family: var(--font-mono); font-size: 0.7rem; padding: 1px 6px; border-radius: 3px; }
+.claim-tag.sourced { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent-strong); }
+.claim-tag.derived { background: color-mix(in srgb, var(--brass) 18%, transparent); color: var(--brass-strong); }
+.claim-tag.unverified { background: color-mix(in srgb, var(--rust) 16%, transparent); color: var(--rust-strong); }
+.internal-section table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: 10px 0; display: block; overflow-x: auto; }
+.internal-section th, .internal-section td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; }
+.internal-section ul { padding-left: 20px; }
+.internal-section li { margin-bottom: 8px; }
+
+footer.site-footer { padding: 30px 0 60px; text-align: center; color: var(--ink-muted); font-size: 0.84rem; }
+
+@media (max-width: 900px) {
+  .hero .wrap { grid-template-columns: 1fr; }
+}
+@media (max-width: 700px) {
+  section { padding: 38px 0; }
+  .cta-box { padding: 26px 22px 26px 26px; }
+}
+</style>
+</head>
+<body><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
+
+
+<div class="topbar">
+  <div class="wrap">
+    <a class="brand-mark" href="#top"><svg class="glyph" viewbox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9"></circle><path d="M12 3v4M12 17v4M3 12h4M17 12h4"></path><circle cx="12" cy="12" r="2.3" fill="var(--accent)" stroke="none"></circle></svg>Beachhead Intel</a>
+    <nav aria-label="Primary">
+      <ul class="topnav">
+        <li><a href="#what">What</a></li>
+        <li><a href="#who">Who</a></li>
+        <li><a href="#features">Capabilities</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#demo">Demo</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+    </nav>
+    <a class="btn small" href="#cta">Request a walkthrough</a>
+  </div>
+</div>
+
+<main>
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="hero-copy">
+      <p class="hero-eyebrow">Territory intelligence · field report</p>
+      <h1>Scan the territory before you walk it.</h1>
+      <p class="tagline">Capability-tagged business intelligence, built city by city, for anyone who has to answer
+      “who's actually in this territory, and what do they already run” before they can prospect it.</p>
+      <div class="hero-ctas">
+        <a class="btn" href="#cta">Request a territory walkthrough</a>
+        <a class="btn secondary" href="#demo">See the demo</a>
+      </div>
+      <div class="hero-stats">
+      <div class="stat-pill"><b>1,463</b><span>businesses profiled — Portland proof build</span></div>
+      <div class="stat-pill"><b>$0</b><span>tool cost to build it </span></div>
+      <div class="stat-pill"><b>1 day</b><span>build window </span></div>
+    </div>
+    </div>
+    <div class="map-panel">
+      <div class="map-panel-head">
+        <span class="map-panel-query mono">QUERY: sign &amp; print · Portland, OR</span>
+        <span class="sim-badge">Simulated</span>
+      </div>
+      <svg class="map-svg" viewbox="0 0 440 230" role="img" aria-labelledby="mapTitle mapDesc" xmlns="http://www.w3.org/2000/svg"><title id="mapTitle">Stylized territory-scan map, Portland proof build</title><desc id="mapDesc">Illustrative city-grid visualization of a capability-tagged business roster over a metro area. Simulated interface, not a live map or a real-time system.</desc><rect x="90" y="20" width="70" height="40" fill="var(--accent)" fill-opacity="0.14"></rect><rect x="230" y="100" width="70" height="40" fill="var(--accent)" fill-opacity="0.14"></rect><rect x="300" y="140" width="70" height="40" fill="var(--accent)" fill-opacity="0.14"></rect><rect x="20" y="140" width="70" height="40" fill="var(--accent)" fill-opacity="0.14"></rect><line x1="20" y1="10" x2="20" y2="220" stroke="var(--line)" stroke-width="1"></line><line x1="90" y1="10" x2="90" y2="220" stroke="var(--line)" stroke-width="1"></line><line x1="160" y1="10" x2="160" y2="220" stroke="var(--line)" stroke-width="1"></line><line x1="230" y1="10" x2="230" y2="220" stroke="var(--line)" stroke-width="1"></line><line x1="300" y1="10" x2="300" y2="220" stroke="var(--line)" stroke-width="1"></line><line x1="370" y1="10" x2="370" y2="220" stroke="var(--line)" stroke-width="1"></line><line x1="420" y1="10" x2="420" y2="220" stroke="var(--line)" stroke-width="1"></line><line x1="10" y1="20" x2="430" y2="20" stroke="var(--line)" stroke-width="1"></line><line x1="10" y1="60" x2="430" y2="60" stroke="var(--line)" stroke-width="1"></line><line x1="10" y1="100" x2="430" y2="100" stroke="var(--line)" stroke-width="1"></line><line x1="10" y1="140" x2="430" y2="140" stroke="var(--line)" stroke-width="1"></line><line x1="10" y1="180" x2="430" y2="180" stroke="var(--line)" stroke-width="1"></line><line x1="10" y1="210" x2="430" y2="210" stroke="var(--line)" stroke-width="1"></line><g><circle cx="20" cy="60" r="4" fill="var(--rust)" stroke="var(--card)" stroke-width="1.5"></circle><text x="28" y="63" font-family="var(--font-mono)" font-size="9.5" fill="var(--ink-2)">Wide-format</text></g><g><circle cx="20" cy="128" r="4" fill="var(--rust)" stroke="var(--card)" stroke-width="1.5"></circle><text x="28" y="131" font-family="var(--font-mono)" font-size="9.5" fill="var(--ink-2)">Vehicle wraps</text></g><g><circle cx="20" cy="196" r="4" fill="var(--rust)" stroke="var(--card)" stroke-width="1.5"></circle><text x="28" y="199" font-family="var(--font-mono)" font-size="9.5" fill="var(--ink-2)">Laser engraving</text></g><g><circle cx="232" cy="60" r="4" fill="var(--rust)" stroke="var(--card)" stroke-width="1.5"></circle><text x="240" y="63" font-family="var(--font-mono)" font-size="9.5" fill="var(--ink-2)">Dye-sub</text></g><g><circle cx="342" cy="128" r="4" fill="var(--rust)" stroke="var(--card)" stroke-width="1.5"></circle><text x="350" y="131" font-family="var(--font-mono)" font-size="9.5" fill="var(--ink-2)">DTF</text></g><g><circle cx="342" cy="196" r="4" fill="var(--rust)" stroke="var(--card)" stroke-width="1.5"></circle><text x="350" y="199" font-family="var(--font-mono)" font-size="9.5" fill="var(--ink-2)">CNC</text></g></svg>
+      <div class="map-readout">
+        <div><b class="mono">1,463</b><span>Businesses profiled</span></div>
+        <div><b class="mono">713</b><span>Reachable sites</span></div>
+        <div><b class="mono">4.9%</b><span>Brand-named</span></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="what">
+  <div class="wrap">
+    <h2>What it is</h2>
+    <p>Beachhead Intel builds a <strong>capability-tagged roster of every reachable business in a city×vertical</strong>
+      — not just names and addresses (that's a solved, commoditized problem) but what equipment, capability, or
+      service line each one actually runs, pulled from public state business registries, open map data, and each
+      business's own website. It's the same method that produced the working proof of concept:
+      <strong>portland-signs</strong>, a 1,463-business dataset of Portland-area sign, print, and graphics shops built
+      in a single day for zero metered tool cost .</p>
+    <p>The output is a static report or a standing subscription — a roster, ranked and tagged, that tells a
+      territory seller who's really out there, what they run, and where the manual-prospecting blind spots are.</p>
+  </div>
+</section>
+
+<section id="who">
+  <div class="wrap">
+    <h2>Who it's for</h2>
+    <div class="grid-2">
+      <div class="card">
+        
+        <h3>Territory sellers</h3>
+        <p>Independent manufacturer's reps, distributor and dealer sales managers, and franchise-development staff
+          who must answer “who's really in city X that could buy vertical Y, and what do they already run”
+          before they can prospect — today doing it by manual Maps browsing or paying for firmographic-only
+          databases that don't carry equipment or capability data at all.</p>
+      </div>
+      <div class="card">
+        
+        <h3>Dealer network sales reps</h3>
+        <p>Equipment-dealer sales reps (the flagship case: a wide-format printing equipment dealer network) who need
+          a ranked, city-scoped prospect list of shops with the right capability tags — the full addressable
+          universe, not just existing owners of one brand — plus displacement targets against competitors
+          already on the floor.</p>
+      </div>
+    </div>
+    <div class="non-icp"><strong>Not for:</strong> enterprise sales orgs already running ZoomInfo or D&amp;B
+      enterprise tiers with dedicated market-intel staff — they've solved this a different, more expensive way.
+      Not a consumer data product — this is business-entity data only.</div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <h2>Tools &amp; features</h2>
+    <div class="features">
+      <div class="feature card">
+        <h3>Capability tagging</h3>
+        <p>Every business gets tagged by what it actually does and runs — wide-format, vehicle wraps, laser
+          engraving, DTF, dye-sub, CNC and more — extracted from public website text, not guessed from category
+          codes.</p>
+      </div>
+      <div class="feature card">
+        <h3>Geographic-gap detection</h3>
+        <p>City-by-city sweep against the state business registry, not a fixed-radius circle from downtown —
+          catches the edge-of-metro businesses that radius-based prospecting structurally misses.</p>
+      </div>
+      <div class="feature card">
+        <h3>Displacement targeting</h3>
+        <p>Flags businesses that already run a <em>competitor's</em> equipment in a given capability class — a
+          ranked replacement-sale target list, not just a cold-prospect list.</p>
+      </div>
+      <div class="feature card">
+        <h3>Dealer briefing sheets</h3>
+        <p>For channel motions: a per-rep, per-territory sheet turning the raw roster into a workable call list with
+          capability context attached.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="proof">
+  <div class="wrap">
+    <h2>Proof, from the Portland build</h2>
+    <p>The Portland proof build tagged capability signals across 1,463 businesses. Here's the shape of what came
+      back — real counts from the actual build :</p>
+    <div class="data-table-wrap"><table class="data-table"><thead><tr><th scope="col">Capability</th><th scope="col">Count</th><th scope="col">Share of max (164)</th></tr></thead><tbody><tr><th scope="row">Wide-format</th><td class="num mono">164</td><td><div class="bar-cell"><div class="track"><div class="fill" style="width:100%"></div></div><span class="mono pct">100%</span></div></td></tr><tr><th scope="row">Vehicle wraps</th><td class="num mono">91</td><td><div class="bar-cell"><div class="track"><div class="fill" style="width:55%"></div></div><span class="mono pct">55%</span></div></td></tr><tr><th scope="row">Laser engraving</th><td class="num mono">46</td><td><div class="bar-cell"><div class="track"><div class="fill" style="width:28%"></div></div><span class="mono pct">28%</span></div></td></tr><tr><th scope="row">Dimensional letters</th><td class="num mono">43</td><td><div class="bar-cell"><div class="track"><div class="fill" style="width:26%"></div></div><span class="mono pct">26%</span></div></td></tr><tr><th scope="row">DTF</th><td class="num mono">30</td><td><div class="bar-cell"><div class="track"><div class="fill" style="width:18%"></div></div><span class="mono pct">18%</span></div></td></tr><tr><th scope="row">Dye-sub</th><td class="num mono">28</td><td><div class="bar-cell"><div class="track"><div class="fill" style="width:17%"></div></div><span class="mono pct">17%</span></div></td></tr><tr><th scope="row">CNC</th><td class="num mono">23</td><td><div class="bar-cell"><div class="track"><div class="fill" style="width:14%"></div></div><span class="mono pct">14%</span></div></td></tr></tbody></table></div>
+    <p class="chart-note">Capability-tag counts, Portland-metro proof build (1,463 businesses profiled, 713 reachable websites) . For comparison: only 35 of those 713 sites (4.9%) name any equipment <em>brand</em> at all — the sellable value here is the capability-tagged universe above, not a brand-ownership registry. </p>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <h2>Pricing</h2>
+    <div class="table-scroll">
+    <table class="pricing">
+      <thead><tr><th>Offer</th><th>Price</th><th>What's delivered</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Territory Snapshot Report</strong><br><span style="font-size:0.8rem;color:var(--ink-muted)">Motion 1 · one-time</span></td>
+          <td class="price">$750–$1,500<br><span style="font-size:0.72rem;font-weight:400;color:var(--ink-muted)">per city×vertical</span></td>
+          <td>Static report: business roster, capability tags, geographic-gap flags </td>
+        </tr>
+        <tr>
+          <td><strong>Standing Territory Subscription</strong><br><span style="font-size:0.8rem;color:var(--ink-muted)">Motion 1 · recurring</span></td>
+          <td class="price">$299–$499<span style="font-weight:400;font-size:0.8rem">/mo</span></td>
+          <td>Quarterly-refreshed roster + capability tags + new-registrant alerts </td>
+        </tr>
+        <tr>
+          <td><strong>Dealer-Channel Engagement</strong><br><span style="font-size:0.8rem;color:var(--ink-muted)">Motion 2 · services-hybrid</span></td>
+          <td class="price">$2,500–$5,000 setup<br>+ $750–$1,500<span style="font-weight:400;font-size:0.8rem">/mo</span></td>
+          <td>Dealer-rep briefing-sheet tooling: capability-ranked prospect lists + displacement targets, delivered as a recurring service </td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <p style="font-size:0.85rem;margin-top:14px;">No dedicated “territory report” product comp exists in the market we could find; the report tier is priced by build-cost-and-value, not copied from a comparable product.  (unverified) pricing rationale detail in the internal section below.</p>
+  </div>
+</section>
+
+<section id="demo">
+  <div class="wrap">
+    <h2>Simulated product walkthroughs</h2>
+    <p>Two scripted scenarios showing what actually using Beachhead Intel looks like. Every scenario below is a
+      simulated interaction — not a live system.</p>
+    <div class="demo-links">
+      <div class="demo-card">
+        <span class="sim-tag">Simulated</span>
+        <h3>Territory query → ranked prospect list</h3>
+        <p>A territory seller queries a city &amp; vertical and gets back a ranked, capability-tagged list.</p>
+        <a class="btn secondary" href="./media/territory-query-demo.html">Open walkthrough →</a>
+      </div>
+      <div class="demo-card">
+        <span class="sim-tag">Simulated</span>
+        <h3>Dealer-rep briefing sheet</h3>
+        <p>The Mimaki-motion scenario: a dealer rep gets a per-territory briefing sheet with displacement targets.</p>
+        <a class="btn secondary" href="./media/dealer-briefing-demo.html">Open walkthrough →</a>
+      </div>
+    </div>
+  </div>
+
+  
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <h2>Questions we expect</h2>
+    <details class="faq">
+      <summary>Isn't this just scraped data you're reselling illegally, like every lead database that gets sued?</summary>
+      <p>No — and the distinction is specific, not a hand-wave. Sources here are state open-data business
+        registries (public government records, no platform terms apply), OpenStreetMap (ODbL, explicitly permits
+        reuse with attribution), and individual business websites under robots.txt / rate-limit discipline.
+        Google Maps/Places and Facebook/Instagram — the two platforms whose terms actually bar this kind of
+        commercial resale — are named, permanent non-sources and are not used.</p>
+    </details>
+    <details class="faq">
+      <summary>How good is your equipment-detection data, really — did you find our competitor's customers?</summary>
+      <p>Honestly: only 4.9% of reachable sites (35 of 713) name any equipment brand at all, and only 11 clearly say
+        they operate it. The sellable value isn't “we found everyone's exact machine” — it's the
+        much larger capability-tagged addressable universe (wide-format, wraps, laser, DTF, dye-sub, CNC) ranked for
+        prospecting, including displacement targets.</p>
+    </details>
+    <details class="faq">
+      <summary>How is this different from ZoomInfo, Apollo, D&amp;B, or Regrid?</summary>
+      <p>None of those sell physical-equipment or capability data as a line item — they sell who a business is
+        and how to contact it. This is a different data category entirely, not a cheaper version of the same one.</p>
+    </details>
+    <details class="faq">
+      <summary>Why pay $750–$1,500 for a one-off report when Infofree is $150–$275/mo?</summary>
+      <p>Infofree sells contact and firmographic lists — the same category as Apollo/ZoomInfo, just priced for
+        self-serve. It doesn't tag capability or equipment data at all. The report is a different product, priced on
+        build-value, and the Standing Subscription tier exists for buyers who want Infofree's recurring shape with
+        this data instead.</p>
+    </details>
+    <details class="faq">
+      <summary>What's in this for a dealer network specifically — aren't you just another vendor pitch?</summary>
+      <p>The capability-universe reframe turns this from “buy our database” into “here's your
+        existing territory, ranked, including which of your competitor's current customers are displaceable”
+        — a working artifact (the Portland build) exists to demo live, not a slide-deck claim.</p>
+    </details>
+  </div>
+</section>
+
+<section id="cta">
+  <div class="wrap">
+    <div class="cta-box">
+      <h2 style="border:none;">Want to see your territory scanned?</h2>
+      <p>The fastest way to evaluate this is a real territory walkthrough against a city and vertical you already
+        know — not a slide deck.</p>
+      <p>Contact (placeholder — not yet active): <span class="placeholder-contact">hello@beachheadintel.example</span></p>
+      <a class="btn" href="#demo">Revisit the demo</a>
+    </div>
+  </div>
+</section>
+
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">Beachhead Intel — a alpha product, not a live product. © 2026.</div>
+</footer>
+
+</body>
+</html>
