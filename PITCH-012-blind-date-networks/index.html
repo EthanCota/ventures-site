@@ -156,9 +156,12 @@
     color: var(--ink);
     background: transparent;
     min-height: 44px;
+    transition: border-bottom-color .14s ease, transform .14s ease, color .14s ease;
   }
   .btn-primary { color: var(--accent); }
   .btn-secondary { color: var(--muted); border-bottom-color: var(--line); }
+  .btn:hover { transform: translateY(-1px); }
+  .btn-secondary:hover { border-bottom-color: var(--accent); color: var(--accent); }
 
   section { padding: 50px 0; border-bottom: 1px solid var(--line); }
   section:last-of-type { border-bottom: none; }
@@ -256,6 +259,32 @@
     padding: 3px 10px;
     margin-bottom: 14px;
   }
+  .demo-frame-wrap {
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--card);
+    margin-top: 16px;
+  }
+  .demo-frame-wrap iframe {
+    width: 100%;
+    height: 620px;
+    border: 0;
+    display: block;
+    background: var(--paper);
+  }
+  .demo-frame-caption {
+    padding: 12px 16px;
+    font-family: var(--sans);
+    font-size: 12.5px;
+    color: var(--muted);
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
 
   
   footer.closing {
@@ -318,6 +347,10 @@
   }
   html { scroll-behavior: smooth; }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+  
+  .reveal-pending { opacity: 0; transform: translateY(10px); transition: opacity .5s ease-out, transform .5s ease-out; }
+  .reveal-pending.revealed { opacity: 1; transform: translateY(0); }
 </style><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
 
 
@@ -435,11 +468,17 @@
   <div class="col">
     <p class="salutation">A specimen, so you can see it—</p>
     <h2 class="section-title">A demonstration</h2>
-    <p class="section-sub">Two simulated match scenarios — a founder asking for an investor intro, and an investor's advisory offer being matched to a founder. Every name and message below is invented for illustration.</p>
+    <p class="section-sub">Two simulated match scenarios, playing automatically below — a founder asking for an investor intro, and an investor's advisory offer being matched to a founder. Each ends with a human curator's reasoning revealed, never an algorithm swiping two profiles together. Every name and message below is invented for illustration.</p>
     <div class="enclosure">
       
-      <p style="margin:0 0 16px;">Full scripted walkthrough, both sides of a match, with the human's reasoning shown at each step.</p>
-      <a class="btn btn-primary" href="./media/demo.html">Open the simulated demo →</a>
+      <p style="margin:0 0 16px;">Full scripted walkthrough, both sides of a match, with the curator's reasoning shown at each step.</p>
+      <div class="demo-frame-wrap">
+        <iframe src="./media/demo.html" title="OneGoodIntro simulated match demo" loading="lazy"></iframe>
+        <div class="demo-frame-caption">
+          <span>Simulated — scripted example, no real founders or investors</span>
+          <a class="btn btn-secondary" href="./media/demo.html" target="_blank" rel="noopener">Open full-screen ↗</a>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -455,3 +494,32 @@
 </footer>
 
 
+
+<script>
+/* ── shared scroll-reveal pattern (reusable across the fleet, per
+   DEMO-WAVE-PLAN.md) ── One-shot IntersectionObserver fade+rise on section
+   headers/reading blocks only; the hero is never targeted and stays fully
+   visible on first paint. Gated on prefers-reduced-motion at the JS layer
+   (not just CSS) so a reduced-motion visitor's content is never assigned a
+   hidden initial state to begin with. */
+(function(){
+  var reducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  if (reducedMotion || !('IntersectionObserver' in window)) return;
+
+  var targets = document.querySelectorAll(
+    'section .salutation, section h2.section-title, ' +
+    '.entries, ol.steps, .table-wrap, .enclosure'
+  );
+  targets.forEach(function(el){ el.classList.add('reveal-pending'); });
+
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if (entry.isIntersecting){
+        entry.target.classList.add('revealed');
+        io.unobserve(entry.target);
+      }
+    });
+  }, {threshold: .15, rootMargin: '0px 0px -40px 0px'});
+  targets.forEach(function(el){ io.observe(el); });
+})();
+</script>

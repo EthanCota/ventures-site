@@ -6,6 +6,7 @@
     --ink: #1c1712; --paper: #faf6ef; --paper-2: #f1e9d8; --accent: #b5541e;
     --accent-2: #2c5148; --line: #d9cdb2; --muted: #6b6152; --card: #ffffff;
     --danger-bg: #fff2e0; --danger-line: #c98a3e;
+    --good: #2f5d3a; --good-ink: #ffffff;
     --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
     --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   }
@@ -13,12 +14,14 @@
     --ink: #f2ece0; --paper: #16130f; --paper-2: #201b14; --accent: #e08a4c;
     --accent-2: #6fae9c; --line: #3a3225; --muted: #b3a891; --card: #1e1a14;
     --danger-bg: #2a2015; --danger-line: #b5732f;
+    --good: #6fbf7e; --good-ink: #0f1a10;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       --ink: #f2ece0; --paper: #16130f; --paper-2: #201b14; --accent: #e08a4c;
       --accent-2: #6fae9c; --line: #3a3225; --muted: #b3a891; --card: #1e1a14;
       --danger-bg: #2a2015; --danger-line: #b5732f;
+      --good: #6fbf7e; --good-ink: #0f1a10;
     }
   }
   * { box-sizing: border-box; }
@@ -34,124 +37,336 @@
     font-weight: 800; letter-spacing: .03em; font-size: 12px; padding: 7px 12px; text-transform: uppercase;
   }
   h1 { font-family: var(--serif); font-size: 28px; margin: 36px 0 6px; }
-  p.lead { color: var(--muted); margin: 0 0 30px; }
+  p.lead { color: var(--muted); margin: 0 0 26px; }
+
+  .tabs { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+  .tab {
+    border: 1px solid var(--line); background: var(--card); color: var(--ink);
+    padding: 8px 12px; border-radius: 999px; font-size: 12.5px; font-weight: 700; cursor: pointer;
+    transition: background-color .14s ease, color .14s ease, border-color .14s ease, transform .14s ease;
+  }
+  .tab.active { background: var(--accent); color: #fff; border-color: var(--accent); transform: scale(1.04); }
+
   .scenario {
     background: var(--card); border: 1px solid var(--line); border-radius: 14px;
-    padding: 24px; margin-bottom: 28px;
+    padding: 24px; margin-bottom: 20px;
   }
-  .scenario h2 { font-family: var(--serif); font-size: 20px; margin: 0 0 4px; }
   .scenario .tag {
     display: inline-block; font-size: 11px; font-weight: 800; text-transform: uppercase;
     letter-spacing: .04em; color: var(--danger-line); background: var(--danger-bg);
-    border: 1px solid var(--danger-line); border-radius: 999px; padding: 3px 10px; margin-bottom: 12px;
+    border: 1px solid var(--danger-line); border-radius: 999px; padding: 3px 10px; margin-bottom: 16px;
   }
-  .msg { display: flex; margin: 10px 0; gap: 10px; }
-  .msg .bubble {
-    max-width: 78%; padding: 10px 14px; border-radius: 14px; font-size: 14.5px;
-    background: var(--paper-2); border: 1px solid var(--line);
+
+  
+  .match-row {
+    display: flex; align-items: center; justify-content: center; gap: 14px;
+    flex-wrap: wrap; margin-bottom: 4px;
   }
-  .msg.right { justify-content: flex-end; }
-  .msg.right .bubble { background: var(--accent); color: #fff; border-color: var(--accent); }
-  .msg.system .bubble {
-    background: transparent; border: 1px dashed var(--line); color: var(--muted); font-style: italic;
-    max-width: 100%;
+  .profile-card {
+    flex: 1 1 200px; max-width: 260px; background: var(--paper-2); border: 1px solid var(--line);
+    border-radius: 10px; padding: 16px 18px; text-align: left;
+    transition: transform .5s cubic-bezier(.22,.8,.32,1), border-color .5s ease, box-shadow .5s ease;
   }
-  .who { font-size: 12px; color: var(--muted); margin: 0 0 3px; }
-  button.step-btn {
-    display: block; margin: 18px auto 0; padding: 10px 22px; border-radius: 999px;
-    border: 1px solid var(--accent); background: var(--accent); color: #fff; font-weight: 700;
-    font-size: 14px; cursor: pointer;
+  .profile-card .role {
+    font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--muted); margin: 0 0 4px;
   }
-  button.step-btn:disabled { opacity: .4; cursor: default; }
-  .step-indicator { text-align: center; color: var(--muted); font-size: 12.5px; margin-top: 10px; }
-  .hidden { display: none; }
+  .profile-card .name { font-family: var(--serif); font-size: 17px; margin: 0 0 4px; }
+  .profile-card .detail { font-size: 12.5px; color: var(--muted); margin: 0; }
+  .profile-card.left { transform: translateX(-14px); }
+  .profile-card.right { transform: translateX(14px); }
+  .match-row.matched .profile-card {
+    border-color: var(--good); box-shadow: 0 0 0 1px var(--good) inset;
+  }
+  .match-row.matched .profile-card.left { transform: translateX(-2px); }
+  .match-row.matched .profile-card.right { transform: translateX(2px); }
+
+  .curator-col {
+    flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 6px;
+    opacity: 0; transition: opacity .45s ease;
+    min-width: 74px;
+  }
+  .curator-col.shown { opacity: 1; }
+  .curator-seal {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 42px; height: 42px; border-radius: 50%;
+    border: 2px solid var(--accent); color: var(--accent);
+    font-family: var(--serif); font-weight: 700; font-size: 13px; letter-spacing: .04em;
+    background: var(--card);
+    transition: border-color .4s ease, color .4s ease, transform .4s ease;
+  }
+  .match-row.matched .curator-seal {
+    border-color: var(--good); color: var(--good); transform: scale(1.08);
+  }
+  .curator-label {
+    font-size: 9.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted);
+    font-weight: 700; text-align: center; white-space: nowrap;
+  }
+  .link-line {
+    width: 30px; height: 0; border-top: 2px dashed var(--line); align-self: center;
+    transition: border-color .4s ease, border-style .2s ease .2s;
+  }
+  .match-row.matched .link-line { border-style: solid; border-color: var(--good); }
+
+  .ask-quote {
+    margin: 18px 0 0; padding: 12px 14px; border-left: 3px solid var(--accent);
+    background: var(--paper-2); border-radius: 0 8px 8px 0; font-size: 14px;
+    font-style: italic; color: var(--ink);
+    opacity: 0; max-height: 0; overflow: hidden;
+    transition: opacity .4s ease;
+  }
+  .ask-quote.shown { opacity: 1; max-height: none; margin-top: 18px; }
+
   .reasoning {
     background: var(--paper-2); border-left: 3px solid var(--accent-2); padding: 12px 14px;
-    border-radius: 8px; font-size: 14px; margin: 14px 0; color: var(--muted);
+    border-radius: 0 8px 8px 0; font-size: 13.5px; margin: 14px 0 0; color: var(--muted);
+    opacity: 0; max-height: 0; overflow: hidden; transition: opacity .4s ease;
   }
+  .reasoning.shown { opacity: 1; max-height: none; }
+
+  .matched-badge {
+    display: inline-block; margin-top: 16px; font-weight: 800; font-size: 12px; letter-spacing: .03em;
+    color: var(--good-ink); background: var(--good); padding: 6px 13px; border-radius: 999px;
+    opacity: 0; transform: translateY(4px); transition: opacity .35s ease, transform .35s ease;
+  }
+  .matched-badge.shown { opacity: 1; transform: translateY(0); }
+
+  .final-note {
+    margin-top: 14px; padding: 12px 14px; border: 1px dashed var(--good); border-radius: 8px;
+    font-size: 13.5px; color: var(--ink); background: var(--card);
+    opacity: 0; max-height: 0; overflow: hidden; transition: opacity .4s ease;
+  }
+  .final-note.shown { opacity: 1; max-height: none; }
+  .final-note .who { font-size: 11px; color: var(--muted); margin-top: 8px; }
+  .final-note .who:first-child { margin-top: 0; }
+
+  .controls {
+    display: flex; justify-content: space-between; align-items: center; margin-top: 18px; gap: 10px;
+  }
+  button.nav {
+    border: 1px solid var(--line); background: var(--card); color: var(--ink);
+    padding: 9px 16px; border-radius: 9px; font-weight: 700; font-size: 13.5px; cursor: pointer;
+    transition: background-color .14s ease, border-color .14s ease, transform .14s ease;
+    min-height: 40px;
+  }
+  button.nav:hover:not(:disabled) { border-color: var(--accent); transform: translateY(-1px); }
+  button.nav:disabled { opacity: .4; cursor: default; }
+  .progress { font-size: 12.5px; color: var(--muted); }
+  #replayBtn { display: none; }
+
+  .step-caption { font-size: 12.5px; color: var(--muted); margin-top: 10px; min-height: 32px; }
+
   .synth-note {
     font-size: 12px; color: var(--muted); border-top: 1px dashed var(--line);
-    margin-top: 16px; padding-top: 10px;
+    margin-top: 8px; padding-top: 10px;
+  }
+
+  
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
   }
 </style><div id="alpha-banner" style="background:#3a2f0f;color:#f5e6b8;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;">Alpha — early access. This page describes an early-stage product; features and pricing may change.</div>
 
 
 <div class="sim-banner">Simulated product demo — every name, message, and figure below is invented for illustration</div>
 
-<div class="wrap">
-  <h1>Two simulated matches</h1>
-  <p class="lead">Illustrative example only. Synthetic people, synthetic messages, plausibility-bounded against real figures in RESEARCH.md (no invented dollar figures carry citation-style decoration). Click through each scenario.</p>
+<div class="wrap" id="demoRoot">
+  <h1>How a curated match comes together</h1>
+  <p class="lead">Two simulated scenarios, playing automatically below. A person reviews both sides and proposes the pairing — never an algorithm matching profiles on its own. Hover, focus, or touch the demo any time to pause it.</p>
+
+  <div class="tabs" id="tabs"></div>
 
   <div class="scenario">
     
-    <h2>A founder asks for an investor intro</h2>
-    <div id="s1-steps"></div>
-    <button class="step-btn" id="s1-next">Show next message</button>
-    <div class="step-indicator" id="s1-indicator">Step 0 of 5</div>
+    <div id="matchStage"></div>
+    <div class="step-caption" id="caption"></div>
+    <div class="controls">
+      <button class="nav" id="prevBtn">← Back</button>
+      <span class="progress" id="progress"></span>
+      <button class="nav" id="nextBtn">Next →</button>
+      <button class="nav" id="replayBtn">↻ Replay</button>
+    </div>
   </div>
 
-  <div class="scenario">
-    
-    <h2>An advisor's offer gets matched to a founder</h2>
-    <div id="s2-steps"></div>
-    <button class="step-btn" id="s2-next">Show next message</button>
-    <div class="step-indicator" id="s2-indicator">Step 0 of 5</div>
-  </div>
-
-  <p class="synth-note">Illustrative example. Names ("Priya," "Marcus," "Elena," "Sam") and every message are synthetic — no real person, deal, or outcome is depicted. Dollar figures shown ($150 intro fee) match the real STRATEGY.md pricing; all other numbers in this demo (timelines, meeting counts) are invented and unlabeled with any source tag on purpose, per house style for synthetic data.</p>
+  <p class="synth-note">Illustrative example. Names ("Priya," "Marcus," "Elena," "Sam") and every message are synthetic — no real person, deal, or outcome is depicted. The $150 figure matches the real pricing on the main page; all other numbers in this demo (timelines, hire counts) are invented, per house style for synthetic data.</p>
 </div>
 
 <script>
-  function buildScenario(containerId, nextBtnId, indicatorId, steps) {
-    const container = document.getElementById(containerId);
-    const btn = document.getElementById(nextBtnId);
-    const indicator = document.getElementById(indicatorId);
-    let shown = 0;
+const scenarios = [
+  {
+    name: "Founder → investor",
+    left: { role: "Founder", name: "Priya", detail: "Pre-seed, logistics-tech" },
+    right: { role: "Investor", name: "Marcus", detail: "Angel, 2 prior logistics-tech checks" },
+    steps: [
+      { caption: "Both people are in the opt-in pool — not yet paired." },
+      { caption: "Priya submits a request through OneGoodIntro.",
+        ask: "“I need one intro to an investor who’s actually written checks into logistics-tech before Series A. Not a general VC list.” — Priya, founder" },
+      { caption: "A curator reads the request.",
+        reasoning: "Curator reasoning (simulated): a specific, narrow ask — checking the opt-in pool for a match with logistics-adjacent check-writing experience, not broadcasting to every investor on the list." },
+      { caption: "The curator proposes the pairing to both sides.", matched: true },
+      { caption: "Both sides say yes.",
+        final: ["“Got a founder — pre-seed, logistics-tech, sharp on the specifics. Want the intro?” — curator, to Marcus",
+                "“Sure, send it over.” — Marcus"] }
+    ]
+  },
+  {
+    name: "Advisor → founder",
+    left: { role: "Advisor", name: "Elena", detail: "Ops-scaling focus, 3 slots/quarter" },
+    right: { role: "Founder", name: "Sam", detail: "9 hires, ops-scaling inflection" },
+    steps: [
+      { caption: "Both people are in the opt-in pool — not yet paired." },
+      { caption: "Elena opts in with a standing offer.",
+        ask: "“I’ve got bandwidth for a few founders this quarter — anyone wrestling with ops scaling past their first 10 hires.” — Elena, advisor" },
+      { caption: "A curator reads the offer.",
+        reasoning: "Curator reasoning (simulated): Elena’s offer is specific — checking the founder pool for someone at that exact inflection point rather than broadcasting the offer widely." },
+      { caption: "The curator proposes the pairing to both sides.", matched: true },
+      { caption: "Both sides say yes.",
+        final: ["“There’s an advisor with real ops-scaling experience who has room for a conversation. $150 for the intro, one-time. Want it?” — curator, to Sam",
+                "“Yes — that’s exactly the gap I flagged. Set it up.” — Sam"] }
+    ]
+  }
+];
 
-    function render() {
-      container.innerHTML = '';
-      for (let i = 0; i < shown; i++) {
-        const s = steps[i];
-        const div = document.createElement('div');
-        if (s.type === 'system') {
-          div.className = 'msg system';
-          div.innerHTML = '<div class="bubble">' + s.text + '</div>';
-        } else if (s.type === 'reasoning') {
-          div.className = 'reasoning';
-          div.textContent = s.text;
-        } else {
-          div.className = 'msg ' + (s.side === 'right' ? 'right' : '');
-          div.innerHTML = '<div><div class="who">' + s.who + '</div><div class="bubble">' + s.text + '</div></div>';
-        }
-        container.appendChild(div);
-      }
-      indicator.textContent = 'Step ' + shown + ' of ' + steps.length;
-      btn.disabled = shown >= steps.length;
-      btn.textContent = shown >= steps.length ? 'Scenario complete' : 'Show next message';
-    }
+let scenarioIdx = 0;
+let stepIdx = 1; // how many steps of the current scenario are "shown" (1-based, like msgIdx elsewhere)
 
-    btn.addEventListener('click', function () {
-      if (shown < steps.length) { shown++; render(); }
-    });
+const tabsEl = document.getElementById('tabs');
+const stageEl = document.getElementById('matchStage');
+const progressEl = document.getElementById('progress');
+const captionEl = document.getElementById('caption');
+const tagEl = document.getElementById('scenarioTag');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const replayBtn = document.getElementById('replayBtn');
+const demoRoot = document.getElementById('demoRoot');
 
-    render();
+scenarios.forEach((s, i) => {
+  const b = document.createElement('button');
+  b.className = 'tab' + (i === 0 ? ' active' : '');
+  b.textContent = s.name;
+  b.onclick = () => { stopAutoplayForManual(); scenarioIdx = i; stepIdx = 1; render(); };
+  tabsEl.appendChild(b);
+});
+
+function render(){
+  const scenario = scenarios[scenarioIdx];
+  [...tabsEl.children].forEach((b, i) => b.classList.toggle('active', i === scenarioIdx));
+  tagEl.textContent = 'Simulated — Scenario ' + (scenarioIdx + 1);
+
+  // cumulative state across all steps shown so far
+  let curatorShown = false, askShown = false, reasoningShown = false, matched = false, finalLines = null;
+  for (let i = 0; i < stepIdx; i++){
+    const st = scenario.steps[i];
+    if (st.ask){ curatorShown = true; askShown = st.ask; }
+    if (st.reasoning){ curatorShown = true; reasoningShown = st.reasoning; }
+    if (st.matched){ curatorShown = true; matched = true; }
+    if (st.final){ curatorShown = true; matched = true; finalLines = st.final; }
   }
 
-  buildScenario('s1-steps', 's1-next', 's1-indicator', [
-    { type: 'system', text: 'Founder "Priya" (illustrative) submits a request through OneGoodIntro.' },
-    { type: 'msg', side: 'left', who: 'Priya, founder', text: '"I need one intro to an investor who\'s actually written checks into logistics-tech before Series A. Not a general VC list."' },
-    { type: 'reasoning', text: 'Curator reasoning (simulated): Priya has a specific, narrow ask — that\'s the kind of request this service is built for, not a broad "any investor" browse. Checking the opt-in pool for a match with logistics-adjacent check-writing experience.' },
-    { type: 'system', text: 'Curator finds "Marcus" (illustrative), an angel in the opt-in pool with two prior logistics-tech investments, opted in to founder intros this quarter.' },
-    { type: 'msg', side: 'right', who: 'Curator, to Marcus', text: '"Got a founder — pre-seed, logistics-tech, sharp on the specifics. Want the intro?"' },
-    { type: 'msg', side: 'right', who: 'Marcus, investor', text: '"Sure, send it over."' }
-  ]);
+  stageEl.innerHTML =
+    '<div class="match-row' + (matched ? ' matched' : '') + '">' +
+      '<div class="profile-card left"><p class="role">' + scenario.left.role + '</p><p class="name">' + scenario.left.name + '</p><p class="detail">' + scenario.left.detail + '</p></div>' +
+      '<div class="curator-col' + (curatorShown ? ' shown' : '') + '">' +
+        '<div class="link-line"></div>' +
+        '<div class="curator-seal">OGI</div>' +
+        '<div class="curator-label">Human curator</div>' +
+        '<div class="link-line"></div>' +
+      '</div>' +
+      '<div class="profile-card right"><p class="role">' + scenario.right.role + '</p><p class="name">' + scenario.right.name + '</p><p class="detail">' + scenario.right.detail + '</p></div>' +
+    '</div>' +
+    (askShown ? '<div class="ask-quote shown">' + askShown + '</div>' : '') +
+    (reasoningShown ? '<div class="reasoning shown">' + reasoningShown + '</div>' : '') +
+    (matched ? '<div class="matched-badge shown">✓ Curated match — reviewed by a person, not an algorithm</div>' : '') +
+    (finalLines ? '<div class="final-note shown">' + finalLines.map(l => '<div class="who">' + l + '</div>').join('') + '</div>' : '');
 
-  buildScenario('s2-steps', 's2-next', 's2-indicator', [
-    { type: 'system', text: 'Advisor "Elena" (illustrative) opts in with a standing offer: 3 advisory conversations/quarter, ops-scaling focus.' },
-    { type: 'msg', side: 'left', who: 'Elena, advisor', text: '"I\'ve got bandwidth for a few founders this quarter — anyone wrestling with ops scaling past their first 10 hires."' },
-    { type: 'reasoning', text: 'Curator reasoning (simulated): Elena\'s offer is specific (ops scaling, 10+ hires) — checking the founder pool for someone at that exact inflection point rather than broadcasting the offer widely.' },
-    { type: 'system', text: 'Curator finds "Sam" (illustrative), a founder at 9 hires who flagged hiring-process pain in their own opt-in profile.' },
-    { type: 'msg', side: 'right', who: 'Curator, to Sam', text: '"There\'s an advisor with real ops-scaling experience who has room for a conversation. $150 for the intro, one-time. Want it?"' },
-    { type: 'msg', side: 'right', who: 'Sam, founder', text: '"Yes — that\'s exactly the gap I flagged. Set it up."' }
-  ]);
+  progressEl.textContent = stepIdx + ' / ' + scenario.steps.length;
+  captionEl.textContent = scenario.steps[stepIdx - 1].caption;
+  prevBtn.disabled = (scenarioIdx === 0 && stepIdx <= 1);
+  nextBtn.disabled = (scenarioIdx === scenarios.length - 1 && stepIdx >= scenario.steps.length);
+}
+
+function advanceOne(){
+  const scenario = scenarios[scenarioIdx];
+  if (stepIdx < scenario.steps.length){
+    stepIdx++;
+    return true;
+  } else if (scenarioIdx < scenarios.length - 1){
+    scenarioIdx++;
+    stepIdx = 1;
+    return true;
+  }
+  return false;
+}
+function retreatOne(){
+  if (stepIdx > 1){
+    stepIdx--;
+  } else if (scenarioIdx > 0){
+    scenarioIdx--;
+    stepIdx = scenarios[scenarioIdx].steps.length;
+  }
+}
+
+nextBtn.onclick = () => { stopAutoplayForManual(); advanceOne(); render(); };
+prevBtn.onclick = () => { stopAutoplayForManual(); retreatOne(); render(); };
+replayBtn.onclick = () => { scenarioIdx = 0; stepIdx = 1; render(); startAutoplay(); };
+
+/* ── reusable autoplay pattern (shared conventions §1-2, DEMO-WAVE-PLAN.md) ──
+   Auto-advances through every scenario/step at 2.6-3.5s/step. Pauses on
+   hover/focus/touch + tab visibility; plays once per page view, then hands
+   off to a Replay affordance. Fully gated on prefers-reduced-motion so a
+   reduced-motion user gets exactly today's manual-only experience. ── */
+const reducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+let autoplayActive = false;
+let autoplayPaused = false;
+let autoplayTimer = null;
+
+function stepDelay(){ return 3000; }
+function scheduleNext(){
+  clearTimeout(autoplayTimer);
+  if (!autoplayActive || autoplayPaused) return;
+  autoplayTimer = setTimeout(tick, stepDelay());
+}
+function tick(){
+  if (!autoplayActive || autoplayPaused) return;
+  const advanced = advanceOne();
+  render();
+  if (advanced){
+    scheduleNext();
+  } else {
+    finishAutoplay();
+  }
+}
+function finishAutoplay(){
+  autoplayActive = false;
+  clearTimeout(autoplayTimer);
+  replayBtn.style.display = 'inline-flex';
+}
+function startAutoplay(){
+  if (reducedMotion) return; // manual-only for reduced-motion users, never worse
+  autoplayActive = true;
+  autoplayPaused = false;
+  replayBtn.style.display = 'none';
+  scheduleNext();
+}
+function stopAutoplayForManual(){
+  autoplayActive = false;
+  clearTimeout(autoplayTimer);
+}
+function pauseAutoplay(){ autoplayPaused = true; clearTimeout(autoplayTimer); }
+function resumeAutoplay(){
+  if (!autoplayActive) return;
+  autoplayPaused = false;
+  scheduleNext();
+}
+
+['mouseenter', 'focusin'].forEach(evt => demoRoot.addEventListener(evt, pauseAutoplay));
+['mouseleave', 'focusout'].forEach(evt => demoRoot.addEventListener(evt, resumeAutoplay));
+demoRoot.addEventListener('touchstart', pauseAutoplay, {passive: true});
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) pauseAutoplay(); else resumeAutoplay();
+});
+
+stepIdx = 1;
+render();
+startAutoplay();
 </script>
